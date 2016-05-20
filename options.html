@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Level up for Dynamics CRM</title>
+    <style>
+        body {
+            min-width:280px;
+            min-height:300px;
+            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
+        .container{
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: row;
+            flex-direction: row;
+            -webkit-flex-flow: row wrap;
+            flex-flow: row wrap;
+            width: 100%;
+        }
+        .links{
+            padding: 10px;
+            background: #002050;
+            color: white;
+            height: 60px;
+            width: 60px;
+            margin: 5px;
+            text-align: center;
+        }
+        .links:hover{
+            cursor: pointer;
+            background: seagreen;
+        }
+        .section{
+            font-size: 16px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div id="crmHelperLinks" >
+        <p class="section">Forms</p>
+        <div class="container">
+            <div class="links" id="displayLogicalNames">Logical Names</div>
+            <div class="links" id="godMode">God Mode</div>
+            <div class="links" id="formProperties">Form Properties</div>
+            <div class="links" id="highlightDirtyFields">Dirty Fields</div>  
+            <div class="links" id="copyRecordUrl">Record URL</div>
+            <div class="links" id="copyRecordId">Record Id</div>                
+        </div>
+        <p class="section">Navigation</p>
+        <div class="container">
+            <div class="links" id="openRecord">Open Record By Id</div>
+            <div class="links" id="openSecurity">Open Security</div>
+            <div class="links" id="openSystemJobs">Open System Jobs</div>
+            <div class="links" id="openSolutions">Open Solutions</div>
+            <div class="links" id="openProcesses">Open Processes</div>            
+            <div class="links" id="openMain">Open Main</div>            
+        </div>
+    </div>   
+    <script src="options.js"></script>    
+</body>
+</html>

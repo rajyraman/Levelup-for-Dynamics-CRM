@@ -1,0 +1,32 @@
+{
+	"background" : {
+		"scripts" : ["background.js"],
+		"persistant" : false
+	},
+	"browser_action" : {
+		"default_icon" : "icon-128.png",
+		"default_title" : "Level up for Dynamics CRM",
+		"default_popup" : "options.html"
+	},
+	"name" : "Level up for Dynamics CRM",
+	"description" : "Quickly perform advanced/hidden actions in Dynamics CRM, without bookmarklets.",
+	"content_scripts" : [{
+			"matches" : ["http://*/*", "https://*/*"],
+			"js" : ["app.js"]
+		}
+	],
+	"icons" : {
+		"16" : "icon-16.png",
+		"48" : "icon-48.png",
+		"128" : "icon-128.png"
+	},
+	"permissions" : [
+		"activeTab",
+		"tabs",
+		"http://*/*",
+		"https://*/*"
+	],
+	"web_accessible_resources" : ["crmmethods.js"],
+	"version" : "1.0",
+	"manifest_version" : 2
+}
