@@ -191,7 +191,4 @@ window.addEventListener('message', function(event) {
     }
     RYR[event.data.type](RYR.formWindow, RYR.Xrm);
   }
-  else{
-    alert('Dynamics CRM not detected.');
-  }
 });
