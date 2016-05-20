@@ -28,5 +28,6 @@
 	],
 	"web_accessible_resources" : ["crmmethods.js"],
 	"version" : "1.0",
+	"version_name" : "1.0 beta",
 	"manifest_version" : 2
 }
