@@ -74,28 +74,21 @@ var RYR = {
         }
       } catch (e) {}
 
-      var attrs = Xrm.Page.data.entity.attributes.get();
-      for (var i in attrs) {
-        attrs[i].setRequiredLevel("none")
-      }
-      var contrs = Xrm.Page.ui.controls.get();
-      for (var i in contrs) {
-        try {
-          contrs[i].setVisible(true);
-          contrs[i].setDisabled(false);
-          contrs[i].clearNotification()
-        } catch (e) {}
-
-      }
-      var tabs = Xrm.Page.ui.tabs.get();
-      for (var i in tabs) {
-        tabs[i].setVisible(true);
-        tabs[i].setDisplayState("expanded");
-        var sects = tabs[i].sections.get();
-        for (var i in sects) {
-          sects[i].setVisible(true)
-        }
-      }
+      Xrm.Page.data.entity.attributes.forEach(a => a.setRequiredLevel('none'));
+      
+      Xrm.Page.ui.controls.forEach(c => {
+          c.setVisible(true);
+          if(c.setDisabled){
+            c.setDisabled(false);
+          }
+          c.clearNotification();
+      });
+      
+      Xrm.Page.ui.tabs.forEach(t => {
+        t.setVisible(true);
+        t.setDisplayState('expanded');
+        t.sections.forEach(s => s.setVisible(true));
+      });
   };
   
   RYR.formProperties = function(formWindow, Xrm){
@@ -179,7 +172,9 @@ var RYR = {
 window.addEventListener('message', function(event) {
   if(event.source.Xrm && event.data.type){
     var clientUrl = event.source.Xrm.Page.context.getClientUrl();
-    if(event.origin !== clientUrl.substr(0, clientUrl.lastIndexOf('/'))) return;
+    var orgUniqueName = Xrm.Page.context.getOrgUniqueName();
+    var cleanedClientUrl = clientUrl.lastIndexOf(orgUniqueName) === -1 ? clientUrl : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
+    if(event.origin !== cleanedClientUrl) return;
     var contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
         return d.style.visibility !== 'hidden'
       });
