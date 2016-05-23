@@ -13,5 +13,5 @@ Please watch this animation below for quick functionality intro.
 #Credits
 * God mode adapted from original script by ![Paul Nieuwelaar](https://twitter.com/paulnz1 "@paulnz1")
 * Form Properties by ![Paul Nieuwelaar](https://twitter.com/paulnz1 "@paulnz1")
-* Display Logical Names by Chris Groh
+* Display Logical Names by Chris Groh (http://us.hitachi-solutions.com/blog/2014/10/27/showing-entity-logical-names-on-form/)
 * Rocket Icon by Jerry Low - (https://www.iconfinder.com/jerrylow)
