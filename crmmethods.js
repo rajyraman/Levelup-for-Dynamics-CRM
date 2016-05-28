@@ -1,50 +1,19 @@
-var RYR = {
-  Xrm : undefined,
-  formWindow : undefined,
-  runtimeChannel: undefined,
-  extensionId: undefined,
-  clientUrl: undefined
-};
-
-(function(){
-  RYR.openRecord = function(formWindow, Xrm){
-    var entityName = prompt("Entity?", ""), entityId = prompt("Id?", "");
-    window.open(`${RYR.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
-  };
+class LevelUp {
   
-  RYR.displayLogicalNames = function(formWindow, Xrm){
-      if(!Xrm.Page.data) {
-        alert('CRM Form is not open');
-        return;
-      }
-      Xrm.Page.ui.tabs.forEach(function (tab) {
-        tab.setVisible(true);
-        tab.sections.forEach(function (section) {
-          section.setVisible(true);
-        });
-      });
-      var $ = formWindow.jQuery || (formWindow.CEI && formWindow.CEI.$);
-      if (!$) {
-        var head = formWindow.document.getElementsByTagName('head').item(0);
-        var s = formWindow.document.createElement('script');
-        s.setAttribute('type', 'text/javascript');
-        s.setAttribute('src', 'https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js');
-        s.async = false;
-        head.appendChild(s);
-        waitForJQ();
-      } else {
-        setLabels();
-      }
-      function waitForJQ() {
-        if (formWindow.jQuery) {
-          $ = formWindow.jQuery.noConflict(true);
-          setLabels();
-        } else {
-          setTimeout(waitForJQ, 1000);
-        }
-      }
-      function setLabels() {
-        Xrm.Page.data.entity.attributes.forEach(function (a) {
+  messageExtension(message) {
+       let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', content: message} });
+       levelUpEvent.initEvent('levelup');
+       document.dispatchEvent(levelUpEvent);
+  }
+    
+  openRecord() {
+    var entityName = prompt("Entity?", ""), entityId = prompt("Id?", "");
+    window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
+  }
+  
+  displayLogicalNames() {
+      let setLabels = (Xrm) => {
+        Xrm.Page.data.entity.attributes.forEach(a => {
           a.controls.forEach(function (c) {
             var lblText = c.getLabel();
             c.setVisible(true);
@@ -55,28 +24,47 @@ var RYR = {
               lbl.closest('table').children('colgroup').children('col:even').attr('width', '400');
             }
             $('<input/>').width(200).val(attr).appendTo(lbl).focus(function () {
-              $(this).select()
+              $(this).select();
             });
             $('<span></span>').text(lblText).appendTo(lbl);
           });
         });
-      }
-  };
-  
-  RYR.godMode = function(formWindow, Xrm) {
-      if(!Xrm.Page.data) {
-        alert('CRM Form is not open');
-        return;
-      }    
-      try {
-        formWindow.Mscrm.InlineEditDataService.get_dataService().validateAndFireSaveEvents = function () {
-          return new Mscrm.SaveResponse(5, "")
-        }
-      } catch (e) {}
-
-      Xrm.Page.data.entity.attributes.forEach(a => a.setRequiredLevel('none'));
+      };
       
-      Xrm.Page.ui.controls.forEach(c => {
+      let waitForJQ = () => {
+        if (this.formWindow.jQuery) {
+          $ = this.formWindow.jQuery.noConflict(true);
+          setLabels(this.Xrm);
+        } else {
+          setTimeout(waitForJQ, 1000);
+        }
+      }
+            
+      this.Xrm.Page.ui.tabs.forEach(function (tab) {
+        tab.setVisible(true);
+        tab.sections.forEach(function (section) {
+          section.setVisible(true);
+        });
+      });
+      
+      var $ = this.formWindow.jQuery || (this.formWindow.CEI && this.formWindow.CEI.$);
+      if (!$) {
+        var head = this.formWindow.document.getElementsByTagName('head').item(0);
+        var s = this.formWindow.document.createElement('script');
+        s.setAttribute('type', 'text/javascript');
+        s.setAttribute('src', 'https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js');
+        s.async = false;
+        head.appendChild(s);
+        waitForJQ();
+      } else {
+        setLabels(this.Xrm);
+      }
+  }
+  
+  godMode() {
+      this.Xrm.Page.data.entity.attributes.forEach(a => a.setRequiredLevel('none'));
+      
+      this.Xrm.Page.ui.controls.forEach(c => {
           c.setVisible(true);
           if(c.setDisabled){
             c.setDisabled(false);
@@ -84,106 +72,117 @@ var RYR = {
           c.clearNotification();
       });
       
-      Xrm.Page.ui.tabs.forEach(t => {
+      this.Xrm.Page.ui.tabs.forEach(t => {
         t.setVisible(true);
         t.setDisplayState('expanded');
         t.sections.forEach(s => s.setVisible(true));
       });
-  };
+  }
   
-  RYR.formProperties = function(formWindow, Xrm){
-    if(!Xrm.Page.data) {
-      alert('CRM Form is not open');
-      return;
-    }       
-    var id = Xrm.Page.data.entity.getId();
-    var etc = Xrm.Page.context.getQueryStringParameters().etc;
-    formWindow.Mscrm.RibbonActions.openFormProperties(id, etc);
-  };
+  formProperties() {
+    var id = this.Xrm.Page.data.entity.getId();
+    var etc = this.Xrm.Page.context.getQueryStringParameters().etc;
+    window.Mscrm.RibbonActions.openFormProperties(id, etc);
+  }
   
-  RYR.copyRecordUrl = function(formWindow, Xrm){
-      if(!Xrm.Page.data) {
-        alert('CRM Form is not open');
-        return;
-      }       
-      var entityId = Xrm.Page.data.entity.getId();
+  copyRecordUrl() {
+      var entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
-        var locationUrl = `${RYR.clientUrl}/main.aspx?etn=${Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+        var locationUrl = `${this.clientUrl}/main.aspx?etn=${this.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
         prompt('Ctrl+C to copy. OK to close.', locationUrl);
       }
-  };
+  }
   
-  RYR.copyRecordId = function(formWindow, Xrm){
-      if(!Xrm.Page.data) {
-        alert('CRM Form is not open');
-        return;
-      }       
-      var entityId = Xrm.Page.data.entity.getId();
+  copyRecordId() {
+      var entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
-        prompt('Ctrl+C to copy. OK to close.', Xrm.Page.data.entity.getId());
+        prompt('Ctrl+C to copy. OK to close.', this.Xrm.Page.data.entity.getId());
       }
-  };
+  }
   
-  RYR.openSecurity = function(formWindow, Xrm){
-    window.open(`${RYR.clientUrl}/tools/AdminSecurity/adminsecurity_area.aspx`);
-  };
+  openSecurity() {
+    window.open(`${this.clientUrl}/tools/AdminSecurity/adminsecurity_area.aspx`);
+  }
   
-  RYR.openSystemJobs = function(formWindow, Xrm){
-    window.open(`${RYR.clientUrl}/tools/business/home_asyncoperation.aspx`);
-  };
+  openSystemJobs() {
+    window.open(`${this.clientUrl}/tools/business/home_asyncoperation.aspx`);
+  }
   
-  RYR.openSolutions = function(formWindow, Xrm){
-    window.open(`${RYR.clientUrl}/main.aspx?Origin=Portal&page=Settings&area=nav_solution`);
-  };
+  openSolutions() {
+    window.open(`${this.clientUrl}/main.aspx?Origin=Portal&page=Settings&area=nav_solution`);
+  }
   
-  RYR.openProcesses = function(formWindow, Xrm) {
-    window.open(`${RYR.clientUrl}/_root/homepage.aspx?etc=4703&pagemode=iframe&sitemappath=Settings|ProcessCenter|nav_workflow`);
-  };
+  openProcesses() {
+    window.open(`${this.clientUrl}/_root/homepage.aspx?etc=4703&pagemode=iframe&sitemappath=Settings|ProcessCenter|nav_workflow`);
+  }
   
-  RYR.highlightDirtyFields = function(formWindow, Xrm){
-      Xrm.Page.data.entity.addOnSave(function (econtext) {
-        var eventArgs = econtext.getEventArgs();
-        if (eventArgs.getSaveMode() == 70 || eventArgs.getSaveMode() == 2) {
-          eventArgs.preventDefault();
+  highlightDirtyFields() {
+      this.Xrm.Page.ui.controls.forEach(c => {
+        if (c.getAttribute) {
+          var dirtyAttribute = c.getAttribute();
+          if(!dirtyAttribute || !dirtyAttribute.getIsDirty()) return;
+          this.formWindow.document.getElementById(dirtyAttribute.getName()).setAttribute('style', 'border: 1px solid red');
         }
       });
-      var dirtyAttributes = [];
-      Xrm.Page.ui.controls.forEach(function (c) {
-        if (c.getAttribute && c.getAttribute() && c.getAttribute().getIsDirty()) {
-          if (c.get_chromeElement)
-            c.get_chromeElement().attr('style', 'border: 1px solid red');
-          else
-            dirtyAttributes.push(c.getAttribute().getName());
-          c.getAttribute().setSubmitMode('never');
-        }
-      });
-      if (dirtyAttributes.length > 0)
-        alert('Dirty attributes "' + dirtyAttributes.join(',') + '" will not be submitted on save');
-  };
+  }
   
-  RYR.openMain = function(){
-    window.open(`${RYR.clientUrl}/main.aspx`,'_blank');
-  };
+  openMain() {
+    window.open(`${this.clientUrl}/main.aspx`,'_blank');
+  }
   
-  window.RYR = RYR;
-})();
+  openAdvFind() {
+    if(!this.Xrm.Page.data || !this.Xrm.Page.data.entity) {
+      window.open(`${this.clientUrl}/main.aspx?pagetype=advancedfind`,'_blank');
+    }
+    else {
+        let entityName = this.Xrm.Page.data.entity.getEntityName();
+        window.open(`${this.clientUrl}/main.aspx?extraqs=EntityCode%3d${Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`,'_blank');
+    }
+  }
+  
+  mocaClient() {
+      var url = Xrm.Page.context.isOffice365() ? this.Xrm.Page.context.getClientUrl() : window.location.origin;
+      window.open(`${url}/nga/main.htm?org=${this.Xrm.Page.context.getOrgUniqueName()}&server= ${url}`);
+  }
+  
+  refreshAllSubgrids() {
+    this.Xrm.Page.ui.controls.forEach(function (c) {
+			if (c.getControlType() === 'subgrid') {
+				c.refresh();
+			}
+		});
+  }
+}
 
+var RYR = new LevelUp();
 
 window.addEventListener('message', function(event) {
   if(event.source.Xrm && event.data.type){
     var clientUrl = event.source.Xrm.Page.context.getClientUrl();
     var orgUniqueName = Xrm.Page.context.getOrgUniqueName();
+    //This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
     var cleanedClientUrl = clientUrl.lastIndexOf(orgUniqueName) === -1 ? clientUrl : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
     if(event.origin !== cleanedClientUrl) return;
-    var contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
+    
+    RYR.clientUrl = clientUrl;
+    
+    let contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
         return d.style.visibility !== 'hidden'
       });
       
     if (contentPanels && contentPanels.length > 0) {
       RYR.formWindow = contentPanels[0].contentWindow;
       RYR.Xrm = RYR.formWindow.Xrm;
-      RYR.clientUrl = RYR.Xrm.Page.context.getClientUrl();
     }
-    RYR[event.data.type](RYR.formWindow, RYR.Xrm);
+
+    if(event.data.category === 'form' && !this.Xrm.Page.data) {
+        alert('CRM Form is not open');
+        return;
+    }
+    try{
+      RYR[event.data.type]();
+    }catch(e){
+      console.error(e);
+    }
   }
 });

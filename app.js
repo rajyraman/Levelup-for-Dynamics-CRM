@@ -7,4 +7,10 @@
     };
     
     injectScript(chrome.extension.getURL('crmmethods.js'));
+    
+    document.addEventListener("levelup", function(data) {
+        if(data.detail && data.detail.type === 'page'){
+            chrome.runtime.sendMessage(data.detail);
+        }
+    });
 })();
