@@ -1,7 +1,7 @@
 class LevelUp {
   
   messageExtension(message) {
-       let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', content: message} });
+       let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', category: 'settings', content: message} });
        levelUpEvent.initEvent('levelup');
        document.dispatchEvent(levelUpEvent);
   }
@@ -152,6 +152,102 @@ class LevelUp {
 			}
 		});
   }
+  
+  populateMin(){
+    this.Xrm.Page.data.entity.attributes.forEach(a => {
+      if (a.getRequiredLevel() === 'required') {
+        switch (a.getAttributeType()) {
+        case 'memo': {
+            a.setValue('memo');
+            break;
+          }
+        case 'string': {
+            a.setValue('string');
+            break;
+          }
+        case 'boolean': {
+            a.setValue(false);
+            break
+          }
+        case 'datetime': {
+            a.setValue(new Date());
+            break;
+          }
+        case 'decimal': {
+            a.setValue(a.getMin());
+            break;
+          }
+        case 'double': {
+            a.setValue(a.getMin());
+            break;
+          }
+        case 'integer': {
+            a.setValue(a.getMin());
+            break;
+          }
+        case 'lookup': {
+            a.setValue(0);
+            break;
+          }
+        case 'money': {
+            a.setValue(a.getMin());
+            break;
+          }
+        case 'optionset': {
+            let options = a.getOptions();
+            a.setValue(options[0].value);
+          }
+        }
+      }
+    });
+  }
+  
+  environmentDetails() {
+    let version = Xrm.Page.context.getVersion ? Xrm.Page.context.getVersion() : APPLICATION_VERSION;
+    let headers = new Headers({
+      "Accept" : "application/json",
+      "Content-Type" : "application/json; charset=utf-8",
+    });
+    let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/OrganizationSet?$select=SqlAccessGroupName,ReportingGroupName,
+    PrivReportingGroupName,MaxRecordsForLookupFilters,
+    MaxRecordsForExportToExcel,IsFullTextSearchEnabled,
+    IsUserAccessAuditEnabled,IsDuplicateDetectionEnabled,
+    QuickFindRecordLimitEnabled,IsAutoSaveEnabled,
+    IsPresenceEnabled,IsAuditEnabled,
+    SchemaNamePrefix,DisplayNavigationTour,
+    MaxUploadFileSize`;
+    if(version.startsWith('8')) {
+        headers = new Headers({
+          "Accept" : "application/json",
+          "Content-Type" : "application/json; charset=utf-8",
+          "OData-MaxVersion" : "4.0",
+          "OData-Version" : "4.0"
+        });
+        serviceUrl = `/api/data/v8.0/organizations?$select=sqlaccessgroupname,reportinggroupname,privreportinggroupname,maxrecordsforlookupfilters,maxrecordsforexporttoexcel,isfulltextsearchenabled,isuseraccessauditenabled,isduplicatedetectionenabled,quickfindrecordlimitenabled,isautosaveenabled,ispresenceenabled,isauditenabled,schemanameprefix,displaynavigationtour,maxuploadfilesize,cortanaproactiveexperienceenabled,uselegacyrendering`;
+    }
+    fetch(serviceUrl, {
+      method : 'GET',
+      headers : headers,
+      credentials : 'include'
+    }).then((response) => {
+      return response.json();
+    }).then((c) => {
+      let settingsArray = [];
+      let settings = {};
+      if(c.d){
+        settings = c.d.results[0];
+      }
+      else if (c.value && c.value.length > 0) {
+        settings = c.value[0];
+      }
+      for(let s in settings) { 
+        settingsArray.push({name: s, value: settings[s]});
+      }
+      this.messageExtension(settingsArray);      
+    }).catch ((err) => {
+      console.log(err);
+    });    
+  }
 }
 
 var RYR = new LevelUp();
@@ -161,7 +257,7 @@ window.addEventListener('message', function(event) {
     var clientUrl = event.source.Xrm.Page.context.getClientUrl();
     var orgUniqueName = Xrm.Page.context.getOrgUniqueName();
     //This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
-    var cleanedClientUrl = clientUrl.lastIndexOf(orgUniqueName) === -1 ? clientUrl : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
+    var cleanedClientUrl = !clientUrl.endsWith(orgUniqueName) ? clientUrl : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
     if(event.origin !== cleanedClientUrl) return;
     
     RYR.clientUrl = clientUrl;
