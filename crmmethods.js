@@ -1,14 +1,56 @@
 class LevelUp {
-  
-  messageExtension(message) {
-       let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', category: 'settings', content: message} });
+  fetch(entity, attributes, filter) {
+      let headers = new Headers({
+        "Accept" : "application/json",
+        "Content-Type" : "application/json; charset=utf-8",
+      });
+      let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/${entity}?$select=${attributes}`;
+      if(this.is2016) {
+          headers = new Headers({
+            "Accept" : "application/json",
+            "Content-Type" : "application/json; charset=utf-8",
+            "OData-MaxVersion" : "4.0",
+            "OData-Version" : "4.0"
+          });
+          serviceUrl = `/api/data/v8.0/${entity}?$select=${attributes}`;
+      }
+      if(filter) {
+        serviceUrl += `&$filter=${filter}`;
+      }
+      return fetch(serviceUrl, {
+        method : 'GET',
+        headers : headers,
+        credentials : 'include'
+      }).then((response) => {
+        return response.json();
+      }).then((c) => {
+        if(c.d){
+          return c.d.results;
+        }
+        else if (c.value) {
+          return c.value;
+        }
+      }).catch ((err) => {
+        console.log(err);
+      });    
+  }
+
+  messageExtension(message, category) {
+       let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', category: category, content: message} });
        levelUpEvent.initEvent('levelup');
        document.dispatchEvent(levelUpEvent);
   }
     
-  openRecord() {
-    var entityName = prompt("Entity?", ""), entityId = prompt("Id?", "");
-    window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
+  openRecord(entityName, entityId) {
+    if(!entityName) {
+      entityName = prompt("Entity?", "");
+    }
+    if(entityName && !entityId) {
+      entityId = prompt("Id?", "");
+    }
+    if(entityId) {
+      window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
+    }
   }
   
   displayLogicalNames() {
@@ -101,11 +143,11 @@ class LevelUp {
   }
   
   openSecurity() {
-    window.open(`${this.clientUrl}/tools/AdminSecurity/adminsecurity_area.aspx`);
+    window.top.document.getElementById('navBar').control.raiseNavigateRequest({uri: '/tools/AdminSecurity/adminsecurity_area.aspx?pagemode=iframe&'});
   }
   
   openSystemJobs() {
-    window.open(`${this.clientUrl}/tools/business/home_asyncoperation.aspx`);
+    window.top.document.getElementById('navBar').control.raiseNavigateRequest({uri: '/tools/business/home_asyncoperation.aspx?pagemode=iframe&'});
   }
   
   openSolutions() {
@@ -113,7 +155,7 @@ class LevelUp {
   }
   
   openProcesses() {
-    window.open(`${this.clientUrl}/_root/homepage.aspx?etc=4703&pagemode=iframe&sitemappath=Settings|ProcessCenter|nav_workflow`);
+    window.top.document.getElementById('navBar').control.raiseNavigateRequest({uri: '/_root/homepage.aspx?etc=4703&pagemode=iframe&sitemappath=Settings|ProcessCenter|nav_workflow'});
   }
   
   highlightDirtyFields() {
@@ -141,7 +183,7 @@ class LevelUp {
   }
   
   mocaClient() {
-      var url = Xrm.Page.context.isOffice365() ? this.Xrm.Page.context.getClientUrl() : window.location.origin;
+      var url = Xrm.Page.context.isOffice365() ? this.clientUrl : window.location.origin;
       window.open(`${url}/nga/main.htm?org=${this.Xrm.Page.context.getOrgUniqueName()}&server= ${url}`);
   }
   
@@ -157,58 +199,35 @@ class LevelUp {
     this.Xrm.Page.data.entity.attributes.forEach(a => {
       if (a.getRequiredLevel() === 'required') {
         switch (a.getAttributeType()) {
-        case 'memo': {
-            a.setValue('memo');
-            break;
-          }
-        case 'string': {
-            a.setValue('string');
-            break;
-          }
-        case 'boolean': {
-            a.setValue(false);
-            break
-          }
-        case 'datetime': {
-            a.setValue(new Date());
-            break;
-          }
-        case 'decimal': {
-            a.setValue(a.getMin());
-            break;
-          }
-        case 'double': {
-            a.setValue(a.getMin());
-            break;
-          }
-        case 'integer': {
-            a.setValue(a.getMin());
-            break;
-          }
-        case 'lookup': {
-            a.setValue(0);
-            break;
-          }
-        case 'money': {
-            a.setValue(a.getMin());
-            break;
-          }
-        case 'optionset': {
-            let options = a.getOptions();
-            a.setValue(options[0].value);
-          }
+            case 'memo':
+              a.setValue('memo');
+              break;
+            case 'string':
+              a.setValue('string');
+              break;
+            case 'boolean':
+              a.setValue(false);
+              break;
+            case 'datetime':
+              a.setValue(new Date());
+              break;
+            case 'decimal':
+            case 'double':
+            case 'integer':
+            case 'money':
+              a.setValue(a.getMin());
+              break;
+            case 'optionset':
+              let options = a.getOptions();
+              a.setValue(options[0].value);
+              break;
         }
       }
     });
   }
   
   environmentDetails() {
-    let version = Xrm.Page.context.getVersion ? Xrm.Page.context.getVersion() : APPLICATION_VERSION;
-    let headers = new Headers({
-      "Accept" : "application/json",
-      "Content-Type" : "application/json; charset=utf-8",
-    });
-    let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/OrganizationSet?$select=SqlAccessGroupName,ReportingGroupName,
+    let attributes = `SqlAccessGroupName,ReportingGroupName,
     PrivReportingGroupName,MaxRecordsForLookupFilters,
     MaxRecordsForExportToExcel,IsFullTextSearchEnabled,
     IsUserAccessAuditEnabled,IsDuplicateDetectionEnabled,
@@ -216,52 +235,85 @@ class LevelUp {
     IsPresenceEnabled,IsAuditEnabled,
     SchemaNamePrefix,DisplayNavigationTour,
     MaxUploadFileSize`;
-    if(version.startsWith('8')) {
-        headers = new Headers({
-          "Accept" : "application/json",
-          "Content-Type" : "application/json; charset=utf-8",
-          "OData-MaxVersion" : "4.0",
-          "OData-Version" : "4.0"
-        });
-        serviceUrl = `/api/data/v8.0/organizations?$select=sqlaccessgroupname,reportinggroupname,privreportinggroupname,maxrecordsforlookupfilters,maxrecordsforexporttoexcel,isfulltextsearchenabled,isuseraccessauditenabled,isduplicatedetectionenabled,quickfindrecordlimitenabled,isautosaveenabled,ispresenceenabled,isauditenabled,schemanameprefix,displaynavigationtour,maxuploadfilesize,cortanaproactiveexperienceenabled,uselegacyrendering`;
+    let entity = 'OrganizationSet';
+    if(this.is2016) {
+      attributes = `sqlaccessgroupname,reportinggroupname,privreportinggroupname,maxrecordsforlookupfilters,
+      maxrecordsforexporttoexcel,isfulltextsearchenabled,isuseraccessauditenabled,isduplicatedetectionenabled,
+      quickfindrecordlimitenabled,isautosaveenabled,ispresenceenabled,isauditenabled,schemanameprefix,
+      displaynavigationtour,maxuploadfilesize,cortanaproactiveexperienceenabled,uselegacyrendering`;
+      entity = 'organizations';
     }
-    fetch(serviceUrl, {
-      method : 'GET',
-      headers : headers,
-      credentials : 'include'
-    }).then((response) => {
-      return response.json();
-    }).then((c) => {
-      let settingsArray = [];
+    this.fetch(entity, attributes).then((c) => {
       let settings = {};
-      if(c.d){
-        settings = c.d.results[0];
-      }
-      else if (c.value && c.value.length > 0) {
-        settings = c.value[0];
+      let settingsArray = [];
+      if(c.length > 0){
+        settings = c[0];
       }
       for(let s in settings) { 
         settingsArray.push({name: s, value: settings[s]});
       }
-      this.messageExtension(settingsArray);      
+      this.messageExtension(settingsArray, 'settings');      
     }).catch ((err) => {
       console.log(err);
     });    
   }
+
+  myUserRecord(){
+    this.openRecord('systemuser', this.Xrm.Page.context.getUserId());
+  }
+
+  myRoles(){
+    let resultsArray = [{cells: ['Role Id', 'Name']}];
+    let attributes = 'RoleId,Name';
+    let entity = 'RoleSet';
+    let filter = Xrm.Page.context.getUserRoles().map(x=>`RoleId eq (guid'${x}')`).join(' or ');
+    if(this.is2016) {
+      entity = 'roles';
+      attributes = attributes.toLocaleLowerCase();
+      filter = Xrm.Page.context.getUserRoles().map(x=>`roleid eq ${x}`).join(' or ');
+    }
+    this.fetch(entity, attributes, filter)
+    .then((results) => {
+      results.forEach(r=>{
+        resultsArray.push({cells: Object.keys(r).filter(x=>!x.startsWith('@')).map(key=> r[key])});
+      });
+      this.messageExtension(resultsArray, 'userroles');            
+    }).catch ((err) => {
+      console.log(err);
+    });
+  }
+
+  myMailbox(){
+    let attributes = 'MailboxId';
+    let entity = 'MailboxSet';
+    let filter = `RegardingObjectId/Id eq (guid'${this.currentUserId}')`;
+    if(this.is2016) {
+      entity = 'mailboxes';
+      attributes = attributes.toLocaleLowerCase();
+      filter = `_regardingobjectid_value eq ${this.currentUserId}`;
+    }
+    this.fetch(entity, attributes, filter)
+    .then((results) => {
+      if(results.length > 0){
+        this.openRecord('mailbox', results[0].MailboxId || results[0].mailboxid);
+      }
+    }).catch ((err) => {
+      console.log(err);
+    });
+  }  
 }
 
 var RYR = new LevelUp();
-
 window.addEventListener('message', function(event) {
   if(event.source.Xrm && event.data.type){
-    var clientUrl = event.source.Xrm.Page.context.getClientUrl();
-    var orgUniqueName = Xrm.Page.context.getOrgUniqueName();
+    RYR.clientUrl = event.source.Xrm.Page.context.getClientUrl();
     //This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
-    var cleanedClientUrl = !clientUrl.endsWith(orgUniqueName) ? clientUrl : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
-    if(event.origin !== cleanedClientUrl) return;
-    
-    RYR.clientUrl = clientUrl;
-    
+    RYR.cleanedClientUrl = !RYR.clientUrl.endsWith(Xrm.Page.context.getOrgUniqueName()) ? 
+                          RYR.clientUrl : RYR.clientUrl.substr(0, RYR.clientUrl.lastIndexOf('/'));  
+    if(event.origin !== RYR.cleanedClientUrl) return;
+    let version = event.source.Xrm.Page.context.getVersion ? event.source.Xrm.Page.context.getVersion() : APPLICATION_VERSION;
+    RYR.is2016 = version.startsWith('8');
+    RYR.currentUserId = event.source.Xrm.Page.context.getUserId().substr(1,36);
     let contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
         return d.style.visibility !== 'hidden'
       });
@@ -271,8 +323,8 @@ window.addEventListener('message', function(event) {
       RYR.Xrm = RYR.formWindow.Xrm;
     }
 
-    if(event.data.category === 'form' && !this.Xrm.Page.data) {
-        alert('CRM Form is not open');
+    if(event.data.category === 'forms' && !this.Xrm.Page.data) {
+        alert('This action can only be performed in the context of a form');
         return;
     }
     try{
