@@ -101,6 +101,23 @@ class LevelUp {
       } else {
         setLabels(this.Xrm);
       }
+
+      this.Xrm.Page.ui.tabs.forEach(t=>{
+        var tabInput = parent.document.createElement('input');
+        tabInput.setAttribute('style', 'width:200px');
+        tabInput.value = t.getName(); 
+        if(tabInput.value){
+          this.formWindow.document.getElementsByName(tabInput.value)[0].prepend(tabInput);
+        }
+        t.sections.forEach(s=>{
+          var sectionInput = parent.document.createElement('input'); 
+          sectionInput.setAttribute('style', 'width:200px');
+          sectionInput.value = s.getName(); 
+          if(sectionInput.value){
+            this.formWindow.document.getElementsByName(sectionInput.value)[0].prepend(sectionInput);
+          }
+        });
+      });      
   }
   
   godMode() {
@@ -139,6 +156,9 @@ class LevelUp {
       var entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
         prompt('Ctrl+C to copy. OK to close.', this.Xrm.Page.data.entity.getId());
+      }
+      else{
+        alert('This record has not been saved. Please save and run this command again');
       }
   }
   
@@ -300,7 +320,75 @@ class LevelUp {
     }).catch ((err) => {
       console.log(err);
     });
-  }  
+  }
+
+  optionSetValues() {
+    this.Xrm.Page.ui.controls.forEach(function (c) {
+			if (c.getControlType() !== 'optionset')
+				return;
+			let attribute = c.getAttribute(),
+			selectedOptionValue = attribute.getValue(),
+			options = attribute.getOptions(),
+			isClearOptions = options.some(function (o) {
+					return o.text.indexOf(' (') === -1;
+      });
+			if (isClearOptions) {
+				c.clearOptions();
+			}
+			options.forEach(function (o) {
+				if (o.text && o.text.indexOf(' (') === -1) {
+					o.text = o.text + ' (' + o.value + ')';
+				}
+				c.addOption(o);
+			});
+			if (selectedOptionValue && isClearOptions) {
+				attribute.setValue(selectedOptionValue);
+			}
+		});
+  }
+
+  cloneRecord() {
+    let extraq = '',
+    entityName = this.Xrm.Page.data.entity.getEntityName();
+
+    this.Xrm.Page.data.entity.attributes.forEach(function (c) {
+      var attributeType = c.getAttributeType();
+      var attributeName = c.getName();
+      var attributeValue = c.getValue();
+      if (!attributeValue || 
+      attributeName === 'createdon' || 
+      attributeName === 'modifiedon' || 
+      attributeName === 'createdby' || 
+      attributeName === 'modifiedby' ||
+      attributeName.startsWith('transactioncurrency'))
+        return;
+      if (attributeType === 'lookup') {
+        extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
+        extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
+        attributeValue = attributeValue[0].id;
+      }
+      if (attributeType === 'datetime') {
+        attributeValue = attributeValue.toDateString();
+      }
+      extraq += (attributeName + '=' + attributeValue + '&');
+    });
+    var newWindowUrl = this.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq) + 'etn=' + entityName;
+    window.open(newWindowUrl);
+  }
+
+  refresh(){
+    this.Xrm.Page.data.refresh(false).then(() => {
+			this.Xrm.Page.data.entity.addOnSave((econtext) => {
+				var eventArgs = econtext.getEventArgs();
+				if (eventArgs.getSaveMode() === 70 || eventArgs.getSaveMode() === 2) {
+					eventArgs.preventDefault();
+				}
+			});
+			alert('Form refreshed without save. Autosave turned off.');
+		}, function (errorCode, message) {
+			alert(message);
+		});
+  }
 }
 
 var RYR = new LevelUp();
@@ -323,8 +411,8 @@ window.addEventListener('message', function(event) {
       RYR.Xrm = RYR.formWindow.Xrm;
     }
 
-    if(event.data.category === 'forms' && !this.Xrm.Page.data) {
-        alert('This action can only be performed in the context of a form');
+    if(event.data.category === 'forms' && !RYR.Xrm.Page.data) {
+        alert('This command can only be performed in the context of a form');
         return;
     }
     try{
