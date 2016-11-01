@@ -8,6 +8,7 @@ Install the extension from Chrome Store. https://chrome.google.com/webstore/deta
 
 # Detailed Functionality
 
+## Forms
 Action | What it does
 --- | ---
 ![Logical Names](/screenshots/Logical Names.png "Logical Names") | Displays logical names for fields, tabs and sections.
@@ -21,6 +22,10 @@ Action | What it does
 ![Show Optionset Values](/screenshots/Show Optionset Values.png "Show Optionset Values") | Updates all the OptionSet fields on the current form to show text as well the the value of the OptionSet.
 ![Clone Record](/screenshots/Clone Record.png "Clone Record") | Use the record parameters functionality and display a new popup which is a clone of the current record. This clone does not include the child records.
 ![Refresh](/screenshots/Refresh.png "Refresh") | Refreshes the current form without saving it. It also turns off the auto-save after refresh.
+
+## Navigation
+Action | What it does
+--- | ---
 ![Record By Id](/screenshots/Record By Id.png "Record By Id") | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 ![Security](/screenshots/Security.png "Security") | Displays the security area from the sitemap.
 ![System Jobs](/screenshots/System Jobs.png "System Jobs") | Displays the system jobs from the sitemap.
@@ -31,6 +36,10 @@ Action | What it does
 ![Mobile Client](/screenshots/Mobile Client.png "Mobile Client") | Opens the mobile client (MoCA) in a new window.
 ![User Record](/screenshots/User Record.png "User Record") | Opens your "systemuser" record in a new window.
 ![Mailbox](/screenshots/Mailbox.png "Mailbox") | Opens your "mailbox" record in a new window.
+
+## Service Calls
+Action | What it does
+--- | ---
 ![Org Settings](/screenshots/Org Settings.png "Org Settings") | Displays some useful information about the current "Organization" you are connected to in a popup.
 ![Roles](/screenshots/Roles.png "Roles") | Displays the user roles, that you user record has.
 
@@ -40,7 +49,7 @@ Please watch this animation below for quick functionality intro.
 ![Power up extension introduction](/screenshots/Functionality Quick Intro.gif "Functionality")
 
 # Youtube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
-[![Youtube Demo](https://img.youtube.com/vi/zqPGeOH1OF4/0.jpg)](https://youtu.be/zqPGeOH1OF4)
+[![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
 
 # Credits
 * God mode adapted from original script by Paul Nieuwelaar. (https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
