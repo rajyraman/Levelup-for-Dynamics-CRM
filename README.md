@@ -8,6 +8,7 @@ Install the extension from Chrome Store. https://chrome.google.com/webstore/deta
 
 # Detailed Functionality
 
+
 ## Forms
 Action | What it does
 --- | ---
@@ -48,7 +49,7 @@ Please watch this animation below for quick functionality intro.
 
 ![Power up extension introduction](/screenshots/Functionality Quick Intro.gif "Functionality")
 
-# Youtube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
+# YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
 [![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
 
 # Credits
