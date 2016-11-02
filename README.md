@@ -39,8 +39,8 @@ Please watch this animation below for quick functionality intro.
 
 ![Power up extension introduction](/screenshots/Functionality Quick Intro.gif "Functionality")
 
-# Youtube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
-[![Youtube Demo](https://img.youtube.com/vi/zqPGeOH1OF4/0.jpg)](https://youtu.be/zqPGeOH1OF4)
+# YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
+[![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
 
 # Credits
 * God mode adapted from original script by Paul Nieuwelaar. (https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
