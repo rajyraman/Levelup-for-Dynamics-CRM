@@ -49,4 +49,5 @@ Please watch this animation below for quick functionality intro.
 * Form Properties by Jared Johnson (http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
 * Minimum values by Ahmed Anwar (http://www.magnetismsolutions.com/blog/ahmed-anwar's-blog/2014/12/8/microsoft-dynamics-crm-2013-populating-required-fields-with-bookmarklets)
 * Display Logical Names by Chris Groh (http://us.hitachi-solutions.com/blog/2014/10/27/showing-entity-logical-names-on-form/)
+* Performance Center by Benjamin John (http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
 * Rocket Icon by Jerry Low - (https://www.iconfinder.com/jerrylow)
