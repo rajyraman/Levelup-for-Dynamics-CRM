@@ -295,7 +295,7 @@ class LevelUp {
     this.fetch(entity, attributes, filter)
     .then((results) => {
       results.forEach(r=>{
-        resultsArray.push({cells: Object.keys(r).filter(x=>!x.startsWith('@')).map(key=> r[key])});
+        resultsArray.push({cells: Object.keys(r).filter(x=> !x.startsWith('@') && !x.startsWith('_')).map(key=> r[key])});
       });
       this.messageExtension(resultsArray, 'userroles');            
     }).catch ((err) => {
@@ -360,11 +360,15 @@ class LevelUp {
       attributeName === 'modifiedon' || 
       attributeName === 'createdby' || 
       attributeName === 'modifiedby' ||
+      attributeName === 'processid' ||
+      attributeName === 'stageid' ||
       attributeName.startsWith('transactioncurrency'))
         return;
       if (attributeType === 'lookup') {
         extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
-        extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
+        if(attributeName === 'customerid' || attributeName === 'ownerid') {
+          extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
+        }
         attributeValue = attributeValue[0].id;
       }
       if (attributeType === 'datetime') {
@@ -388,6 +392,14 @@ class LevelUp {
 		}, function (errorCode, message) {
 			alert(message);
 		});
+  }
+
+  diagnostics() {
+    window.open(`${this.clientUrl}/tools/diagnostics/diag.aspx`,'_blank');
+  }
+  
+  perfCenter(){
+    Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
   }
 }
 

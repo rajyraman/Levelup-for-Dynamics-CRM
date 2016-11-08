@@ -31,6 +31,8 @@ Action | What it does
 ![Mobile Client](/screenshots/Mobile Client.png "Mobile Client") | Opens the mobile client (MoCA) in a new window.
 ![User Record](/screenshots/User Record.png "User Record") | Opens your "systemuser" record in a new window.
 ![Mailbox](/screenshots/Mailbox.png "Mailbox") | Opens your "mailbox" record in a new window.
+![Performance Diagnostics](/screenshots/Perf Diag.png "Performance Diagnostics") | Displays the performance diagnostics page. Primarily useful for assessing network perforamance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
+![Performance Center](/screenshots/Perf Center.png "Performance Center") | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
 ![Org Settings](/screenshots/Org Settings.png "Org Settings") | Displays some useful information about the current "Organization" you are connected to in a popup.
 ![Roles](/screenshots/Roles.png "Roles") | Displays the user roles, that you user record has.
 
