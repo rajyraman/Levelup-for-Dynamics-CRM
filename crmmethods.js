@@ -204,7 +204,7 @@ class LevelUp {
   
   mocaClient() {
       var url = Xrm.Page.context.isOffice365() ? this.clientUrl : window.location.origin;
-      window.open(`${url}/nga/main.htm?org=${this.Xrm.Page.context.getOrgUniqueName()}&server= ${url}`);
+      window.open(`${url}/nga/main.htm?org=${this.Xrm.Page.context.getOrgUniqueName()}&server=${this.clientUrl}`);
   }
   
   refreshAllSubgrids() {
