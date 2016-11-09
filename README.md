@@ -31,7 +31,7 @@ Action | What it does
 ![Mobile Client](/screenshots/Mobile Client.png "Mobile Client") | Opens the mobile client (MoCA) in a new window.
 ![User Record](/screenshots/User Record.png "User Record") | Opens your "systemuser" record in a new window.
 ![Mailbox](/screenshots/Mailbox.png "Mailbox") | Opens your "mailbox" record in a new window.
-![Performance Diagnostics](/screenshots/Perf Diag.png "Performance Diagnostics") | Displays the performance diagnostics page. Primarily useful for assessing network perforamance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
+![Performance Diagnostics](/screenshots/Perf Diag.png "Performance Diagnostics") | Displays the performance diagnostics page. Primarily useful for assessing network performance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
 ![Performance Center](/screenshots/Perf Center.png "Performance Center") | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
 ![Org Settings](/screenshots/Org Settings.png "Org Settings") | Displays some useful information about the current "Organization" you are connected to in a popup.
 ![Roles](/screenshots/Roles.png "Roles") | Displays the user roles, that you user record has.
@@ -49,4 +49,5 @@ Please watch this animation below for quick functionality intro.
 * Form Properties by Jared Johnson (http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
 * Minimum values by Ahmed Anwar (http://www.magnetismsolutions.com/blog/ahmed-anwar's-blog/2014/12/8/microsoft-dynamics-crm-2013-populating-required-fields-with-bookmarklets)
 * Display Logical Names by Chris Groh (http://us.hitachi-solutions.com/blog/2014/10/27/showing-entity-logical-names-on-form/)
+* Performance Center by Benjamin John (http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
 * Rocket Icon by Jerry Low - (https://www.iconfinder.com/jerrylow)
