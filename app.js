@@ -25,4 +25,18 @@
             chrome.runtime.sendMessage(data.detail);
         }
     });
+    chrome.runtime.onMessage.addListener(function (message, sender, response) {
+        if(message.type === 'visibilityCheck'){
+            let contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
+                return d.style.visibility !== 'hidden'
+            });
+        
+            if (contentPanels && contentPanels.length > 0 && contentPanels[0].contentWindow.document.getElementById('crmFormHeaderTop')) {
+                response('form');
+            }
+            else{
+                response('general');
+            }
+        }
+    });
 })();

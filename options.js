@@ -1,3 +1,7 @@
+function setVisibility(areaName){
+    document.querySelectorAll('.forms').forEach(x=> x.style.display = areaName !== 'form' ? 'none' : 'flex');
+}
+
 document.getElementById('crmHelperLinks').addEventListener('click',function(e){
     let category = e.target.parentNode.getAttribute('data-category');
     
@@ -6,3 +10,15 @@ document.getElementById('crmHelperLinks').addEventListener('click',function(e){
         category: category
     });
 }, false);
+
+window.addEventListener('DOMContentLoaded', function () {
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    chrome.tabs.sendMessage(
+        tabs[0].id,
+        { type: 'visibilityCheck' },
+        setVisibility);
+  });
+});

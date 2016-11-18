@@ -37,7 +37,7 @@ class LevelUp {
 
   messageExtension(message, category) {
        let levelUpEvent = new CustomEvent('levelup', { 'detail': { type: 'page', category: category, content: message} });
-       levelUpEvent.initEvent('levelup');
+       levelUpEvent.initEvent('levelup', false, false);
        document.dispatchEvent(levelUpEvent);
   }
     
@@ -198,7 +198,7 @@ class LevelUp {
     }
     else {
         let entityName = this.Xrm.Page.data.entity.getEntityName();
-        window.open(`${this.clientUrl}/main.aspx?extraqs=EntityCode%3d${Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`,'_blank');
+        window.open(`${this.clientUrl}/main.aspx?extraqs=EntityCode%3d${this.Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`,'_blank');
     }
   }
   
@@ -400,6 +400,13 @@ class LevelUp {
   
   perfCenter(){
     Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
+  }
+
+  toggleTabs(){
+    this.Xrm.Page.ui.tabs.forEach(t => {
+      var currentState = t.getDisplayState();
+      t.setDisplayState(currentState === 'expanded' ? 'collapsed' : 'expanded');
+    });
   }
 }
 

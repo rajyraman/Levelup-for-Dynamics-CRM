@@ -21,6 +21,7 @@ Action | What it does
 ![Show Optionset Values](/screenshots/Show Optionset Values.png "Show Optionset Values") | Updates all the OptionSet fields on the current form to show text as well the the value of the OptionSet.
 ![Clone Record](/screenshots/Clone Record.png "Clone Record") | Use the record parameters functionality and display a new popup which is a clone of the current record. This clone does not include the child records.
 ![Refresh](/screenshots/Refresh.png "Refresh") | Refreshes the current form without saving it. It also turns off the auto-save after refresh.
+![Toggle Tabs](/screenshots/Toggle Tabs.png "Toggle Tabs") | Collapses or expands the tabs in the form.
 ![Record By Id](/screenshots/Record By Id.png "Record By Id") | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 ![Security](/screenshots/Security.png "Security") | Displays the security area from the sitemap.
 ![System Jobs](/screenshots/System Jobs.png "System Jobs") | Displays the system jobs from the sitemap.
