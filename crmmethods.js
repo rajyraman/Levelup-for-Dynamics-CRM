@@ -412,6 +412,9 @@ class LevelUp {
 
 var RYR = new LevelUp();
 window.addEventListener('message', function(event) {
+  //home.dynamics.com also messaging. Ignore.
+  if(location.origin !== event.origin) return;
+  
   if(event.source.Xrm && event.data.type){
     RYR.clientUrl = event.source.Xrm.Page.context.getClientUrl();
     //This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
