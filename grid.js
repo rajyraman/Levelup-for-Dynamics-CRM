@@ -1,5 +1,4 @@
-window.addEventListener('DOMContentLoaded', function () {
-    let rows = JSON.parse(decodeURI(window.location.search.split('&')[0].replace('?message=','')));
+chrome.runtime.sendMessage({type: 'page', category: 'load'}, function(rows) {
     let rowsHtml = '';
     for(let i = 0; i < rows.length; i++){
         if(i>0)

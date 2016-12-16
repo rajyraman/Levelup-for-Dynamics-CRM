@@ -1,7 +1,5 @@
-window.addEventListener('DOMContentLoaded', function () {
-    let settings = JSON.parse(decodeURI(window.location.search.split('&')[0].replace('?message=','')));
-    let rows = settings
-    .slice(1)
+chrome.runtime.sendMessage({type: 'page', category: 'load'}, function(response) {
+    let rows = response
     .map(x=> {
       if(typeof x.value === 'boolean') {
        x.value = x.value ? 'Yes' : 'No'; 

@@ -4,7 +4,7 @@ class LevelUp {
         "Accept" : "application/json",
         "Content-Type" : "application/json; charset=utf-8",
       });
-      let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/${entity}?$select=${attributes}`;
+      let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/${entity}`;
       if(this.is2016) {
           headers = new Headers({
             "Accept" : "application/json",
@@ -12,8 +12,11 @@ class LevelUp {
             "OData-MaxVersion" : "4.0",
             "OData-Version" : "4.0"
           });
-          serviceUrl = `/api/data/v8.0/${entity}?$select=${attributes}`;
+          serviceUrl = `/api/data/v8.0/${entity}`;
       }
+      if(attributes){
+        serviceUrl += `?$select=${attributes}`;
+      }      
       if(filter) {
         serviceUrl += `&$filter=${filter}`;
       }
@@ -247,30 +250,17 @@ class LevelUp {
   }
   
   environmentDetails() {
-    let attributes = `SqlAccessGroupName,ReportingGroupName,
-    PrivReportingGroupName,MaxRecordsForLookupFilters,
-    MaxRecordsForExportToExcel,IsFullTextSearchEnabled,
-    IsUserAccessAuditEnabled,IsDuplicateDetectionEnabled,
-    QuickFindRecordLimitEnabled,IsAutoSaveEnabled,
-    IsPresenceEnabled,IsAuditEnabled,
-    SchemaNamePrefix,DisplayNavigationTour,
-    MaxUploadFileSize`;
-    let entity = 'OrganizationSet';
-    if(this.is2016) {
-      attributes = `sqlaccessgroupname,reportinggroupname,privreportinggroupname,maxrecordsforlookupfilters,
-      maxrecordsforexporttoexcel,isfulltextsearchenabled,isuseraccessauditenabled,isduplicatedetectionenabled,
-      quickfindrecordlimitenabled,isautosaveenabled,ispresenceenabled,isauditenabled,schemanameprefix,
-      displaynavigationtour,maxuploadfilesize,cortanaproactiveexperienceenabled,uselegacyrendering`;
-      entity = 'organizations';
-    }
-    this.fetch(entity, attributes).then((c) => {
+    let entity = this.is2016 ? 'organizations' : 'OrganizationSet';
+    this.fetch(entity).then((c) => {
       let settings = {};
       let settingsArray = [];
       if(c.length > 0){
         settings = c[0];
       }
-      for(let s in settings) { 
-        settingsArray.push({name: s, value: settings[s]});
+      for(let s in settings) {
+        if(s.indexOf('@') == -1 && s.indexOf('_') == -1){
+          settingsArray.push({name: s, value: settings[s]});
+        }
       }
       this.messageExtension(settingsArray, 'settings');      
     }).catch ((err) => {
@@ -398,16 +388,25 @@ class LevelUp {
     window.open(`${this.clientUrl}/tools/diagnostics/diag.aspx`,'_blank');
   }
   
-  perfCenter(){
+  perfCenter() {
     Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
   }
 
-  toggleTabs(){
+  toggleTabs() {
     this.Xrm.Page.ui.tabs.forEach(t => {
       var currentState = t.getDisplayState();
       t.setDisplayState(currentState === 'expanded' ? 'collapsed' : 'expanded');
     });
   }
+
+  instancePicker() {
+    if(this.Xrm.Page.context.isOffice365()) {
+      window.open(`https://port${this.clientUrl.substr(this.clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`,'_blank');
+    }
+    else{
+      alert('Instance picker is available only for Dynamics 365/Dynamics CRM Online');
+    }
+  }  
 }
 
 var RYR = new LevelUp();

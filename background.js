@@ -1,22 +1,30 @@
+var content = [];
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if(message.type === 'page') {
-		if(message.category === 'settings'){
-			chrome.windows.create({
-				type : 'panel',
-				url : `organisationdetails.html?message=${JSON.stringify(message.content)}`
-			});	
-		}
-		if(message.category === 'userroles'){
-			chrome.windows.create({
-				type : 'panel',
-				url : `grid.html?message=${JSON.stringify(message.content)}`
-			});	
-		}		
-		else if(message.category === 'extension'){
-			if(message.content === 'on')
-				chrome.browserAction.enable(sender.tab.id);
-			else if(message.content === 'off')
-				chrome.browserAction.disable(sender.tab.id);
+		switch (message.category) {
+			case 'settings':
+				content = message.content;
+				chrome.tabs.create({
+					url : `organisationdetails.html`
+				});					
+				break;
+			case 'userroles':
+				content = message.content;
+				chrome.tabs.create({
+					url : `grid.html`
+				});					
+				break;
+			case 'extension':
+				if(message.content === 'on')
+					chrome.browserAction.enable(sender.tab.id);
+				else if(message.content === 'off')
+					chrome.browserAction.disable(sender.tab.id);				
+				break;		
+			case 'load':
+				sendResponse(content);
+				break;										
+			default:
+				break;
 		}
 	}
 	else {
@@ -24,7 +32,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			active : true,
 			currentWindow : true
 		}, function (tabs) {
-			if(!tabs) return;
+			if(!tabs || tabs.length === 0) return;
 			chrome.tabs.executeScript(tabs[0].id, {
 				code : `window.postMessage({ type: '${message.type}', category: '${message.category}' }, '*');`
 			});
