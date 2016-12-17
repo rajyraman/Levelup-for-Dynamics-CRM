@@ -153,6 +153,9 @@ class LevelUp {
         var locationUrl = `${this.clientUrl}/main.aspx?etn=${this.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
         prompt('Ctrl+C to copy. OK to close.', locationUrl);
       }
+      else {
+        alert('This record has not been saved. Please save and run this command again');
+      }
   }
   
   copyRecordId() {
@@ -342,9 +345,10 @@ class LevelUp {
     entityName = this.Xrm.Page.data.entity.getEntityName();
 
     this.Xrm.Page.data.entity.attributes.forEach(function (c) {
-      var attributeType = c.getAttributeType();
-      var attributeName = c.getName();
-      var attributeValue = c.getValue();
+      let attributeType = c.getAttributeType(),
+          attributeName = c.getName(),
+          attributeValue = c.getValue();
+
       if (!attributeValue || 
       attributeName === 'createdon' || 
       attributeName === 'modifiedon' || 
@@ -354,9 +358,9 @@ class LevelUp {
       attributeName === 'stageid' ||
       attributeName.startsWith('transactioncurrency'))
         return;
-      if (attributeType === 'lookup') {
+      if (attributeType === 'lookup' && !c.getIsPartyList() && attributeValue.length > 0) {
         extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
-        if(attributeName === 'customerid' || attributeName === 'ownerid') {
+        if(c.getLookupTypes().length > 1){
           extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
         }
         attributeValue = attributeValue[0].id;
@@ -366,7 +370,7 @@ class LevelUp {
       }
       extraq += (attributeName + '=' + attributeValue + '&');
     });
-    var newWindowUrl = this.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq) + 'etn=' + entityName;
+    var newWindowUrl = this.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
     window.open(newWindowUrl);
   }
 
