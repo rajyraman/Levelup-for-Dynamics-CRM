@@ -137,12 +137,12 @@ var n=this.__index__>=this.__values__.length;return{done:n,value:n?F:this.__valu
 
 chrome.runtime.sendMessage({type: 'page', category: 'load'}, function(response) {
     let rows = response
-	.filter(x=>typeof x.value === 'string' || (x.value && x.value.Value))
+    .filter(x=>x.value)
     .map(x=> {
-      if(typeof x.value === 'boolean') {
+      if(_.isBoolean(x.value)) {
        x.value = x.value ? 'Yes' : 'No'; 
       }
-      else if(typeof x.value === 'object') {
+      else if(_.isObject(x.value)) {
        x.value = x.value.Value; 
       }
 	  return `<tr><td>${x.name}</td><td>${_.escape(x.value)}</td></tr>` 
