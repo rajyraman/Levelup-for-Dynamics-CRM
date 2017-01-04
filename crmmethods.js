@@ -1,4 +1,15 @@
 class LevelUp {
+
+  copy(valueToCopy){
+    var t = document.createElement('input');
+    t.setAttribute('id', 'copy');
+    t.setAttribute('value', valueToCopy);
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand('copy');
+    t.remove();
+  }
+
   fetch(entity, attributes, filter) {
       let headers = new Headers({
         "Accept" : "application/json",
@@ -148,10 +159,16 @@ class LevelUp {
   }
   
   copyRecordUrl() {
-      var entityId = this.Xrm.Page.data.entity.getId();
+      let entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
-        var locationUrl = `${this.clientUrl}/main.aspx?etn=${this.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
-        prompt('Ctrl+C to copy. OK to close.', locationUrl);
+        let locationUrl = `${this.clientUrl}/main.aspx?etn=${this.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+        try{
+          this.copy(locationUrl);
+          alert('Record URL has been copied to clipboard');
+        }
+        catch(e){
+          prompt('Ctrl+C to copy. OK to close.', locationUrl);
+        }
       }
       else {
         alert('This record has not been saved. Please save and run this command again');
@@ -159,9 +176,15 @@ class LevelUp {
   }
   
   copyRecordId() {
-      var entityId = this.Xrm.Page.data.entity.getId();
+      let entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
-        prompt('Ctrl+C to copy. OK to close.', this.Xrm.Page.data.entity.getId());
+        try{
+          this.copy(entityId);
+          alert('Record Id has been copied to clipboard');
+        }
+        catch(e){
+          prompt('Ctrl+C to copy. OK to close.', entityId);
+        }        
       }
       else{
         alert('This record has not been saved. Please save and run this command again');
