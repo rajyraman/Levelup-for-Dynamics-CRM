@@ -383,7 +383,9 @@ class LevelUp {
         return;
       if (attributeType === 'lookup' && !c.getIsPartyList() && attributeValue.length > 0) {
         extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
-        if(c.getLookupTypes().length > 1){
+        if(attributeName === 'customerid' || 
+            attributeName === 'parentcustomerid' ||
+            c.getLookupTypes().length > 1){
           extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
         }
         attributeValue = attributeValue[0].id;
