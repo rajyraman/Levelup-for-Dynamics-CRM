@@ -14,6 +14,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 					url : `grid.html`
 				});					
 				break;
+			case 'workflows':
+				content = message.content;
+				chrome.tabs.create({
+					url : `processes.html`
+				});					
+				break;				
 			case 'extension':
 				if(message.content === 'on')
 					chrome.browserAction.enable(sender.tab.id);

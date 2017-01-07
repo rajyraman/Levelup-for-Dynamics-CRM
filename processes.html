@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workflows and Business Rules</title>
+    <style>
+        body {
+            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }        
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        th{
+            text-align: left;
+            padding: 0.5em;
+        }
+        thead{
+            border: 1px solid #ddd;
+            font-weight: bold;
+        }
+        tr{
+            border: 1px solid #ddd;
+            color: #222;
+        }
+        td{
+            padding: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <h2>Workflows &amp; Business Rules</h2>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Execution</th>
+                <th>Managed/Unmanaged</th>
+                <th>Status</th>                
+            </tr>
+            </thead>
+            <tbody id="results">
+            <tr>
+                <td colspan="5">No workflows/business rules found for this entity</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="processes.js"></script>
+</html>

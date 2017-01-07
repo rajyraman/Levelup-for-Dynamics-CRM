@@ -291,7 +291,7 @@ class LevelUp {
       this.messageExtension(settingsArray, 'settings');      
     }).catch ((err) => {
       console.log(err);
-    });    
+    });
   }
 
   myUserRecord(){
@@ -435,7 +435,47 @@ class LevelUp {
     else{
       alert('Instance picker is available only for Dynamics 365/Dynamics CRM Online');
     }
-  }  
+  }
+
+  workflows() {
+    let attributes = 'WorkflowId,Name,Category,Mode,IsManaged,StateCode',
+        entityName = this.Xrm.Page.data.entity.getEntityName(),
+        entityTypeCode = this.Xrm.Internal.getEntityCode(entityName),
+        entitySetName = this.is2016 ? 'workflows' : 'WorkflowSet';        
+    if(this.is2016){
+      attributes = attributes.toLowerCase();
+    }
+    let filter = this.is2016 ? `type eq 1 and ( category eq 2 or  category eq 0) and  primaryentity eq '${entityName}'` : 
+    `Type/Value eq 1 and PrimaryEntity eq '${entityTypeCode}' and (Category/Value eq 0 or Category/Value eq 2`;
+    this.fetch(entitySetName, attributes, filter).then((workflows) => {
+      let results = workflows
+      .map(workflow => Object.keys(workflow)
+      .filter(o => o.indexOf('_') == -1 && o.indexOf('@') == -1)
+      .map(p => {
+        let keyName = p.toLowerCase();
+        let workflowKeyValue = workflow[p];
+        if(keyName === 'category'){
+          workflowKeyValue = workflowKeyValue === 0 ? 'Process' : 'Business Rule';
+        }
+        else if(keyName === 'mode'){
+          workflowKeyValue = workflowKeyValue === 0 ? 'Background' : 'Real-time';
+        }
+        else if(keyName === 'ismanaged'){
+          workflowKeyValue = workflowKeyValue ? 'Managed' : 'Unmanaged';
+        }
+        else if(keyName === 'statecode'){
+          workflowKeyValue = workflowKeyValue === 0 ? 'Draft' : 'Activated';
+        }        
+        else if(keyName === 'workflowid'){
+          workflowKeyValue = `${this.clientUrl}/main.aspx?etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
+        }        
+        return workflowKeyValue;
+      }));
+      this.messageExtension(results, 'workflows');      
+    }).catch ((err) => {
+      console.log(err);
+    });
+  }
 }
 
 var RYR = new LevelUp();
