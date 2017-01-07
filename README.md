@@ -22,6 +22,7 @@ Action | What it does
 **Clone Record** | Use the record parameters functionality and display a new popup which is a clone of the current record. This clone does not include the child records.
 **Refresh** | Refreshes the current form without saving it. It also turns off the auto-save after refresh.
 **Toggle Tabs** | Collapses or expands the tabs in the form.
+**Workflows & Business Rules** | Displays any workflows and business rules for the current entity.
 **Record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 **Security** | Displays the security area from the sitemap.
 **System Jobs** | Displays the system jobs from the sitemap.
