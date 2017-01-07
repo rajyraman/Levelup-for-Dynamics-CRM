@@ -365,9 +365,14 @@ class LevelUp {
 
   cloneRecord() {
     let extraq = '',
-    entityName = this.Xrm.Page.data.entity.getEntityName();
-
+        entityName = this.Xrm.Page.data.entity.getEntityName(),
+        fieldCount = 0,
+        isFieldCountLimitExceeded = false;
     this.Xrm.Page.data.entity.attributes.forEach(function (c) {
+      if(fieldCount > 45){
+        isFieldCountLimitExceeded = true;
+        return;
+      }
       let attributeType = c.getAttributeType(),
           attributeName = c.getName(),
           attributeValue = c.getValue();
@@ -379,14 +384,17 @@ class LevelUp {
       attributeName === 'modifiedby' ||
       attributeName === 'processid' ||
       attributeName === 'stageid' ||
+      attributeName === 'ownerid' ||
       attributeName.startsWith('transactioncurrency'))
         return;
       if (attributeType === 'lookup' && !c.getIsPartyList() && attributeValue.length > 0) {
         extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
+        fieldCount++;
         if(attributeName === 'customerid' || 
             attributeName === 'parentcustomerid' ||
-            c.getLookupTypes().length > 1){
+            (typeof c.getLookupTypes === 'function' && c.getLookupTypes().length > 1)){
           extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
+          fieldCount++;
         }
         attributeValue = attributeValue[0].id;
       }
@@ -394,9 +402,15 @@ class LevelUp {
         attributeValue = attributeValue.toDateString();
       }
       extraq += (attributeName + '=' + attributeValue + '&');
+      fieldCount++;
     });
-    var newWindowUrl = this.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
-    window.open(newWindowUrl);
+    if(isFieldCountLimitExceeded){
+      alert('This form contains more than 45 fields and cannot be cloned');
+    }
+    else{
+      var newWindowUrl = this.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
+      window.open(newWindowUrl);
+    }
   }
 
   refresh(){
