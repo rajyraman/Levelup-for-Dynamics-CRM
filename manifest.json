@@ -5,11 +5,11 @@
 	},
 	"browser_action" : {
 		"default_icon" : "icon-128.png",
-		"default_title" : "Level up for Dynamics CRM",
+		"default_title" : "Level up for Dynamics CRM/365",
 		"default_popup" : "options.html"
 	},
-	"name" : "Level up for Dynamics CRM",
-	"description" : "Quickly perform advanced/hidden actions in Dynamics CRM, without bookmarklets.",
+	"name" : "Level up for Dynamics CRM/365",
+	"description" : "Quickly perform advanced/hidden actions in Dynamics CRM/365, without bookmarklets.",
 	"content_scripts" : [{
 			"matches" : ["http://*/*", "https://*/*"],
 			"js" : ["app.js"]
