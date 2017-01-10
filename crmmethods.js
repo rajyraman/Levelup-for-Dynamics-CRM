@@ -245,8 +245,12 @@ class LevelUp {
   }
   
   populateMin(){
+    if(this.Xrm.Page.ui.getFormType() !== 1){
+      alert('This action cannot be run against an existing record.');
+      return;
+    }
     this.Xrm.Page.data.entity.attributes.forEach(a => {
-      if (a.getRequiredLevel() === 'required') {
+      if (a.getRequiredLevel() === 'required' && !a.getValue()) {
         switch (a.getAttributeType()) {
             case 'memo':
               a.setValue('memo');
@@ -454,37 +458,47 @@ class LevelUp {
   workflows() {
     let attributes = 'WorkflowId,Name,Category,Mode,IsManaged,StateCode',
         entityName = this.Xrm.Page.data.entity.getEntityName(),
-        entityTypeCode = this.Xrm.Internal.getEntityCode(entityName),
         entitySetName = this.is2016 ? 'workflows' : 'WorkflowSet';        
     if(this.is2016){
       attributes = attributes.toLowerCase();
     }
     let filter = this.is2016 ? `type eq 1 and ( category eq 2 or  category eq 0) and  primaryentity eq '${entityName}'` : 
-    `Type/Value eq 1 and PrimaryEntity eq '${entityTypeCode}' and (Category/Value eq 0 or Category/Value eq 2`;
+    `Type/Value eq 1 and PrimaryEntity eq '${entityName}' and (Category/Value eq 0 or Category/Value eq 2)`;
     this.fetch(entitySetName, attributes, filter).then((workflows) => {
-      let results = workflows
-      .map(workflow => Object.keys(workflow)
-      .filter(o => o.indexOf('_') == -1 && o.indexOf('@') == -1)
-      .map(p => {
-        let keyName = p.toLowerCase();
-        let workflowKeyValue = workflow[p];
-        if(keyName === 'category'){
-          workflowKeyValue = workflowKeyValue === 0 ? 'Process' : 'Business Rule';
-        }
-        else if(keyName === 'mode'){
-          workflowKeyValue = workflowKeyValue === 0 ? 'Background' : 'Real-time';
-        }
-        else if(keyName === 'ismanaged'){
-          workflowKeyValue = workflowKeyValue ? 'Managed' : 'Unmanaged';
-        }
-        else if(keyName === 'statecode'){
-          workflowKeyValue = workflowKeyValue === 0 ? 'Draft' : 'Activated';
-        }        
-        else if(keyName === 'workflowid'){
-          workflowKeyValue = `${this.clientUrl}/main.aspx?etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
-        }        
-        return workflowKeyValue;
-      }));
+      //CRM2015 Data doesn't return attributes in order specified on select
+      let results = workflows.map(workflow => {
+      let resultRow = [
+          {key: 'workflowid', value: ''}, 
+          {key: 'name', value: ''}, 
+          {key: 'category', value: ''}, 
+          {key: 'mode', value: ''}, 
+          {key: 'ismanaged', value: ''}, 
+          {key: 'statecode', value: ''}
+        ];
+        Object.keys(workflow)
+        .filter(o => o.indexOf('_') == -1 && o.indexOf('@') == -1)
+        .forEach(p => {
+          let keyName = p.toLowerCase(),
+          workflowKeyValue = workflow[p];
+          if(keyName === 'category'){
+            workflowKeyValue = (workflowKeyValue === 0 || workflowKeyValue.Value === 0)? 'Process' : 'Business Rule';
+          }
+          else if(keyName === 'mode'){
+            workflowKeyValue = (workflowKeyValue === 0 || workflowKeyValue.Value === 0) ? 'Background' : 'Real-time';
+          }
+          else if(keyName === 'ismanaged'){
+            workflowKeyValue = (workflowKeyValue || workflowKeyValue.Value) ? 'Managed' : 'Unmanaged';
+          }
+          else if(keyName === 'statecode'){
+            workflowKeyValue = (workflowKeyValue === 0 || workflowKeyValue.Value === 0)? 'Draft' : 'Activated';
+          }        
+          else if(keyName === 'workflowid'){
+            workflowKeyValue = `${this.clientUrl}/main.aspx?etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
+          }
+          resultRow.find(k=>k.key === keyName).value = workflowKeyValue;
+        });
+        return resultRow;
+      });
       this.messageExtension(results, 'workflows');      
     }).catch ((err) => {
       console.log(err);
