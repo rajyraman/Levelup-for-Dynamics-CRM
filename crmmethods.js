@@ -68,67 +68,49 @@ class LevelUp {
   }
   
   displayLogicalNames() {
-      let setLabels = (Xrm) => {
-        Xrm.Page.data.entity.attributes.forEach(a => {
-          a.controls.forEach(function (c) {
-            var lblText = c.getLabel();
-            c.setVisible(true);
-            var attr = a.getName();
-            var lbl = $('#' + c.getName() + '_c').html('');
-            lbl.css('text-align', 'left');
-            if (lbl.is('td')) {
-              lbl.closest('table').children('colgroup').children('col:even').attr('width', '400');
-            }
-            $('<input/>').width(200).val(attr).appendTo(lbl).focus(function () {
-              $(this).select();
-            });
-            $('<span></span>').text(lblText).appendTo(lbl);
-          });
-        });
-      };
-      
-      let waitForJQ = () => {
-        if (this.formWindow.jQuery) {
-          $ = this.formWindow.jQuery.noConflict(true);
-          setLabels(this.Xrm);
-        } else {
-          setTimeout(waitForJQ, 1000);
-        }
-      }
-            
-      this.Xrm.Page.ui.tabs.forEach(function (tab) {
-        tab.setVisible(true);
-        tab.sections.forEach(function (section) {
-          section.setVisible(true);
-        });
-      });
-      
-      var $ = this.formWindow.jQuery || (this.formWindow.CEI && this.formWindow.CEI.$);
-      if (!$) {
-        var head = this.formWindow.document.getElementsByTagName('head').item(0);
-        var s = this.formWindow.document.createElement('script');
-        s.setAttribute('type', 'text/javascript');
-        s.setAttribute('src', 'https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js');
-        s.async = false;
-        head.appendChild(s);
-        waitForJQ();
-      } else {
-        setLabels(this.Xrm);
-      }
+      this.formDocument.querySelectorAll('.levelupschema').forEach(x => x.remove());
 
-      this.Xrm.Page.ui.tabs.forEach(t=>{
-        var tabInput = parent.document.createElement('input');
-        tabInput.setAttribute('style', 'width:200px');
-        tabInput.value = t.getName(); 
-        if(tabInput.value){
-          this.formWindow.document.getElementsByName(tabInput.value)[0].prepend(tabInput);
+      let createSchemaNameInput = (controlName, controlNode) => {
+          let schemaNameInput = this.formDocument.createElement('input');
+          schemaNameInput.setAttribute('type','text');
+          schemaNameInput.setAttribute('class','levelupschema');
+          schemaNameInput.value = controlName;
+          controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
+      };
+
+      this.Xrm.Page.ui.controls.forEach(c => {
+        let controlName = c.getName(),
+          controlType = c.getControlType(),
+          controlNode = this.formDocument.getElementById(controlName);
+        if(!controlNode){
+          return;
         }
-        t.sections.forEach(s=>{
-          var sectionInput = parent.document.createElement('input'); 
-          sectionInput.setAttribute('style', 'width:200px');
-          sectionInput.value = s.getName(); 
-          if(sectionInput.value){
-            this.formWindow.document.getElementsByName(sectionInput.value)[0].prepend(sectionInput);
+        let parentNodeId = controlNode.getAttribute('aria-describedby');
+        if(!c.getAttribute) {
+          createSchemaNameInput(controlName, this.formDocument.getElementById(`${controlName}_d`));
+        }
+        else {
+          if(!c.getVisible()) {
+            return;
+          }
+          let parentNode = this.formDocument.getElementById(parentNodeId);
+          if(parentNode) {
+            createSchemaNameInput(controlName, parentNode);
+            parentNode.style.overflow = 'hidden';
+          }
+        }
+      });
+
+      this.Xrm.Page.ui.tabs.forEach(t => {
+        let tabName = t.getName();
+        if(t.getVisible()){
+          createSchemaNameInput(tabName, this.formDocument.querySelector(`div[name="${tabName}"]`));
+        }
+        
+        t.sections.forEach(s => {
+          let sectionName = s.getName();
+          if(s.getVisible()) {
+            createSchemaNameInput(sectionName, this.formDocument.querySelector(`table[name="${sectionName}"]`));
           }
         });
       });      
@@ -504,6 +486,61 @@ class LevelUp {
       console.log(err);
     });
   }
+
+  copyLookup() {
+      let currentControl = this.Xrm.Page.ui.getCurrentControl();
+      if (currentControl && currentControl.getControlType() === 'lookup') {
+        let currentLookup = currentControl.getAttribute().getValue();
+        if (currentLookup) {
+          let serialisedLookupValue = JSON.stringify(
+            currentLookup.map(x => {
+              let c = {};
+              ({
+                id : c.id,
+                name : c.name,
+                type : c.type,
+                typename : c.typename,
+                entityType : c.entityType
+              } = x);
+              return c;
+            }));
+          sessionStorage.setItem('ryr_serialisedLookup', serialisedLookupValue);
+          alert('Lookup copied. Ready to paste');
+        }
+      } else {
+        alert('No field has been selected or the currently selected field is not a lookup');
+      }
+  }
+
+  pasteLookup() {
+      let currentControl = this.Xrm.Page.ui.getCurrentControl();
+      if (currentControl && currentControl.getControlType() === 'lookup') {
+        let currentLookup = currentControl.getAttribute();
+        let copiedLookupValue = sessionStorage.getItem('ryr_serialisedLookup');
+        if (copiedLookupValue) {
+          currentLookup.setValue(JSON.parse(copiedLookupValue));
+        } else {
+          alert('Please select a lookup to copy first before pasting');
+        }
+      } else {
+        alert('No field has been selected or the currently selected field is not a lookup');
+      }
+  }
+
+  openLookupNewWindow() {
+      var currentControl = this.Xrm.Page.ui.getCurrentControl();
+      if (currentControl.getControlType() === 'lookup') {
+        var currentLookup = currentControl.getAttribute().getValue();
+        if (currentLookup) {
+          var entityName = currentLookup[0].type,
+          entityId = currentLookup[0].id;
+          var url = `${this.clientUrl}/main.aspx?etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+          window.open(url, '_blank');
+        }
+      } else {
+        alert('The currently selected control is not a lookup');
+      }
+  }
 }
 
 var RYR = new LevelUp();
@@ -526,6 +563,7 @@ window.addEventListener('message', function(event) {
       
     if (contentPanels && contentPanels.length > 0) {
       RYR.formWindow = contentPanels[0].contentWindow;
+      RYR.formDocument = contentPanels[0].contentDocument;
       RYR.Xrm = RYR.formWindow.Xrm;
     }
 
