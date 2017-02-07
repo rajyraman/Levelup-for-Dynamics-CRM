@@ -25,7 +25,7 @@ Action | What it does
 **Workflows & Business Rules** | Displays any workflows and business rules for the current entity.
 **Copy Lookup** | Copies the lookup field selected on the form
 **Paste Lookup** | Paste the copied lookup field
-**Open Lookup in new window** | Opens the selected lookup in a new window/tab
+**Lookup in new window** | Opens the selected lookup in a new window/tab
 **Record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 **Security** | Displays the security area from the sitemap.
 **System Jobs** | Displays the system jobs from the sitemap.
@@ -39,6 +39,7 @@ Action | What it does
 **Performance Diagnostics** | Displays the performance diagnostics page. Primarily useful for assessing network performance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
 **Performance Center** | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
 **Instance Picker** | Displays the instance picker page (applicable to Dynamics CRM/365 Online only).
+**Grid in new window** | Displays the current grid (Saved Query) in a new window.
 **Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **Roles** | Displays the user roles, that you user record has.
 

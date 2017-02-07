@@ -325,7 +325,7 @@ class LevelUp {
   }
 
   optionSetValues() {
-    this.Xrm.Page.ui.controls.forEach(function (c) {
+    this.Xrm.Page.getControl().forEach(c => {
 			if (c.getControlType() !== 'optionset')
 				return;
 			let attribute = c.getAttribute(),
@@ -345,6 +345,11 @@ class LevelUp {
 			});
 			if (selectedOptionValue && isClearOptions) {
 				attribute.setValue(selectedOptionValue);
+			}
+      let selectElement = this.formDocument.getElementById(`${attribute.getName()}_i`);
+			if (selectElement) {
+				selectElement.parentElement.removeAttribute('style');
+				selectElement.parentElement.removeAttribute('class');
 			}
 		});
   }
@@ -541,6 +546,19 @@ class LevelUp {
         alert('The currently selected control is not a lookup');
       }
   }
+
+  openGrid(){
+    let currentView = this.formDocument.querySelector('span.ms-crm-View-Name');
+    if(currentView && RYR.formWindow.location.search.startsWith('?etc')){
+      let viewType = currentView.getAttribute('currentviewtype'),
+          viewId = currentView.getAttribute('currentview'),
+          viewUrl = `${this.clientUrl}/main.aspx${RYR.formWindow.location.search.split('&')[0]}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
+      window.open(viewUrl, '_blank');
+    }
+    else {
+      alert('The current page is not a grid');
+    }
+  }  
 }
 
 var RYR = new LevelUp();
