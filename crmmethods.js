@@ -66,7 +66,12 @@ class LevelUp {
       window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
     }
   }
-  
+
+  newRecord(){
+    let entityName = this.Xrm.Page.data.entity.getEntityName();
+    window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank'); 
+  }
+
   displayLogicalNames() {
       this.formDocument.querySelectorAll('.levelupschema').forEach(x => x.remove());
 
@@ -161,7 +166,7 @@ class LevelUp {
       let entityId = this.Xrm.Page.data.entity.getId();
       if (entityId) {
         try{
-          this.copy(entityId);
+          this.copy(entityId.substr(1,36));
           alert('Record Id has been copied to clipboard');
         }
         catch(e){
@@ -548,15 +553,23 @@ class LevelUp {
   }
 
   openGrid(){
-    let currentView = this.formDocument.querySelector('span.ms-crm-View-Name');
-    if(currentView && RYR.formWindow.location.search.startsWith('?etc')){
+    let currentView = this.formDocument.querySelector('span.ms-crm-View-Name'),
+        etc = this.Xrm.Page.context.getQueryStringParameters().etc;
+    if(currentView && etc){
       let viewType = currentView.getAttribute('currentviewtype'),
           viewId = currentView.getAttribute('currentview'),
-          viewUrl = `${this.clientUrl}/main.aspx${RYR.formWindow.location.search.split('&')[0]}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
+          viewUrl = `${this.clientUrl}/main.aspx?etc=${etc}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
       window.open(viewUrl, '_blank');
     }
     else {
       alert('The current page is not a grid');
+    }
+  }
+
+  customize(){
+    let etc = this.Xrm.Page.context.getQueryStringParameters().etc;
+    if(etc && Mscrm.RibbonActions.openEntityEditor && typeof Mscrm.RibbonActions.openEntityEditor === 'function'){
+      Mscrm.RibbonActions.openEntityEditor(etc);
     }
   }  
 }
