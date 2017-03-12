@@ -68,8 +68,10 @@ class LevelUp {
   }
 
   newRecord(){
-    let entityName = this.Xrm.Page.data.entity.getEntityName();
-    window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank'); 
+    let entityName = prompt("Entity?", "");
+    if(entityName){
+      window.open(`${this.clientUrl}/main.aspx?etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
+    }
   }
 
   displayLogicalNames() {
