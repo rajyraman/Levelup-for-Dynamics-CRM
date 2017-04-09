@@ -9,11 +9,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				});					
 				break;
 			case 'userroles':
+			case 'allfields':
+			case 'quickFindFields':						
 				content = message.content;
 				chrome.tabs.create({
 					url : `grid.html`
 				});					
-				break;
+				break;			
 			case 'workflows':
 				content = message.content;
 				chrome.tabs.create({

@@ -6,6 +6,7 @@
         document.body.appendChild(scriptTag);
     };
     if(Array.from(document.scripts).findIndex(x=>x.id.startsWith('/_static/_common/scripts/ribbonactions.js')) !== -1){
+        injectScript(chrome.extension.getURL('Sdk.Soap.min.js'));
         injectScript(chrome.extension.getURL('crmmethods.js'));
         chrome.runtime.sendMessage({
             type: 'page',
@@ -31,8 +32,14 @@
                 return d.style.visibility !== 'hidden'
             });
         
-            if (contentPanels && contentPanels.length > 0 && contentPanels[0].contentWindow.document.getElementById('crmFormHeaderTop')) {
-                response('form');
+            if (contentPanels && contentPanels.length > 0) {
+                let formDocument = contentPanels[0].contentWindow.document;
+                if(formDocument.getElementById('crmFormHeaderTop')){
+                    response('form');
+                }
+                else if(formDocument.querySelector('span.ms-crm-View-Name')){
+                    response('grid');
+                }
             }
             else{
                 response('general');

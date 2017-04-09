@@ -292,7 +292,7 @@ class LevelUp {
   }
 
   myRoles(){
-    let resultsArray = [{cells: ['Role Id', 'Name']}];
+    let resultsArray = [{cells: ['Name','Role Id']}];
     let attributes = 'RoleId,Name';
     let entity = 'RoleSet';
     let filter = Xrm.Page.context.getUserRoles().map(x=>`RoleId eq (guid'${x}')`).join(' or ');
@@ -304,7 +304,7 @@ class LevelUp {
     this.fetch(entity, attributes, filter)
     .then((results) => {
       results.forEach(r=>{
-        resultsArray.push({cells: Object.keys(r).filter(x=> !x.startsWith('@') && !x.startsWith('_')).map(key=> r[key])});
+        resultsArray.push({cells: Object.keys(r).sort().filter(x=> !x.startsWith('@') && !x.startsWith('_')).map(key=> r[key])});
       });
       this.messageExtension(resultsArray, 'userroles');            
     }).catch ((err) => {
@@ -573,7 +573,71 @@ class LevelUp {
     if(etc && Mscrm.RibbonActions.openEntityEditor && typeof Mscrm.RibbonActions.openEntityEditor === 'function'){
       Mscrm.RibbonActions.openEntityEditor(etc);
     }
-  }  
+  }
+
+  allFields(){
+    Sdk.Async.retrieve(
+      this.Xrm.Page.data.entity.getEntityName(),
+      this.Xrm.Page.data.entity.getId().substr(1,36),
+      new Sdk.ColumnSet(true),
+      entity => { 
+        console.log(entity);
+        let attributes = entity.getAttributes()
+          ,formattedAttributes = entity.getFormattedValues()
+          ,attributeNames = attributes.getNames()
+          ,formAttributes = this.Xrm.Page.getAttribute().map(x=>x.getName())
+          ,attributesNotInForm = attributeNames.filter(x=>!formAttributes.includes(x)),
+          resultsArray = [{cells: ['Attribute Name', 'Value']}];
+
+        let attributeValues = attributesNotInForm.forEach(x=>{
+          let attribute = attributes.getAttributeByName(x),
+              attributeValue = attribute.getValue();
+          if(formattedAttributes.containsName(x)){
+            let formattedValue = formattedAttributes.getItem(x).getValue();
+            if(formattedValue) {
+              resultsArray.push({cells: [x, formattedAttributes.getItem(x).getValue()]});
+            }
+          }
+          else{
+            resultsArray.push({cells: [x, attribute.getType() !== 'entityReference' ? attributeValue : attributeValue.getName() || attributeValue.getId()]});
+          }
+        });
+        this.messageExtension(resultsArray, 'allfields');                    
+    },error=>console.log(error));
+  }
+
+  quickFindFields(){
+    let currentView = this.formDocument.querySelector('span.ms-crm-View-Name'),
+        resultsArray = [{cells: ['Quick Find Attribute']}],
+        etc = this.Xrm.Page.context.getQueryStringParameters().etc,
+        entityName = this.Xrm.Internal.getEntityName(parseInt(etc));
+    if(currentView && etc){
+      let viewType = currentView.getAttribute('currentviewtype'),
+          attributes = 'FetchXml',
+          entitySetName = this.is2016 ? 'savedqueries' : 'SavedQuerySet';        
+      if(this.is2016){
+        attributes = attributes.toLowerCase();
+      }
+      let filter = this.is2016 ? `isquickfindquery eq true and querytype eq 4 and returnedtypecode eq '${entityName}'` : 
+      `IsQuickFindQuery eq true and QueryType eq 4 and ReturnedTypeCode eq '${entityName}'`;
+      this.fetch(entitySetName, attributes, filter).then((view) => {
+        let quickFindFields = [];
+        if(this.is2016) {
+          quickFindFields = Array.from(new DOMParser().parseFromString(view[0].fetchxml, "text/html").querySelectorAll('condition'))
+                                .map(x=>x.getAttribute('attribute'));
+        }
+        else {
+          quickFindFields = Array.from(new DOMParser().parseFromString(view[0].FetchXml, "text/html").querySelectorAll('condition'))
+                                .map(x=>x.getAttribute('attribute'));
+        }
+        quickFindFields.forEach(x=>resultsArray.push({cells:[x]}));
+        this.messageExtension(resultsArray, 'quickFindFields');
+      });
+    }
+    else {
+      alert('The current page is not a grid');
+    }
+  } 
 }
 
 var RYR = new LevelUp();

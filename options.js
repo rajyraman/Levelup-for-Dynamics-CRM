@@ -1,5 +1,6 @@
 function setVisibility(areaName){
     document.querySelectorAll('.forms').forEach(x=> x.style.display = areaName !== 'form' ? 'none' : 'flex');
+    document.querySelectorAll('.grid').forEach(x=> x.style.display = areaName !== 'grid' ? 'none' : 'flex');
 }
 
 document.getElementById('crmHelperLinks').addEventListener('click',function(e){

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LevelUp - Results</title>
     <style>
         body {
             font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
@@ -28,18 +27,32 @@
         td{
             padding: 0.5em;
         }
+        input {
+            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            padding: 5px 5px;
+            width: 300px;
+            margin-bottom: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #aaa;
+        }        
     </style>
 </head>
 <body>
     <h2 id="header"></h2>
-    <div>
+    <div id="grid">
+        <input class="search" placeholder="Search" />
         <table>
             <thead id="tableheader">
             </thead>
-            <tbody id="results">
+            <tbody id="results" class="list">
             </tbody>
         </table>
     </div>
+    <script src="list.min.js"></script>
     <script src="grid.js"></script>
 </body>
 </html>
