@@ -27,6 +27,7 @@ Action | What it does
 **Paste Lookup** | Paste the copied lookup field
 **Lookup in new window** | Opens the selected lookup in a new window/tab
 **Customize** | Opens the entity in the default solution. Do not use this solution to add new fields, unless you have changed the default publisher prefix, which is "new_"
+**All Fields** | Displays values for all fields not in the current form
 **Open record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 **New record** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to create a new record.
 **Security** | Displays the security area from the sitemap.
@@ -41,7 +42,8 @@ Action | What it does
 **Perf Diag** | Displays the performance diagnostics page. Primarily useful for assessing network performance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
 **Perf Center** | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
 **Instance Picker** | Displays the instance picker page (applicable to Dynamics CRM/365 Online only).
-**Grid in new window** | Displays the current grid (Saved Query) in a new window.
+**New window** | Displays the current grid (Saved Query) in a new window.
+**Quick Find fields** | Displays the search fields for the current entity that is displayed in the grid.
 **Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
 
