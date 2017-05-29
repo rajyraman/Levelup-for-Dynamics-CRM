@@ -1,7 +1,7 @@
 # Summary
 Chrome Extension for Dynamics CRM Power users
 
-![Power up extension screenshot](/screenshots/Screenshot Main.png "Screenshot")
+![Level up screenshot](/screenshots/Levelup.png)
 
 # Usage
 Install the extension from Chrome Store. https://chrome.google.com/webstore/detail/level-up-for-dynamics-crm/bjnkkhimoaclnddigpphpgkfgeggokam
