@@ -23,7 +23,7 @@ class LevelUp {
             "OData-MaxVersion" : "4.0",
             "OData-Version" : "4.0"
           });
-          serviceUrl = `/api/data/v8.0/${entity}`;
+          serviceUrl = `${this.clientUrl}/api/data/v8.0/${entity}`;
       }
       if(attributes){
         serviceUrl += `?$select=${attributes}`;
@@ -586,7 +586,7 @@ class LevelUp {
           ,formattedAttributes = entity.getFormattedValues()
           ,attributeNames = attributes.getNames()
           ,formAttributes = this.Xrm.Page.getAttribute().map(x=>x.getName())
-          ,attributesNotInForm = attributeNames.filter(x=>!formAttributes.includes(x)),
+          ,attributesNotInForm = attributeNames.filter(x=>!formAttributes.includes(x) || !this.Xrm.Page.getControl(x) || !this.Xrm.Page.getControl(x).getVisible()),
           resultsArray = [{cells: ['Attribute Name', 'Value']}];
 
         let attributeValues = attributesNotInForm.forEach(x=>{

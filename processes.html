@@ -28,11 +28,24 @@
         td{
             padding: 0.5em;
         }
+        input {
+            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
+            border: solid 1px #ccc;
+            border-radius: 5px;
+            padding: 5px 5px;
+            width: 300px;
+            margin-bottom: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #aaa;
+        }             
     </style>
 </head>
 <body>
     <h2>Workflows &amp; Business Rules</h2>
-    <div>
+    <div id="grid">
+        <input class="search" placeholder="Search" />
         <table>
             <thead>
             <tr>
@@ -43,13 +56,15 @@
                 <th>Status</th>                
             </tr>
             </thead>
-            <tbody id="results">
+            <tbody id="results" class="list">
             <tr>
                 <td colspan="5">No workflows/business rules found for this entity</td>
             </tr>
             </tbody>
         </table>
     </div>
+    <script src="lodashmoment.bundle.js"></script>
+    <script src="list.min.js"></script>
+    <script src="processes.js"></script>    
 </body>
-<script src="processes.js"></script>
 </html>
