@@ -46,6 +46,7 @@ Action | What it does
 **Quick Find fields** | Displays the search fields for the current entity that is displayed in the grid.
 **Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
+**User & Roles** | Displays the users and their roles.
 
 # Functionality
 Please watch this animation below for quick functionality intro.

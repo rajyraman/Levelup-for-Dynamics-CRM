@@ -13,6 +13,7 @@ document.getElementById('crmHelperLinks').addEventListener('click',function(e){
 }, false);
 
 window.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('version').innerHTML = `v${chrome.runtime.getManifest().version}`;
   chrome.tabs.query({
     active: true,
     currentWindow: true

@@ -306,7 +306,7 @@ class LevelUp {
       results.forEach(r=>{
         resultsArray.push({cells: Object.keys(r).sort().filter(x=> !x.startsWith('@') && !x.startsWith('_')).map(key=> r[key])});
       });
-      this.messageExtension(resultsArray, 'userroles');            
+      this.messageExtension(resultsArray, 'myRoles');            
     }).catch ((err) => {
       console.log(err);
     });
@@ -637,6 +637,34 @@ class LevelUp {
     else {
       alert('The current page is not a grid');
     }
+  }
+
+  allUserRoles(){
+    let resultsArray = [{cells: ['Role','User']}];
+    Sdk.Async.retrieveMultiple(new Sdk.Query.FetchExpression('<fetch><entity name="systemuser" ><attribute name="fullname" /><link-entity name="systemuserroles" from="systemuserid" to="systemuserid" alias="systemuserroles"><attribute name="roleid" /><attribute name="systemuserid" /><link-entity name="role" from="roleid" to="roleid" alias="role"><attribute name="name" /><order attribute="name" /><filter><condition attribute="parentroleid" operator="null" /></filter></link-entity></link-entity></entity></fetch>'), results => { 
+      let entities = results.getEntities().toArray();
+      let cells = entities.forEach(x=>{
+        let attributes = x.getAttributes(), 
+          roleId = attributes.getAttributeByName('systemuserroles.roleid').getValue(),
+          roleName = attributes.getAttributeByName('role.name').getValue(),
+          userId = attributes.getAttributeByName('systemuserroles.systemuserid').getValue(),
+          userName = attributes.getAttributeByName('fullname').getValue();
+
+        resultsArray.push({
+         role: {
+            id: roleId,
+            name: roleName,
+            url: `${this.clientUrl}/main.aspx?etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`
+         },
+         user: {
+            id: userId,
+            name: userName,
+            url: `${this.clientUrl}/main.aspx?etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`
+         }
+        });
+      });
+      this.messageExtension(resultsArray, 'allUserRoles');
+    });
   } 
 }
 

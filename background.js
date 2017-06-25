@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 					url : `organisationdetails.html`
 				});					
 				break;
-			case 'userroles':
+			case 'myRoles':
 			case 'allfields':
 			case 'quickFindFields':						
 				content = message.content;
@@ -30,7 +30,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				break;		
 			case 'load':
 				sendResponse(content);
-				break;										
+				break;	
+			case 'allUserRoles':
+				content = message.content;
+				chrome.tabs.create({
+					url : `userroles.html`
+				});					
+				break;														
 			default:
 				break;
 		}

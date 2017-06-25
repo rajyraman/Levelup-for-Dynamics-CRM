@@ -5,7 +5,7 @@
         scriptTag.setAttribute('src', file);
         document.body.appendChild(scriptTag);
     };
-    if(Array.from(document.scripts).findIndex(x=>x.id.startsWith('/_static/_common/scripts/ribbonactions.js')) !== -1){
+    if(Array.from(document.scripts).findIndex(x=>x.src.indexOf('_common/entityproperties/entitypropertiesutil')) !== -1){
         injectScript(chrome.extension.getURL('Sdk.Soap.min.js'));
         injectScript(chrome.extension.getURL('crmmethods.js'));
         chrome.runtime.sendMessage({
