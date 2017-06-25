@@ -5,7 +5,7 @@
         scriptTag.setAttribute('src', file);
         document.body.appendChild(scriptTag);
     };
-    if(Array.from(document.scripts).findIndex(x=>x.src.indexOf('_common/entityproperties/entitypropertiesutil')) !== -1){
+    if(Array.from(document.scripts).some(x=>x.src.indexOf('_common/entityproperties/entitypropertiesutil') !== -1)){
         injectScript(chrome.extension.getURL('Sdk.Soap.min.js'));
         injectScript(chrome.extension.getURL('crmmethods.js'));
         chrome.runtime.sendMessage({

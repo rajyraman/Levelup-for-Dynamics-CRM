@@ -27,7 +27,7 @@
 		"https://*/*"
 	],
 	"web_accessible_resources" : ["Sdk.Soap.min.js","crmmethods.js"],
-	"version" : "2.4",
-	"version_name" : "2.4",
+	"version" : "2.4.1",
+	"version_name" : "2.4.1",
 	"manifest_version" : 2
 }
