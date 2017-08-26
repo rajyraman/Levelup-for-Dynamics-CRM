@@ -1,12 +1,12 @@
-# Summary
+## Summary
 Chrome Extension for Dynamics CRM Power users
 
 ![Level up screenshot](/screenshots/Levelup.png)
 
-# Usage
+## Usage
 Install the extension from Chrome Store. https://chrome.google.com/webstore/detail/level-up-for-dynamics-crm/bjnkkhimoaclnddigpphpgkfgeggokam
 
-# Detailed Functionality
+## Detailed Functionality
 
 Action | What it does
 --- | ---
@@ -30,10 +30,12 @@ Action | What it does
 **All Fields** | Displays values for all fields not in the current form
 **Open record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 **New record** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to create a new record.
+**Open list** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to show the entity list.
 **Security** | Displays the security area from the sitemap.
 **System Jobs** | Displays the system jobs from the sitemap.
 **Solutions** | Displays the solutions area from the sitemap.
 **Process** | Displays the processes area from the sitemap.
+**Mailboxes** | Displays the mailboxes list.
 **Open Main** | Opens the CRM homepage (main.aspx) on a new window.
 **Advanced Find** | Opens Advanced Find in a new window.
 **Mobile Client** | Opens the mobile client (MoCA) in a new window.
@@ -48,20 +50,63 @@ Action | What it does
 **My Roles** | Displays the user roles, that you user record has.
 **User & Roles** | Displays the users and their roles.
 
-# Functionality
+## Functionality
 Please watch this animation below for quick functionality intro.
 
 ![Power up extension introduction](/screenshots/Functionality Quick Intro.gif "Functionality")
 
-# YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
+## YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
 [![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
 
-# Credits
-* God mode adapted from original script by Paul Nieuwelaar. (https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
-* Customize by Paul Nieuwelaar
-(https://paulnieuwelaar.wordpress.com/2014/07/28/customize-and-publish-from-crm-2013-forms-with-bookmarklets/)
-* Form Properties by Jared Johnson (http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
-* Minimum values by Ahmed Anwar (http://www.magnetismsolutions.com/blog/ahmed-anwar's-blog/2014/12/8/microsoft-dynamics-crm-2013-populating-required-fields-with-bookmarklets)
-* Display Logical Names adapted from original script by Chris Groh (http://us.hitachi-solutions.com/blog/2014/10/27/showing-entity-logical-names-on-form/)
-* Performance Center by Benjamin John (http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
-* Rocket Icon by Jerry Low - (https://www.iconfinder.com/jerrylow)
+## Build instructions
+
+	$ npm install
+    $ npm build
+
+This will build the solution for Chrome, Firefox and Edge
+
+### Version
+
+Increments version number of `manifest.json` and `package.json`,
+commits the change to git and adds a git tag.
+
+
+    $ gulp patch      // => 0.0.X
+
+or
+
+    $ gulp feature    // => 0.X.0
+
+or
+
+    $ gulp release    // => X.0.0
+
+
+## Globals
+
+The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. It will be set to `development` unless you use the `--production` option.
+
+
+**Example:** `./app/background.js`
+
+```javascript
+if(process.env.NODE_ENV === 'development'){
+  console.log('We are in development mode!');
+}
+```
+
+## Credits
+* [God mode adapted from original script by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
+* [Customize by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/28/customize-and-publish-from-crm-2013-forms-with-bookmarklets/)
+* [Form Properties by Jared Johnson](http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
+* [Minimum values by Ahmed Anwar](http://www.magnetismsolutions.com/blog/ahmed-anwar's-blog/2014/12/8/microsoft-dynamics-crm-2013-populating-required-fields-with-bookmarklets)
+* [Display Logical Names adapted from original script by Chris Groh](http://us.hitachi-solutions.com/blog/2014/10/27/showing-entity-logical-names-on-form/)
+* [Performance Center by Benjamin John](http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
+* [Rocket Icon by Jerry Low](https://www.iconfinder.com/jerrylow)
+* [Chrome extension kickstart yo generator by HaNdTrix](https://github.com/HaNdTriX/generator-chrome-extension-kickstart)
+
+
+
+
+
+

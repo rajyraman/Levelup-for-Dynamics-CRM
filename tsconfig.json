@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "sourceMap": false,
+        "noImplicitAny": false,
+        "target": "ES2015",
+        "rootDir": "app/scripts",
+        "typeRoots": [
+            "./app/tsd",
+            "./node_modules/@types"
+        ],
+        "traceResolution": true
+    },
+    "lib": [
+        "ES2015",
+        "DOM"
+    ]
+}

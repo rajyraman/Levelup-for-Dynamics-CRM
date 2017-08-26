@@ -1,4 +1,10 @@
-chrome.runtime.sendMessage({type: 'page', category: 'load'}, function(response) {
+/// <reference path="../../../tsd/moment.d.ts" />
+/// <reference path="../../../tsd/externals.d.ts" />
+/// <reference path="../../types.ts" />
+chrome.runtime.sendMessage({
+    type: "Page",
+    category: "Load"
+}, function(response) {
     let rows = response
     .filter(x=>x.value)
     .map(x=> {

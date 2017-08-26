@@ -1,37 +1,40 @@
-var content = [];
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if(message.type === 'page') {
-		switch (message.category) {
-			case 'settings':
+/// <reference path="../types.ts" />
+import types = LevelUp.Types;
+let content: types.ResultRow[] | types.ResultRowKeyValues[][] | string;
+chrome.runtime.onMessage.addListener(function (message: types.ExtensionMessage, sender, sendResponse) {
+	if(message.type === "Page") {
+		let c = message.category.toString();
+		switch (c) {
+			case "Settings":
 				content = message.content;
 				chrome.tabs.create({
 					url : `organisationdetails.html`
 				});					
 				break;
-			case 'myRoles':
-			case 'allfields':
-			case 'quickFindFields':						
+			case "myRoles":
+			case "allFields":
+			case "quickFindFields":						
 				content = message.content;
 				chrome.tabs.create({
 					url : `grid.html`
 				});					
 				break;			
-			case 'workflows':
+			case "workflows":
 				content = message.content;
 				chrome.tabs.create({
 					url : `processes.html`
 				});					
 				break;				
-			case 'extension':
-				if(message.content === 'on')
+			case "Extension":
+				if(types.ExtensionState[<string>message.content] === types.ExtensionState.On)
 					chrome.browserAction.enable(sender.tab.id);
-				else if(message.content === 'off')
+				else if(types.ExtensionState[<string>message.content] === types.ExtensionState.Off)
 					chrome.browserAction.disable(sender.tab.id);				
 				break;		
-			case 'load':
+			case "Load":
 				sendResponse(content);
 				break;	
-			case 'allUserRoles':
+			case "allUserRoles":
 				content = message.content;
 				chrome.tabs.create({
 					url : `userroles.html`

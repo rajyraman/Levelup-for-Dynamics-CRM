@@ -1,4 +1,9 @@
-chrome.runtime.sendMessage({type: 'page', category: 'load'}, function(rows) {
+/// <reference path="../../types.ts" />
+/// <reference path="../../../tsd/externals.d.ts" />
+chrome.runtime.sendMessage({
+    type: "Page",
+    category: "Load"
+}, function(rows) {
     let rowsHtml = '';
     for(let i = 0; i < rows.length; i++){
         if(i>0)
