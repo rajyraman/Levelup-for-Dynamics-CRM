@@ -53,7 +53,7 @@ Action | What it does
 ## Functionality
 Please watch this animation below for quick functionality intro.
 
-![Power up extension introduction](/screenshots/Functionality Quick Intro.gif "Functionality")
+![Levelup up extension introduction](/screenshots/Functionality%20Quick%20Intro.gif "Functionality")
 
 ## YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
 [![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
