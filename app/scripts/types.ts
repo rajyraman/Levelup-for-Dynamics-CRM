@@ -58,12 +58,11 @@ module LevelUp {
             "allFields" |                      
             "quickFindFields" |
             "workflows" |
-            "allUserRoles"        
+            "allUserRoles";        
 
-        export enum ExtensionState {
-            "On",
-            "Off"
-        }
+        export type ExtensionState = 
+            "On" |
+            "Off";
 
         export interface ExtensionMessage {
             type: MessageType,

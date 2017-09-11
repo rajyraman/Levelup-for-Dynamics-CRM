@@ -13,11 +13,11 @@ module LevelUp{
         }
 
         start(){
+            this.hookupEventListeners();
             if(this.isCRMPage) {
                 utility.injectScript(chrome.extension.getURL("Sdk.Soap.min.js"));
                 utility.injectScript(chrome.extension.getURL("levelup.extension.js"));
                 utility.enableExtension(true);
-                this.hookupEventListeners();
             }
             else {
                 utility.enableExtension(false);

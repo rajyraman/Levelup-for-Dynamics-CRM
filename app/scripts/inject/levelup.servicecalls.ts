@@ -47,8 +47,27 @@ module LevelUp {
         }
 
         allUserRoles() {
-            let resultsArray: any[] = [{ cells: ['Role', 'User'] }];
-            CrmSdk.Async.retrieveMultiple(new CrmSdk.Query.FetchExpression('<fetch><entity name="systemuser" ><attribute name="fullname" /><link-entity name="systemuserroles" from="systemuserid" to="systemuserid" alias="systemuserroles"><attribute name="roleid" /><attribute name="systemuserid" /><link-entity name="role" from="roleid" to="roleid" alias="role"><attribute name="name" /><order attribute="name" /><filter><condition attribute="parentroleid" operator="null" /></filter></link-entity></link-entity></entity></fetch>'), results => {
+            let resultsArray: any[] = [{ cells: ['Business Unit', 'Role', 'User', 'AD Name'] }];
+            CrmSdk.Async.retrieveMultiple(new CrmSdk.Query.FetchExpression(`
+            <fetch>
+                <entity name="systemuser" >
+                    <attribute name="domainname" />
+                    <attribute name="businessunitid" />
+                    <attribute name="fullname" />
+                    <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" alias="systemuserroles">
+                        <attribute name="roleid" />
+                        <attribute name="systemuserid" />
+                        <link-entity name="role" from="roleid" to="roleid" alias="role">
+                            <attribute name="name" />
+                            <order attribute="name" />
+                            <filter>
+                                <condition attribute="parentroleid" operator="null" />
+                            </filter>
+                        </link-entity>
+                    </link-entity>
+                </entity>
+            </fetch>`), 
+            results => {
                 let entities = results.getEntities().toArray();
                 let cells = entities.forEach(x => {
                     let attributes = x.getAttributes(),
@@ -58,6 +77,7 @@ module LevelUp {
                         userName = attributes.getAttributeByName('fullname').getValue();
 
                     resultsArray.push({
+                        bu: attributes.getAttributeByName('businessunitid').getValue().getName(),
                         role: {
                             id: roleId,
                             name: roleName,
@@ -67,7 +87,8 @@ module LevelUp {
                             id: userId,
                             name: userName,
                             url: `${this.utility.clientUrl}/main.aspx?etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`
-                        }
+                        },
+                        adname: attributes.getAttributeByName('domainname').getValue()
                     });
                 });
                 this.utility.messageExtension(resultsArray, 'allUserRoles');

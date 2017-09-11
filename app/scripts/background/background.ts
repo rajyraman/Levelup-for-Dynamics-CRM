@@ -26,9 +26,9 @@ chrome.runtime.onMessage.addListener(function (message: types.ExtensionMessage, 
 				});					
 				break;				
 			case "Extension":
-				if(types.ExtensionState[<string>message.content] === types.ExtensionState.On)
+				if(message.content === "On")
 					chrome.browserAction.enable(sender.tab.id);
-				else if(types.ExtensionState[<string>message.content] === types.ExtensionState.Off)
+				else if(message.content === "Off")
 					chrome.browserAction.disable(sender.tab.id);				
 				break;		
 			case "Load":

@@ -93,7 +93,7 @@ module LevelUp {
             static enableExtension(isEnable: boolean): void {
                 chrome.runtime.sendMessage({
                     type: "Page",
-                    content: isEnable ? Types.ExtensionState.On : Types.ExtensionState.Off,
+                    content: isEnable ? "On" : "Off",
                     category: "Extension"
                 });
             }
