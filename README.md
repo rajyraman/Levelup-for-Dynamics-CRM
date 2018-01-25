@@ -11,6 +11,7 @@ Install the extension from Chrome Store. https://chrome.google.com/webstore/deta
 Action | What it does
 --- | ---
 **Logical Names** | Displays logical names for fields, tabs and sections.
+**Clear Logical Names** | Restores the form to the original state, by removing the schema name textboxes.
 **God Mode** | Makes all mandatory fields optional. Makes hidden fields/tabs/sections visible. Makes read-only fields editable.
 **Record Properties** | Displays information about current record like Created By, Created On, Modified By, Modified on, Permissions and Owner. 
 **Changed Fields** | Highlights fields in the form that have been changed, but not saved yet.
@@ -49,7 +50,7 @@ Action | What it does
 **Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
 **User & Roles** | Displays the users and their roles.
-
+**Emojis** | Display the of emojis for copy pasting into CRM/Dynamics 365 Customer Engagement.
 ## Functionality
 Please watch this animation below for quick functionality intro.
 
@@ -104,9 +105,5 @@ if(process.env.NODE_ENV === 'development'){
 * [Performance Center by Benjamin John](http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
 * [Rocket Icon by Jerry Low](https://www.iconfinder.com/jerrylow)
 * [Chrome extension kickstart yo generator by HaNdTrix](https://github.com/HaNdTriX/generator-chrome-extension-kickstart)
-
-
-
-
-
-
+* [Unicode.org Emoji list v5](https://unicode.org/emoji/charts/full-emoji-list.html)
+* [Copy Text to Clipboard by Sindre Sorhus](https://github.com/sindresorhus/copy-text-to-clipboard)

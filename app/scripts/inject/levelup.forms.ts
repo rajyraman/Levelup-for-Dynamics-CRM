@@ -4,6 +4,9 @@ module LevelUp {
   export class Forms {
     constructor(private utility: LevelUp.Common.Utility) {
     }
+    clearLogicalNames() {
+      this.utility.formDocument.querySelectorAll('.levelupschema').forEach(x => x.remove());
+    }
 
     displayLogicalNames() {
       this.utility.formDocument.querySelectorAll('.levelupschema').forEach(x => x.remove());
@@ -12,6 +15,7 @@ module LevelUp {
         let schemaNameInput = this.utility.formDocument.createElement('input');
         schemaNameInput.setAttribute('type', 'text');
         schemaNameInput.setAttribute('class', 'levelupschema');
+        schemaNameInput.setAttribute('style','background: darkslategray; color: #f9fcfe; font-size: 14px;');
         schemaNameInput.value = controlName;
         controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
       };
@@ -23,7 +27,6 @@ module LevelUp {
         if (!controlNode) {
           return;
         }
-        let parentNodeId = controlNode.getAttribute('aria-describedby');
         if (!c.getAttribute) {
           createSchemaNameInput(controlName, this.utility.formDocument.getElementById(`${controlName}_d`));
         }
@@ -31,11 +34,7 @@ module LevelUp {
           if (!c.getVisible()) {
             return;
           }
-          let parentNode = this.utility.formDocument.getElementById(parentNodeId);
-          if (parentNode) {
-            createSchemaNameInput(controlName, parentNode);
-            parentNode.style.overflow = 'hidden';
-          }
+          createSchemaNameInput(controlName, controlNode);
         }
       });
 
@@ -224,7 +223,9 @@ module LevelUp {
           fieldCount++;
           if (attributeName === 'customerid' ||
             attributeName === 'parentcustomerid' ||
-            (typeof lookupValue.getLookupTypes === 'function' && lookupValue.getLookupTypes().length > 1)) {
+            (typeof lookupValue.getLookupTypes === 'function' 
+            && Array.isArray(lookupValue.getLookupTypes()) 
+            && lookupValue.getLookupTypes().length > 1)) {
             extraq += (attributeName + 'type=' + attributeValue[0].entityType + '&');
             fieldCount++;
           }

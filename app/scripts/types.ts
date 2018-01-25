@@ -58,7 +58,8 @@ module LevelUp {
             "allFields" |                      
             "quickFindFields" |
             "workflows" |
-            "allUserRoles";        
+            "allUserRoles" |
+            "emojis";        
 
         export type ExtensionState = 
             "On" |
