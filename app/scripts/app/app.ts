@@ -9,7 +9,7 @@ module LevelUp{
         constructor() {
             this.isCRMPage = Array
                             .from(document.scripts)
-                            .some(x=>x.src.indexOf("_common/entityproperties/entitypropertiesutil") !== -1);
+                            .some(x => x.src.indexOf("/_static/_common/scripts/PageLoader.js") !== -1 || x.src.indexOf("/_static/_common/scripts/crminternalutility.js"));
         }
 
         start(){
