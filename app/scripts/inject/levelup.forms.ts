@@ -34,7 +34,7 @@ module LevelUp {
           if (!c.getVisible()) {
             return;
           }
-          createSchemaNameInput(controlName, controlNode);
+          createSchemaNameInput(c.getAttribute().getName(), controlNode);
         }
       });
 
