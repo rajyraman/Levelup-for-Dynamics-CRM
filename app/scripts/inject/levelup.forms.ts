@@ -17,13 +17,16 @@ module LevelUp {
         schemaNameInput.setAttribute('class', 'levelupschema');
         schemaNameInput.setAttribute('style','background: darkslategray; color: #f9fcfe; font-size: 14px;');
         schemaNameInput.value = controlName;
-        controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
+        if(controlNode && controlNode.parentNode) {
+          controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
+        }
       };
 
       this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
         let controlName = c.getName(),
           controlType = c.getControlType(),
-          controlNode = this.utility.formDocument.getElementById(controlName);
+          controlNode = this.utility.formDocument.getElementById(controlName) || 
+          this.utility.formDocument.querySelector(`[id$='${controlName}-field-label']`);
         if (!controlNode) {
           return;
         }
@@ -41,13 +44,15 @@ module LevelUp {
       this.utility.Xrm.Page.ui.tabs.forEach(t => {
         let tabName = t.getName();
         if (t.getVisible()) {
-          createSchemaNameInput(tabName, this.utility.formDocument.querySelector(`div[name="${tabName}"]`));
+          createSchemaNameInput(tabName, this.utility.formDocument.querySelector(`div[name="${tabName}"]`) 
+          || this.utility.formDocument.querySelector(`[data-id$="tablist-${tabName}"]`));
         }
 
         t.sections.forEach(s => {
           let sectionName = s.getName();
           if (s.getVisible()) {
-            createSchemaNameInput(sectionName, this.utility.formDocument.querySelector(`table[name="${sectionName}"]`));
+            createSchemaNameInput(sectionName, this.utility.formDocument.querySelector(`table[name="${sectionName}"]`)
+            || this.utility.formDocument.querySelector(`[data-id$="${sectionName}"]`));
           }
         });
       });
@@ -61,7 +66,9 @@ module LevelUp {
         if (c.setDisabled) {
           c.setDisabled(false);
         }
-        c.clearNotification();
+        if(c.clearNotification) {
+          c.clearNotification();
+        }
       });
 
       this.utility.Xrm.Page.ui.tabs.forEach(t => {
