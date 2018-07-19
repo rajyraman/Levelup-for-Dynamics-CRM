@@ -31,6 +31,11 @@ module LevelUp {
         formWindow = contentPanels[0].contentWindow;
         formDocument = contentPanels[0].contentDocument;
         xrm = formWindow.Xrm;
+        if(!xrm) {
+          formWindow = window;
+          formDocument = document;
+          xrm = window.Xrm;     
+        }        
         utility = new LevelUp.Common.Utility(formDocument, formWindow, xrm, clientUrl);
       }
 

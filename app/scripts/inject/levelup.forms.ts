@@ -17,7 +17,9 @@ module LevelUp {
         schemaNameInput.setAttribute('class', 'levelupschema');
         schemaNameInput.setAttribute('style','background: darkslategray; color: #f9fcfe; font-size: 14px;');
         schemaNameInput.value = controlName;
-        controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
+        if(controlNode && controlNode.parentNode) {
+          controlNode.parentNode.insertBefore(schemaNameInput, controlNode);
+        }
       };
 
       this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
@@ -66,7 +68,9 @@ module LevelUp {
         if (c.setDisabled) {
           c.setDisabled(false);
         }
-        c.clearNotification();
+        if(c.clearNotification) {
+          c.clearNotification();
+        }
       });
 
       this.utility.Xrm.Page.ui.tabs.forEach(t => {
