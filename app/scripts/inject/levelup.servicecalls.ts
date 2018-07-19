@@ -84,12 +84,12 @@ module LevelUp {
                         role: {
                             id: roleId,
                             name: roleName,
-                            url: `${this.utility.clientUrl}/main.aspx?etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`
+                            url: `${this.utility.clientUrl}&etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`
                         },
                         user: {
                             id: userId,
                             name: userName,
-                            url: `${this.utility.clientUrl}/main.aspx?etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`
+                            url: `${this.utility.clientUrl}&etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`
                         },
                         adname: attributes.getAttributeByName('domainname').getValue()
                     });

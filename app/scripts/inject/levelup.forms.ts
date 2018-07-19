@@ -23,7 +23,8 @@ module LevelUp {
       this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
         let controlName = c.getName(),
           controlType = c.getControlType(),
-          controlNode = this.utility.formDocument.getElementById(controlName);
+          controlNode = this.utility.formDocument.getElementById(controlName) ||
+                        this.utility.formDocument.querySelector(`label[id$="${controlName}-field-label"]`);
         if (!controlNode) {
           return;
         }
@@ -41,13 +42,17 @@ module LevelUp {
       this.utility.Xrm.Page.ui.tabs.forEach(t => {
         let tabName = t.getName();
         if (t.getVisible()) {
-          createSchemaNameInput(tabName, this.utility.formDocument.querySelector(`div[name="${tabName}"]`));
+          createSchemaNameInput(tabName, 
+            this.utility.formDocument.querySelector(`div[name="${tabName}"]`) || 
+            this.utility.formDocument.querySelector(`li[data-id$="tablist-${tabName}"]`));
         }
 
         t.sections.forEach(s => {
           let sectionName = s.getName();
           if (s.getVisible()) {
-            createSchemaNameInput(sectionName, this.utility.formDocument.querySelector(`table[name="${sectionName}"]`));
+            createSchemaNameInput(sectionName, 
+              this.utility.formDocument.querySelector(`table[name="${sectionName}"]`) ||
+              this.utility.formDocument.querySelector(`section[data-id$="${sectionName}"]`));
           }
         });
       });
@@ -80,7 +85,7 @@ module LevelUp {
     copyRecordUrl() {
       let entityId = this.utility.Xrm.Page.data.entity.getId();
       if (entityId) {
-        let locationUrl = `${this.utility.clientUrl}/main.aspx?etn=${this.utility.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+        let locationUrl = `${this.utility.clientUrl}&etn=${this.utility.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
         try {
           Common.Utility.copy(locationUrl);
           alert('Record URL has been copied to clipboard');
@@ -115,7 +120,9 @@ module LevelUp {
         if (c.getAttribute) {
           var dirtyAttribute = c.getAttribute();
           if (!dirtyAttribute || !dirtyAttribute.getIsDirty()) return;
-          this.utility.formWindow.document.getElementById(dirtyAttribute.getName()).setAttribute('style', 'border: 1px solid red');
+          var attributeNode = this.utility.formWindow.document.getElementById(dirtyAttribute.getName()) ||
+                              this.utility.formDocument.querySelector(`label[id$="${dirtyAttribute.getName()}-field-label"]`);
+          attributeNode.setAttribute('style', 'border: 1px solid red');
         }
       });
     }
@@ -241,7 +248,7 @@ module LevelUp {
         alert('This form contains more than 45 fields and cannot be cloned');
       }
       else {
-        var newWindowUrl = this.utility.clientUrl + '/main.aspx?etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
+        var newWindowUrl = this.utility.clientUrl + '&etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
         window.open(newWindowUrl);
       }
     }
@@ -298,7 +305,7 @@ module LevelUp {
                 workflowKeyValue = (workflowKeyValue === 0 || workflowKeyValue.Value === 0) ? 'Draft' : 'Activated';
               }
               else if (keyName === 'workflowid') {
-                workflowKeyValue = `${this.utility.clientUrl}/main.aspx?etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
+                workflowKeyValue = `${this.utility.clientUrl}&etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
               }
               resultRow.find(k => k.key === keyName).value = workflowKeyValue;
             });
@@ -357,7 +364,7 @@ module LevelUp {
         if (currentLookup) {
           var entityName = currentLookup[0].type,
             entityId = currentLookup[0].id;
-          var url = `${this.utility.clientUrl}/main.aspx?etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+          var url = `${this.utility.clientUrl}&etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
           window.open(url, '_blank');
         }
       } else {

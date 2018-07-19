@@ -45,7 +45,7 @@ module LevelUp {
       if (currentView && etc) {
         let viewType = currentView.getAttribute('currentviewtype'),
           viewId = currentView.getAttribute('currentview'),
-          viewUrl = `${this.utility.clientUrl}/main.aspx?etc=${etc}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
+          viewUrl = `${this.utility.clientUrl}&etc=${etc}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
         window.open(viewUrl, '_blank');
       }
       else {

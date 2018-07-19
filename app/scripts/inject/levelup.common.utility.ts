@@ -35,7 +35,7 @@ module LevelUp {
                     "Accept": "application/json",
                     "Content-Type": "application/json; charset=utf-8",
                 });
-                let serviceUrl = `${this.clientUrl}/XRMServices/2011/OrganizationData.svc/${entityName}`;
+                let serviceUrl = `${Xrm.Page.context.getClientUrl()}/XRMServices/2011/OrganizationData.svc/${entityName}`;
                 if (this.is2016) {
                     headers = new Headers({
                         "Accept": "application/json",
@@ -43,7 +43,7 @@ module LevelUp {
                         "OData-MaxVersion": "4.0",
                         "OData-Version": "4.0"
                     });
-                    serviceUrl = `${this.clientUrl}/api/data/v8.0/${entityName}`;
+                    serviceUrl = `${Xrm.Page.context.getClientUrl()}/api/data/v8.0/${entityName}`;
                 }
                 if (attributes) {
                     serviceUrl += `?$select=${attributes}`;

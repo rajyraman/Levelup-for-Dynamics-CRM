@@ -39,7 +39,8 @@ module LevelUp{
                 
                     if (contentPanels && contentPanels.length > 0) {
                         let formDocument = contentPanels[0].contentWindow.document;
-                        if(formDocument.getElementById("crmFormHeaderTop")){
+                        if(formDocument.getElementById("crmFormHeaderTop") 
+                            || document.querySelector('div[data-id="form-header"]')){
                             response(types.AreaType.Form);
                         }
                         else if(formDocument.querySelector("span.ms-crm-View-Name")){

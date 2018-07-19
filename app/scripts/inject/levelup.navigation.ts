@@ -5,7 +5,7 @@ module LevelUp {
     constructor(private utility: LevelUp.Common.Utility) {
     }
 
-    openRecord(entityName: string, entityId: string): void {
+    openRecord(entityName: string, entityId?: string): void {
       if (!entityName) {
         entityName = prompt("Entity?", "");
       }
@@ -13,14 +13,14 @@ module LevelUp {
         entityId = prompt("Id?", "");
       }
       if (entityId) {
-        window.open(`${this.utility.clientUrl}/main.aspx?etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
+        window.open(`${this.utility.clientUrl}&etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
       }
     }
 
     newRecord() {
       let entityName = prompt("Entity?", "");
       if (entityName) {
-        window.open(`${this.utility.clientUrl}/main.aspx?etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
+        window.open(`${this.utility.clientUrl}&etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
       }
     }
 
@@ -29,28 +29,28 @@ module LevelUp {
     }
 
     openSystemJobs() {
-      window.top.document.getElementById('navBar').control.raiseNavigateRequest({ uri: '/tools/business/home_asyncoperation.aspx?pagemode=iframe&' });
+      this.openList('asyncoperation');
     }
 
     openSolutions() {
-      window.open(`${this.utility.clientUrl}/main.aspx?Origin=Portal&page=Settings&area=nav_solution`);
+      this.openList('solution');
     }
 
     openProcesses() {
-      window.top.document.getElementById('navBar').control.raiseNavigateRequest({ uri: '/_root/homepage.aspx?etc=4703&pagemode=iframe&sitemappath=Settings|ProcessCenter|nav_workflow' });
+      this.openList('workflow');
     }
 
     openMain() {
-      window.open(`${this.utility.clientUrl}/main.aspx`, '_blank');
+      window.open(`${this.utility.clientUrl}`, '_blank');
     }
 
     openAdvFind() {
       if (!this.utility.Xrm.Page.data || !this.utility.Xrm.Page.data.entity) {
-        window.open(`${this.utility.clientUrl}/main.aspx?pagetype=advancedfind`, '_blank');
+        window.open(`${this.utility.clientUrl}&pagetype=advancedfind`, '_blank');
       }
       else {
         let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
-        window.open(`${this.utility.clientUrl}/main.aspx?extraqs=EntityCode%3d${this.utility.Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`, '_blank');
+        window.open(`${this.utility.clientUrl}&extraqs=EntityCode%3d${this.utility.Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`, '_blank');
       }
     }
 
@@ -104,7 +104,7 @@ module LevelUp {
         entityName = prompt("Entity?", "");
       }
       if (entityName) {
-        window.open(`${this.utility.clientUrl}/main.aspx?etn=${entityName}&pagetype=entitylist`);
+        window.open(`${this.utility.clientUrl}&etn=${entityName}&pagetype=entitylist`);
       }
     }
 
