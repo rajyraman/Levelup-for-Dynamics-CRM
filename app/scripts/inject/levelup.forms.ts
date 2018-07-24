@@ -126,6 +126,8 @@ module LevelUp {
           if (!dirtyAttribute || !dirtyAttribute.getIsDirty()) return;
           var attributeNode = this.utility.formWindow.document.getElementById(dirtyAttribute.getName()) ||
                               this.utility.formDocument.querySelector(`label[id$="${dirtyAttribute.getName()}-field-label"]`);
+          if(!attributeNode) return;
+
           attributeNode.setAttribute('style', 'border: 1px solid red');
         }
       });

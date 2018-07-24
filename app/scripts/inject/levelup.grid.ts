@@ -10,7 +10,6 @@ module LevelUp {
         resultsArray: LevelUp.Types.ResultRow[] = [{ cells: ['Quick Find Attribute'] }],
         etc = this.utility.Xrm.Page.context.getQueryStringParameters().etc,
         entityName = this.utility.Xrm.Internal.getEntityName(parseInt(etc));
-      resultsArray[0].cells
       if (currentView && etc) {
         let viewType = currentView.getAttribute('currentviewtype'),
           attributes = 'FetchXml',
