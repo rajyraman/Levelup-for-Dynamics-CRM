@@ -13,14 +13,14 @@ module LevelUp {
         entityId = prompt("Id?", "");
       }
       if (entityId) {
-        window.open(`${this.utility.clientUrl}&etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
+        window.open(`${this.utility.clientUrlForParams}etn=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`, '_blank');
       }
     }
 
     newRecord() {
       let entityName = prompt("Entity?", "");
       if (entityName) {
-        window.open(`${this.utility.clientUrl}&etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
+        window.open(`${this.utility.clientUrlForParams}etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
       }
     }
 
@@ -46,17 +46,18 @@ module LevelUp {
 
     openAdvFind() {
       if (!this.utility.Xrm.Page.data || !this.utility.Xrm.Page.data.entity) {
-        window.open(`${this.utility.clientUrl}&pagetype=advancedfind`, '_blank');
+        window.open(`${this.utility.clientUrlForParams}pagetype=advancedfind`, '_blank');
       }
       else {
         let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
-        window.open(`${this.utility.clientUrl}&extraqs=EntityCode%3d${this.utility.Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`, '_blank');
+        window.open(`${this.utility.clientUrlForParams}extraqs=EntityCode%3d${this.utility.Xrm.Internal.getEntityCode(entityName)}&pagetype=advancedfind`, '_blank');
       }
     }
 
     mocaClient() {
-      var url = Xrm.Page.context.isOffice365() ? this.utility.clientUrl : window.location.origin;
-      window.open(`${url}/nga/main.htm?org=${this.utility.Xrm.Page.context.getOrgUniqueName()}&server=${this.utility.clientUrl}`);
+      var url = ((Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) || 
+      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())) ? Xrm.Page.context.getClientUrl() : window.location.origin;
+      window.open(`${url}/nga/main.htm?org=${this.utility.Xrm.Page.context.getOrgUniqueName()}&server=${Xrm.Page.context.getClientUrl()}`);
     }
 
     myUserRecord() {
@@ -92,7 +93,8 @@ module LevelUp {
 
     instancePicker() {
       if (this.utility.Xrm.Page.context.isOffice365()) {
-        window.open(`https://port${this.utility.clientUrl.substr(this.utility.clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`, '_blank');
+        var clientUrl = Xrm.Page.context.getClientUrl();
+        window.open(`https://port${clientUrl.substr(clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`, '_blank');
       }
       else {
         alert('Instance picker is available only for Dynamics 365/Dynamics CRM Online');
@@ -104,7 +106,7 @@ module LevelUp {
         entityName = prompt("Entity?", "");
       }
       if (entityName) {
-        window.open(`${this.utility.clientUrl}&etn=${entityName}&pagetype=entitylist`);
+        window.open(`${this.utility.clientUrlForParams}etn=${entityName}&pagetype=entitylist`);
       }
     }
 

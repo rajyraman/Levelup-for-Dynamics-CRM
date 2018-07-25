@@ -89,7 +89,7 @@ module LevelUp {
     copyRecordUrl() {
       let entityId = this.utility.Xrm.Page.data.entity.getId();
       if (entityId) {
-        let locationUrl = `${this.utility.clientUrl}&etn=${this.utility.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+        let locationUrl = `${this.utility.clientUrlForParams}etn=${this.utility.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
         try {
           Common.Utility.copy(locationUrl);
           alert('Record URL has been copied to clipboard');
@@ -254,7 +254,7 @@ module LevelUp {
         alert('This form contains more than 45 fields and cannot be cloned');
       }
       else {
-        var newWindowUrl = this.utility.clientUrl + '&etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
+        var newWindowUrl = this.utility.clientUrlForParams + 'etn=' + entityName + '&pagetype=entityrecord' + '&extraqs=?' + encodeURIComponent(extraq);
         window.open(newWindowUrl);
       }
     }
@@ -311,7 +311,7 @@ module LevelUp {
                 workflowKeyValue = (workflowKeyValue === 0 || workflowKeyValue.Value === 0) ? 'Draft' : 'Activated';
               }
               else if (keyName === 'workflowid') {
-                workflowKeyValue = `${this.utility.clientUrl}&etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
+                workflowKeyValue = `${this.utility.clientUrlForParams}etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;;
               }
               resultRow.find(k => k.key === keyName).value = workflowKeyValue;
             });
@@ -370,7 +370,7 @@ module LevelUp {
         if (currentLookup) {
           var entityName = currentLookup[0].type,
             entityId = currentLookup[0].id;
-          var url = `${this.utility.clientUrl}&etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+          var url = `${this.utility.clientUrlForParams}etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
           window.open(url, '_blank');
         }
       } else {

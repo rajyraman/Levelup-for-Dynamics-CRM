@@ -11,7 +11,7 @@ module LevelUp {
                 private _clientUrl: string) {
                 let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window["APPLICATION_VERSION"];
                 this._is2016 = version.startsWith('8');
-                this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36)
+                this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36);
             }
 
             public get formDocument(): Document { return this._document; }
@@ -21,6 +21,10 @@ module LevelUp {
             public get Xrm(): Xrm.XrmStatic { return this._xrm; }
 
             public get clientUrl(): string { return this._clientUrl; }
+            
+            public get clientUrlForParams(): string { 
+                return this._clientUrl + (this._clientUrl.indexOf("appid") > -1 ? '&' : '/main.aspx?'); 
+            }
 
             public get is2016(): boolean {
                 return this._is2016;
