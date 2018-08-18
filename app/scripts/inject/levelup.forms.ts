@@ -422,5 +422,12 @@ module LevelUp {
         t.setDisplayState(currentState === 'expanded' ? 'collapsed' : 'expanded');
       });
     }
+
+    optionSets(){
+      var optionSets = this.utility.Xrm.Page.getAttribute()
+      .filter(x=>x.getAttributeType() === 'optionset')
+      .map((x: Xrm.Page.OptionSetAttribute)=>({name: x.getName(), options: x.getOptions()}));
+      this.utility.messageExtension(optionSets, 'optionsets');
+    }
   }
 }

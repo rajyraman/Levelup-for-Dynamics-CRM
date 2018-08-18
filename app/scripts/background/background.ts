@@ -44,7 +44,13 @@ chrome.runtime.onMessage.addListener(function (message: types.ExtensionMessage, 
 				chrome.tabs.create({
 					url : `emojis.html`
 				});					
-				break;																	
+				break;
+			case "optionsets":
+				content = message.content;
+				chrome.tabs.create({
+					url : `optionsets.html`
+				});					
+				break;				
 			default:
 				break;
 		}

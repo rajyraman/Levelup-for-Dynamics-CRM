@@ -9,7 +9,9 @@ module LevelUp{
         constructor() {
             this.isCRMPage = Array
                             .from(document.scripts)
-                            .some(x => x.src.indexOf("/_static/_common/scripts/PageLoader.js") !== -1 || x.src.indexOf("/_static/_common/scripts/crminternalutility.js"));
+                            .some(x => x.src.indexOf("/_static/_common/scripts/PageLoader.js") !== -1 
+                            || x.src.indexOf("/uclient/scripts/app.js") !== -1 
+                            || x.src.indexOf("/_static/_common/scripts/crminternalutility.js") !== -1);
         }
 
         start(){

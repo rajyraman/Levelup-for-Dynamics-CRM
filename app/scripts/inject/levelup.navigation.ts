@@ -84,15 +84,25 @@ module LevelUp {
     }
 
     diagnostics() {
-      window.open(`${this.utility.clientUrl}/tools/diagnostics/diag.aspx`, '_blank');
+      if(Xrm.Internal.isUci && Xrm.Internal.isUci()){
+        window.open(`${Xrm.Page.context.getClientUrl()}/tools/diagnostics/diag.aspx/GetMetrics`);
+      }
+      else{
+        window.open(`${this.utility.clientUrl}/tools/diagnostics/diag.aspx`, '_blank');
+      }
     }
 
     perfCenter() {
-      Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
+      if(Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('perf=')){
+        window.location.href = `${this.utility.clientUrl}&perf=true`;
+      }
+      else{
+        Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
+      }
     }
 
     instancePicker() {
-      if (this.utility.Xrm.Page.context.isOffice365()) {
+      if (Xrm.Page.context.isOffice365()) {
         var clientUrl = Xrm.Page.context.getClientUrl();
         window.open(`https://port${clientUrl.substr(clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`, '_blank');
       }
@@ -113,5 +123,6 @@ module LevelUp {
     openMailboxes() {
       this.openList("mailbox");
     }
+    
   }
 }

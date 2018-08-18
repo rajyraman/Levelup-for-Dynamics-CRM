@@ -12,7 +12,7 @@ import gulpSequence from 'gulp-sequence'
 
 const ENV = args.production ? 'production' : 'development'
 
-gulp.task('scripts', gulpSequence(['copylibraries','extension','app','background','grid','options','orgdetails','processes','userroles','emojis']));
+gulp.task('scripts', gulpSequence(['copylibraries','extension','app','background','grid','options','orgdetails','processes','userroles','emojis','optionsets']));
 
 gulp.task('extension', (cb) => {
   let tsProject = ts.createProject('tsconfig.json', { outFile: 'levelup.extension.js' });
@@ -81,6 +81,14 @@ gulp.task('userroles', (cb) => {
 gulp.task('emojis', (cb) => {
   let tsProject = ts.createProject('tsconfig.json', { outFile: 'emojis.js' });
   return gulp.src('./app/scripts/pages/emojis/*.ts')
+    .pipe(tsProject())
+    .pipe(gulp.dest(`dist/${args.vendor}`))
+    .pipe(gulpif(args.watch, livereload()))
+})
+
+gulp.task('optionsets', (cb) => {
+  let tsProject = ts.createProject('tsconfig.json', { outFile: 'optionsets.js' });
+  return gulp.src('./app/scripts/pages/optionsets/*.ts')
     .pipe(tsProject())
     .pipe(gulp.dest(`dist/${args.vendor}`))
     .pipe(gulpif(args.watch, livereload()))

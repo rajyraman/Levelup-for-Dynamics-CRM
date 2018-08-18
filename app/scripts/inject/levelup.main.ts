@@ -22,7 +22,7 @@ module LevelUp {
       if(!clientUrl.includes("main.aspx")){
         clientUrlForParams += '/main.aspx';
       }
-      if(event.source.Xrm.Page.context.getCurrentAppUrl && Xrm.Page.context.getCurrentAppUrl().indexOf('appid') > -1){
+      if(event.source.Xrm.Internal.isUci && Xrm.Internal.isUci()){
         formWindow = window;
         formDocument = document;
         xrm = window.Xrm;
