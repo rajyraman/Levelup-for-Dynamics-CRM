@@ -68,6 +68,9 @@ module LevelUp {
                     else if (c.value) {
                         return c.value;
                     }
+                    else {
+                        return c;
+                    }
                 }).catch((err) => {
                     console.log(err);
                 });
