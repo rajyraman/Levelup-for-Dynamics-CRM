@@ -127,10 +127,10 @@ module LevelUp {
       let entityId = this.utility.Xrm.Page.data.entity.getId();
       if (entityId) {
         let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
-        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'LogicalCollectionName').then(
+        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then(
           (entity) => {
-            if (entity && entity.LogicalCollectionName) {
-              var url = `${this.utility.clientUrl}/api/data/v8.0/${entity.LogicalCollectionName}(${entityId.substr(1, 36)})`;
+            if (entity && entity.EntitySetName) {
+              var url = `${this.utility.clientUrl}/api/data/v8.0/${entity.EntitySetName}(${entityId.substr(1, 36)})`;
               window.open(url, '_blank');
             }
           }
