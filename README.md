@@ -17,7 +17,7 @@ Action | What it does
 **Changed Fields** | Highlights fields in the form that have been changed, but not saved yet.
 **Record URL** | Displays the current record URL in a dialog. The URL can be copied from the dialog and dismissed.
 **Record Id** | Displays the current record Id in a dialog. The Id can be copied from the dialog and dismissed.
-**Open Record Web API URL** | Opens the current record's Web API URL in a new window.
+**Open Record Web API URL** | Opens the current records Web API URL in a new window.
 **Refresh All subgrids** | Refreshes all the subgrids on the current form. It does not refresh the associated views.
 **Minimum values** | This is intended for use on a new record. It fills out minimum values for all required fields. Only the following field types are filled out automatically: Memo, String, Boolean, DateTime, Decimal, Double, Integer, Money and OptionSet.
 **Show Optionset values** | Updates all the OptionSet fields on the current form to show text as well the the value of the OptionSet.
