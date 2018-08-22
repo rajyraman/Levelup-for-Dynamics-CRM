@@ -119,6 +119,25 @@ module LevelUp {
       }
     }
 
+    openRecordWebApi() {
+      if (!this.utility.is2016) {
+        alert('Only works with CRM 2016 or higher');
+        return;
+      }
+      let entityId = this.utility.Xrm.Page.data.entity.getId();
+      if (entityId) {
+        let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then(
+          (entity) => {
+            if (entity && entity.EntitySetName) {
+              var url = `${this.utility.clientUrl}/api/data/v8.0/${entity.EntitySetName}(${entityId.substr(1, 36)})`;
+              window.open(url, '_blank');
+            }
+          }
+        );
+      }
+    }
+
     highlightDirtyFields() {
       this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
         if (c.getAttribute) {
