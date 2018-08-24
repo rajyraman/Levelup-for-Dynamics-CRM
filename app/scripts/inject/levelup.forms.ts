@@ -120,21 +120,19 @@ module LevelUp {
     }
 
     openRecordWebApi() {
-      if (!this.utility.is2016) {
-        alert('Only works with CRM 2016 or higher');
+      if (!this.utility.is2016OrGreater) {
+        alert('This feature only works on CRM instances > v8');
         return;
       }
       let entityId = this.utility.Xrm.Page.data.entity.getId();
       if (entityId) {
         let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
-        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then(
-          (entity) => {
+        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then(entity => {
             if (entity && entity.EntitySetName) {
-              var url = `${this.utility.clientUrl}/api/data/v8.0/${entity.EntitySetName}(${entityId.substr(1, 36)})`;
+              var url = `${this.utility.Xrm.Page.context.getClientUrl()}/api/data/v${Xrm.Page.context.getVersion().substr(0,3)}/${entity.EntitySetName}(${entityId.substr(1, 36)})`;
               window.open(url, '_blank');
             }
-          }
-        );
+        });
       }
     }
 
@@ -295,11 +293,11 @@ module LevelUp {
     workflows() {
       let attributes = 'WorkflowId,Name,Category,Mode,IsManaged,StateCode',
         entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
-        entitySetName = this.utility.is2016 ? 'workflows' : 'WorkflowSet';
-      if (this.utility.is2016) {
+        entitySetName = this.utility.is2016OrGreater ? 'workflows' : 'WorkflowSet';
+      if (this.utility.is2016OrGreater) {
         attributes = attributes.toLowerCase();
       }
-      let filter = this.utility.is2016 ? `type eq 1 and ( category eq 2 or  category eq 0) and  primaryentity eq '${entityName}'` :
+      let filter = this.utility.is2016OrGreater ? `type eq 1 and ( category eq 2 or  category eq 0) and  primaryentity eq '${entityName}'` :
         `Type/Value eq 1 and PrimaryEntity eq '${entityName}' and (Category/Value eq 0 or Category/Value eq 2)`;
       this.utility.fetch(entitySetName, attributes, filter).then((workflows) => {
         //CRM2015 Data doesn't return attributes in order specified on select

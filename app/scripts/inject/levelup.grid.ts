@@ -13,15 +13,15 @@ module LevelUp {
       if (currentView && etc) {
         let viewType = currentView.getAttribute('currentviewtype'),
           attributes = 'FetchXml',
-          entitySetName = this.utility.is2016 ? 'savedqueries' : 'SavedQuerySet';
-        if (this.utility.is2016) {
+          entitySetName = this.utility.is2016OrGreater ? 'savedqueries' : 'SavedQuerySet';
+        if (this.utility.is2016OrGreater) {
           attributes = attributes.toLowerCase();
         }
-        let filter = this.utility.is2016 ? `isquickfindquery eq true and querytype eq 4 and returnedtypecode eq '${entityName}'` :
+        let filter = this.utility.is2016OrGreater ? `isquickfindquery eq true and querytype eq 4 and returnedtypecode eq '${entityName}'` :
           `IsQuickFindQuery eq true and QueryType eq 4 and ReturnedTypeCode eq '${entityName}'`;
         this.utility.fetch(entitySetName, attributes, filter).then((view) => {
           let quickFindFields = [];
-          if (this.utility.is2016) {
+          if (this.utility.is2016OrGreater) {
             quickFindFields = Array.from(new DOMParser().parseFromString(view[0].fetchxml, "text/html").querySelectorAll('condition'))
               .map(x => x.getAttribute('attribute'));
           }

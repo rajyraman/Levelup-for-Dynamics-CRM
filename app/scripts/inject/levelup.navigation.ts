@@ -68,7 +68,7 @@ module LevelUp {
       let attributes = 'MailboxId';
       let entity = 'MailboxSet';
       let filter = `RegardingObjectId/Id eq (guid'${this.utility.currentUserId}')`;
-      if (this.utility.is2016) {
+      if (this.utility.is2016OrGreater) {
         entity = 'mailboxes';
         attributes = attributes.toLocaleLowerCase();
         filter = `_regardingobjectid_value eq ${this.utility.currentUserId}`;
@@ -124,5 +124,8 @@ module LevelUp {
       this.openList("mailbox");
     }
     
+    openPPAC(){
+      window.open('https://admin.powerplatform.microsoft.com/analytics/d365ce');
+    }
   }
 }

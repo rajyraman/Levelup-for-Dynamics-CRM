@@ -10,7 +10,7 @@ module LevelUp {
         }
 
         environmentDetails() {
-            let entity = this.utility.is2016 ? 'organizations' : 'OrganizationSet';
+            let entity = this.utility.is2016OrGreater ? 'organizations' : 'OrganizationSet';
             this.utility.fetch(entity).then((c) => {
                 let settings = {};
                 let settingsArray = [];
@@ -33,7 +33,7 @@ module LevelUp {
             let attributes = 'RoleId,Name';
             let entity = 'RoleSet';
             let filter = Xrm.Page.context.getUserRoles().map(x => `RoleId eq (guid'${x}')`).join(' or ');
-            if (this.utility.is2016) {
+            if (this.utility.is2016OrGreater) {
                 entity = 'roles';
                 attributes = attributes.toLocaleLowerCase();
                 filter = Xrm.Page.context.getUserRoles().map(x => `roleid eq ${x}`).join(' or ');

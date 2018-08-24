@@ -2,7 +2,7 @@
 module LevelUp {
     export module Common {
         export class Utility {
-            private _is2016: boolean;
+            private _is2016OrGreater: boolean;
             private _currentUserId: string;
 
             constructor(private _document: Document,
@@ -10,7 +10,7 @@ module LevelUp {
                 private _xrm: Xrm.XrmStatic,
                 private _clientUrl: string) {
                 let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window["APPLICATION_VERSION"];
-                this._is2016 = version.startsWith('8');
+                this._is2016OrGreater = version.startsWith('8') || version.startsWith('9');
                 this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36);
             }
 
@@ -26,8 +26,8 @@ module LevelUp {
                 return this._clientUrl + (this._clientUrl.indexOf("appid") > -1 ? '&' : '/main.aspx?'); 
             }
 
-            public get is2016(): boolean {
-                return this._is2016;
+            public get is2016OrGreater(): boolean {
+                return this._is2016OrGreater;
             }
 
             public get currentUserId(): string {
@@ -40,14 +40,14 @@ module LevelUp {
                     "Content-Type": "application/json; charset=utf-8",
                 });
                 let serviceUrl = `${Xrm.Page.context.getClientUrl()}/XRMServices/2011/OrganizationData.svc/${entityName}`;
-                if (this.is2016) {
+                if (this._is2016OrGreater) {
                     headers = new Headers({
                         "Accept": "application/json",
                         "Content-Type": "application/json; charset=utf-8",
                         "OData-MaxVersion": "4.0",
                         "OData-Version": "4.0"
                     });
-                    serviceUrl = `${Xrm.Page.context.getClientUrl()}/api/data/v8.0/${entityName}`;
+                    serviceUrl = `${Xrm.Page.context.getClientUrl()}/api/data/v${Xrm.Page.context.getVersion().substr(0,3)}/${entityName}`;
                 }
                 if (attributes) {
                     serviceUrl += `?$select=${attributes}`;
@@ -59,18 +59,15 @@ module LevelUp {
                     method: 'GET',
                     headers: headers,
                     credentials: 'include'
-                }).then((response) => {
-                    return response.json();
-                }).then((c) => {
+                }).then(response => response.json())
+                .then(c => {
                     if (c.d) {
                         return c.d.results;
                     }
                     else if (c.value) {
                         return c.value;
                     }
-                    else {
-                        return c;
-                    }
+                    return c;
                 }).catch((err) => {
                     console.log(err);
                 });
