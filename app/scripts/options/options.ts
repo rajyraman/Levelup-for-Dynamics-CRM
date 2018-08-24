@@ -1,8 +1,8 @@
 /// <reference path="../types.ts" />
 module LevelUp {
     function setVisibility(areaName: Types.AreaType){
-        document.querySelectorAll('.forms').forEach((x: HTMLElement) => x.style.display = areaName !== Types.AreaType.Form ? 'none' : 'flex');
-        document.querySelectorAll('.grid').forEach((x: HTMLElement) => x.style.display = areaName !== Types.AreaType.Grid ? 'none' : 'flex');
+        document.querySelectorAll('.forms').forEach((x: HTMLDivElement) => x.setAttribute("style", areaName !== Types.AreaType.Form ? 'display: none!important' : 'display: block'));
+        document.querySelectorAll('.grid').forEach((x: HTMLDivElement) => x.setAttribute("style", areaName !== Types.AreaType.Grid ? 'display: none!important' : 'display: block'));
     }
 
     document.getElementById('crmHelperLinks').addEventListener('click',function(e){
