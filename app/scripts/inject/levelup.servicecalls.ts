@@ -97,5 +97,41 @@ module LevelUp {
                 this.utility.messageExtension(resultsArray, 'allUserRoles');
             });
         }
+        lightUpNavigation(){
+            this.toggleNavigation(true);
+        }
+
+        classicNavigation(){
+            this.toggleNavigation(false);
+        }
+        
+        private toggleNavigation(isNewNavigation){
+            if(this.utility.version.startsWith('9.1')){
+                let organizationSettings = Xrm.Page.context.organizationSettings;
+                if(organizationSettings) {
+                    Xrm.WebApi.updateRecord('organization', organizationSettings.organizationId, {
+                        clientfeatureset: 
+                        `<clientfeatures>
+                            <clientfeature xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-Instance\">
+                                <name>FCB.ShellRefresh</name>
+                                <value>${isNewNavigation}</value>
+                                <location>Organization</location>
+                            </clientfeature>
+                        </clientfeatures>`
+                    }).then(s=>{
+                        if(Xrm.Internal.isUci || Xrm.Internal.isUci()){
+                            alert(`New navigation has been ${isNewNavigation ? 'enabled' : 'disabled'}. The page will now reload.`);
+                            location.reload();
+                        }
+                        else{
+                            alert(`New navigation has been ${isNewNavigation ? 'enabled' : 'disabled'}.`);
+                        }
+                    });
+                }
+            }
+            else{
+                alert('New navigation is available only on orgs that are >= 9.1');
+            }
+        }
     }
 } 

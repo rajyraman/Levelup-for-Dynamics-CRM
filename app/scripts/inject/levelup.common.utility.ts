@@ -4,6 +4,7 @@ module LevelUp {
         export class Utility {
             private _is2016OrGreater: boolean;
             private _currentUserId: string;
+            private _version: string;
 
             constructor(private _document: Document,
                 private _window: Window,
@@ -12,6 +13,7 @@ module LevelUp {
                 let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window["APPLICATION_VERSION"];
                 this._is2016OrGreater = version.startsWith('8') || version.startsWith('9');
                 this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36);
+                this._version = version;
             }
 
             public get formDocument(): Document { return this._document; }
@@ -32,6 +34,10 @@ module LevelUp {
 
             public get currentUserId(): string {
                 return this._currentUserId;
+            }
+            
+            public get version(): string {
+                return this._version;
             }
 
             fetch(entityName: string, attributes?: string, filter?: string): Promise<Array<any>> {

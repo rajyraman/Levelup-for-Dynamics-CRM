@@ -102,7 +102,8 @@ module LevelUp {
     }
 
     instancePicker() {
-      if (Xrm.Page.context.isOffice365()) {
+      if ((Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) || 
+      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())) {
         var clientUrl = Xrm.Page.context.getClientUrl();
         window.open(`https://port${clientUrl.substr(clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`, '_blank');
       }

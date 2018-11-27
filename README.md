@@ -51,7 +51,8 @@ Action | What it does
 **Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
 **User & Roles** | Displays the users and their roles.
-**Emojis** | Display the of emojis for copy pasting into CRM/Dynamics 365 Customer Engagement.
+**Enable new navigation** | Enable the new UCI/modern interface navigation. Refer [UI updates in October release](https://community.dynamics.com/365/b/365teamblog/archive/2018/10/01/announcing-ui-updates-in-october-for-sitemap-and-command-bar) for the official announcement.
+**Disable new navigation** | Disbles the new UCI/modern interface navigation.
 ## Functionality
 Please watch this animation below for quick functionality intro.
 
@@ -108,3 +109,4 @@ if(process.env.NODE_ENV === 'development'){
 * [Chrome extension kickstart yo generator by HaNdTrix](https://github.com/HaNdTriX/generator-chrome-extension-kickstart)
 * [Unicode.org Emoji list v5](https://unicode.org/emoji/charts/full-emoji-list.html)
 * [Copy Text to Clipboard by Sindre Sorhus](https://github.com/sindresorhus/copy-text-to-clipboard)
+* [Enable/Disable new navigation by Jared Johnson](https://www.magnetismsolutions.com/blog/jaredjohnson/2018/11/27/dynamics-365-v9-1-enable-unified-interface-ui-updates-on-upgraded-organizations)
