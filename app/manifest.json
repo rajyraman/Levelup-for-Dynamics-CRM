@@ -30,7 +30,7 @@
 		"https://*/*"
 	],
 	"web_accessible_resources" : ["Sdk.Soap.min.js","levelup.extension.js"],
-	"version" : "3.3.0",
-	"version_name" : "3.3.0",
+	"version" : "3.3.1",
+	"version_name" : "3.3.1",
 	"manifest_version" : 2
 }

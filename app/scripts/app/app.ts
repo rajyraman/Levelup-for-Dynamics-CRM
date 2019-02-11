@@ -42,6 +42,7 @@ module LevelUp{
                     if (contentPanels && contentPanels.length > 0) {
                         let formDocument = contentPanels[0].contentWindow.document;
                         if(formDocument.querySelector("#crmFormHeaderTop") 
+                            || document.querySelector('div[data-id="editFormRoot"]')
                             || document.querySelector("#editFormRoot")) {
                             response(types.AreaType.Form);
                         }

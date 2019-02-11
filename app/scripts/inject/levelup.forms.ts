@@ -142,6 +142,7 @@ module LevelUp {
           var dirtyAttribute = c.getAttribute();
           if (!dirtyAttribute || !dirtyAttribute.getIsDirty()) return;
           var attributeNode = this.utility.formWindow.document.getElementById(dirtyAttribute.getName()) ||
+                              this.utility.formDocument.querySelector(`div[data-id="${dirtyAttribute.getName()}-FieldSectionItemContainer"]`) ||
                               this.utility.formDocument.querySelector(`label[id$="${dirtyAttribute.getName()}-field-label"]`);
           if(!attributeNode) return;
 
