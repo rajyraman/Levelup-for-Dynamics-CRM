@@ -40,7 +40,7 @@ module LevelUp {
                 return this._version;
             }
 
-            fetch(entityName: string, attributes?: string, filter?: string): Promise<Array<any>> {
+            fetch(entityName: string, attributes?: string, filter?: string, id?: string, fetchXML?: string): Promise<Array<any>> {
                 let headers = new Headers({
                     "Accept": "application/json",
                     "Content-Type": "application/json; charset=utf-8",
@@ -51,9 +51,13 @@ module LevelUp {
                         "Accept": "application/json",
                         "Content-Type": "application/json; charset=utf-8",
                         "OData-MaxVersion": "4.0",
-                        "OData-Version": "4.0"
+                        "OData-Version": "4.0",
+                        "Prefer": "odata.include-annotations=\"*\""
                     });
                     serviceUrl = `${Xrm.Page.context.getClientUrl()}/api/data/v${Xrm.Page.context.getVersion().substr(0,3)}/${entityName}`;
+                }
+                if(id){
+                    serviceUrl += `(${id})`;
                 }
                 if (attributes) {
                     serviceUrl += `?$select=${attributes}`;
@@ -61,6 +65,9 @@ module LevelUp {
                 if (filter) {
                     serviceUrl += `&$filter=${filter}`;
                 }
+                if (fetchXML) {
+                    serviceUrl += `?fetchXml=${encodeURI(fetchXML)}`;
+                }                
                 return fetch(serviceUrl, {
                     method: 'GET',
                     headers: headers,

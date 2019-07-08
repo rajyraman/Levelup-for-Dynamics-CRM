@@ -404,34 +404,23 @@ module LevelUp {
     }
 
     allFields() {
-      CrmSdk.Async.retrieve(
-        this.utility.Xrm.Page.data.entity.getEntityName(),
-        this.utility.Xrm.Page.data.entity.getId().substr(1, 36),
-        new CrmSdk.ColumnSet(true),
-        entity => {
-          let attributes = entity.getAttributes()
-            , formattedAttributes = entity.getFormattedValues()
-            , attributeNames = attributes.getNames()
-            , formAttributes = this.utility.Xrm.Page.getAttribute().map(x => x.getName())
-            , attributesNotInForm = attributeNames.filter(x => formAttributes.indexOf(x) > -1 || !this.utility.Xrm.Page.getControl(x) || !this.utility.Xrm.Page.getControl(x).getVisible()),
-            resultsArray = [{ cells: ['Attribute Name', 'Value'] }];
-
-          let attributeValues = attributesNotInForm.forEach(x => {
-            let attribute = attributes.getAttributeByName(x),
-              attributeValue = attribute.getValue();
-            if (formattedAttributes.containsName(x)) {
-              let formattedValue = formattedAttributes.getItem(x).getValue();
-              if (formattedValue) {
-                resultsArray.push({ cells: [x, formattedAttributes.getItem(x).getValue()] });
-              }
+      let entityId = this.utility.Xrm.Page.data.entity.getId();
+      if (entityId) {
+        let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+        let resultsArray = [{ cells: ['Attribute Name', 'Value'] }];
+        this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then(entity => {
+            if (entity && entity.EntitySetName) {
+              this.utility.fetch(entity.EntitySetName, null, null, entityId.substr(1,36).toLowerCase()).then(r=>{
+                var keys = Object.keys(r);
+                keys.forEach(k=>{
+                  resultsArray.push({ cells: [k, r[k]] });
+                });
+                console.log(r);
+                this.utility.messageExtension(resultsArray, 'allFields');
+              })
             }
-            else {
-              resultsArray.push({ cells: [x, attribute.getType() !== 'entityReference' ? attributeValue : attributeValue.getName() || attributeValue.getId()] });
-            }
-          });
-          this.utility.messageExtension(resultsArray, 'allFields');
-        },
-        error => console.log(error));
+        });
+      }      
     }
 
     toggleTabs() {
