@@ -37,7 +37,8 @@ module LevelUp{
             chrome.runtime.onMessage.addListener((message: types.ExtensionMessage, sender, response) => {
                 if(message.type === "VisibilityCheck"){
                     let contentPanels = Array.from(document.querySelectorAll("iframe")).filter(d => {
-                        return d.style.visibility !== "hidden"
+                        return d.style.visibility !== "hidden" 
+                                && d.style.display !== "none"
                     });
                 
                     if (contentPanels && contentPanels.length > 0) {
