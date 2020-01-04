@@ -40,11 +40,6 @@ chrome.runtime.onMessage.addListener(function (message: types.ExtensionMessage, 
 					url : `userroles.html`
 				});					
 				break;	
-			case "emojis":
-				chrome.tabs.create({
-					url : `emojis.html`
-				});					
-				break;
 			case "optionsets":
 				content = message.content;
 				chrome.tabs.create({

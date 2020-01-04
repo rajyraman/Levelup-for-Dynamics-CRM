@@ -1,112 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Level up for Dynamics CRM/365</title>
+    <title>Level up for Dynamics CRM/365</title>
     <style>
-        body {
-            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
-            font-size: 14px;
-        }
+    .maincontainer{
+        width: 900px;
+        overflow: hidden;
+    }
 
-        .container{
-            grid-column-gap: 10px;
-            grid-row-gap: 10px;
-            display: inline-grid!important;
-            grid-template-columns: 90px 90px 90px 90px 90px 90px 90px;
-            grid-auto-rows: 90px;
-        }
+    button{
+        width: 90%;
+    }
 
-        .links{
-            background: #002050;
-            color: white;
-            justify-content:center;
-            text-align: center;
-            border: 1px solid grey;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            padding: 0px 10px 0px 10px;
-        }
-
-        .links:hover{
-            cursor: pointer;
-            background: seagreen;
-            text-decoration: underline;
-        }
-
-        .section{
-            font-size: 16px;
-            font-weight: 600;
-        }
+    .material-icons {
+        top: 5px;
+        left: 10px;
+        position: absolute;
+    }
     </style>
 </head>
 <body>
-    <div>
-        <span style="float:right;">
-            <a href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/blob/master/README.md" target="_blank">Help</a>
-            <a href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/" target="_blank">Report issue</a>
-        </span>
-    </div><br>
-    <div id="crmHelperLinks" >
-        <p class="section forms">Forms</p>
-        <div class="container forms" data-category='Forms'>
-            <div class="links" id="displayLogicalNames">Logical names</div>
-            <div class="links" id="clearLogicalNames">Clear Logical names</div>
-            <div class="links" id="godMode">God Mode</div>
-            <div class="links" id="formProperties">Record Properties</div>
-            <div class="links" id="highlightDirtyFields">Changed fields</div>
-            <div class="links" id="copyRecordUrl">Record URL</div>
-            <div class="links" id="copyRecordId">Record Id</div>
-            <div class="links" id="openRecordWebApi">Open Record in Web API</div>
-            <div class="links" id="refreshAllSubgrids">Refresh all subgrids</div>
-            <div class="links" id="populateMin">Minimum values</div>
-            <div class="links" id="optionSets">Show Optionset values</div>
-            <div class="links" id="cloneRecord">Clone record</div>
-            <div class="links" id="refresh">Refresh + Autosave off</div>
-            <div class="links" id="toggleTabs">Toggle Tabs</div>
-            <div class="links" id="workflows">Workflows &amp; Business Rules</div>
-            <div class="links" id="copyLookup">Copy Lookup</div>
-            <div class="links" id="pasteLookup">Paste Lookup</div>
-            <div class="links" id="openLookupNewWindow">Lookup in new window</div>
-            <div class="links" id="customize">Customize</div>
-            <div class="links" id="allFields">All Fields</div>
+    <div class="maincontainer">
+    <!-- Simple header with fixed tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">Levelup for Dynamics 365/Power Apps</span>
+                <span id="version"></span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+                <!-- Navigation. We hide it in small screens. -->
+                <nav class="mdl-navigation">
+                    <a target="_blank" class="mdl-navigation__link" href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/blob/master/README.md">Report Issue</a>
+                    <a target="_blank" class="mdl-navigation__link" href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/">Help</a target="_blank">
+                </nav>                
+            </div>
+            <!-- Tabs -->
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Forms</a>
+                <a href="#fixed-tab-2" class="mdl-layout__tab">Navigation</a>
+                <a href="#fixed-tab-3" class="mdl-layout__tab">Grid</a>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Environment</span>
+            <nav id="environmentLinks" class="mdl-navigation">
+                <div data-category="API" class="links mdl-navigation__link" id="environmentDetails" data-category="Settings">Environment Settings</div>
+                <div data-category="API" class="links mdl-navigation__link" id="myRoles" data-category="myRoles">My Roles</div>
+                <div data-category="API" class="links mdl-navigation__link" id="allUserRoles" data-category="allUserRoles">Users &amp; Roles</div>
+                <div data-category="Navigation" class="links mdl-navigation__link" id="myUserRecord" data-category="">My User Record</div>
+                <div data-category="Navigation" class="links mdl-navigation__link" id="myMailbox" data-category="">My Mailbox</div>
+            </nav>
         </div>
-        <p class="section">Navigation</p>
-        <div class="container" data-category='Navigation'>
-            <div class="links" id="openRecord">Open record by Id</div>
-            <div class="links" id="newRecord">New record</div>
-            <div class="links" id="openList">Open List</div>            
-            <div class="links" id="openSecurity">Security</div>
-            <div class="links" id="openSystemJobs">System Jobs</div>
-            <div class="links" id="openSolutions">Solutions</div>
-            <div class="links" id="openProcesses">Processes</div>
-            <div class="links" id="openMailboxes">Mailboxes</div>
-            <div class="links" id="openMain">Open Main</div>
-            <div class="links" id="openAdvFind">Advanced Find</div>
-            <div class="links" id="mocaClient">Mobile Client</div>
-            <div class="links" id="myUserRecord">My user record</div>
-            <div class="links" id="myMailbox">My Mailbox</div>
-            <div class="links" id="diagnostics">Perf Diag</div>
-            <div class="links" id="perfCenter">Perf Center</div>
-            <div class="links" id="instancePicker">Instance Picker</div>
-            <div class="links" id="openPPAC">Power Platform Admin</div>
-        </div>
-        <p class="section grid">Grid</p>
-        <div class="container grid" data-category='Grid'>
-            <div class="links" id="openGrid">New window</div>
-            <div class="links" id="quickFindFields">Quick Find fields</div>
-        </div>        
-        <p class="section">Miscellaneous</p>
-        <div class="container" data-category='API'>
-            <div class="links" id="environmentDetails">Org Settings</div>
-            <div class="links" id="myRoles">My Roles</div>
-            <div class="links" id="allUserRoles">Users &amp; Roles</div>
-        </div>
+        <main class="mdl-layout__content">
+            <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+                <div class="page-content">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="displayLogicalNames" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">settings_applications</i>
+                                <span>Logical Names</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="displayLogicalNames">
+                                Logical Names
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="clearLogicalNames" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">clear</i>
+                                <span>Clear Logical names</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="clearLogicalNames">
+                                Clear Logical names
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="Forms" id="godMode" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">vpn_key</i>
+                                <span>God Mode</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="godMode">
+                                God Mode
+                            </div>                            
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="formProperties" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            <i class="material-icons">apps</i>
+                            <span>Record Properties</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="formProperties">
+                                Record Properties
+                            </div>                            
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="highlightDirtyFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">warning</i>
+                                <span>Changed fields</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="highlightDirtyFields">
+                                Changed fields
+                            </div>                             
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="copyRecordUrl" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">open_in_new</i>
+                                <span>Record URL</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="copyRecordUrl">
+                                Record URL
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="copyRecordId" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">info</i>
+                                <span>Record Id</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="copyRecordId">
+                                Record Id
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="Forms" id="openRecordWebApi" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">open_in_browser</i>
+                                <span>Open Record in Web API</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openRecordWebApi">
+                                Open Record in Web API
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="refreshAllSubgrids" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">refresh</i>
+                                <span>Refresh all subgrids</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="refreshAllSubgrids">
+                                Refresh all subgrids
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="Forms" id="populateMin" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">chevron_left</i>
+                                <span>Minimum values</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="populateMin">
+                                Minimum values
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="optionsets" id="optionSets" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">unfold_more</i>
+                                <span>Show Optionset values</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="optionSets">
+                                Show Optionset values
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="cloneRecord" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">group_add</i>
+                                <span>Clone record</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="cloneRecord">
+                                Clone record
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="refresh" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">sync_disabled</i>
+                                <span>Refresh + Autosave off</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="refresh">
+                                Refresh + Autosave off
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="toggleTabs" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">toggle_on</i>
+                                <span>Toggle Tabs</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="toggleTabs">
+                                Toggle Tabs
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="workflows" id="workflows" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">view_module</i>
+                                <span>Workflows &amp; Business Rules</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="workflows">
+                                Workflows &amp; Business Rules
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="copyLookup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">file_copy</i>
+                                <span>Copy Lookup</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="copyLookup">
+                                Copy Lookup
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="pasteLookup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">format_paint</i>
+                                <span>Paste Lookup</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="pasteLookup">
+                                Paste Lookup
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="openLookupNewWindow" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">vertical_align_top</i>
+                                <span>Lookup in new window</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openLookupNewWindow">
+                                Lookup in new window
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="customize" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">ballot</i>
+                                <span>Customize</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="customize">
+                                Customize
+                            </div>                                
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" data-category="allFields" id="allFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">list</i>
+                                <span>All Fields</span>
+                            </button data-category="">
+                            <div class="mdl-tooltip" data-mdl-for="allFields">
+                                All Fields
+                            </div>                                
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+                <div class="page-content">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openRecord" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">launch</i>
+                                <span>Open record by Id</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openRecord">
+                                Open record by Id
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="newRecord" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">add_circle</i>
+                                <span>New record</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="newRecord">
+                                New record
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openList" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">list_alt</i>
+                                <span>Open List</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openList">
+                                Open List
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openSecurity" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">security</i>
+                                <span>Security</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openSecurity">
+                                Security
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openSystemJobs" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">schedule</i>
+                                <span>System Jobs</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openSystemJobs">
+                                System Jobs
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openSolutions" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">view_list</i>
+                                <span>Solutions</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openSolutions">
+                                Solutions
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openProcesses" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">list</i>
+                                <span>Processes</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openProcesses">
+                                Processes
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openMailboxes" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">email</i>
+                                <span>Mailboxes</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openMailboxes">
+                                Mailboxes
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openMain" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">home</i>
+                                <span>Open Main</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openMain">
+                                Open Main
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openAdvFind" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">search</i>
+                                <span>Advanced Find</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openAdvFind">
+                                Advanced Find
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="mocaClient" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">mobile_screen_share</i>
+                                <span>Mobile Client</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="mocaClient">
+                                Mobile Client
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="diagnostics" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">developer_board</i>
+                                <span>Performance Diag</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="diagnostics">
+                                Performance Diag
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="perfCenter" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">developer_board</i>
+                                <span>Performance Center</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="perfCenter">
+                                Performance Center
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="instancePicker" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">view_carousel</i>
+                                <span>Instance Picker</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="instancePicker">
+                                Instance Picker
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Navigation" id="openPPAC" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">build</i>
+                                <span>Power Platform Admin</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openPPAC">
+                                Power Platform Admin
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mdl-layout__tab-panel" id="fixed-tab-3">
+                <div class="page-content">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Grid" id="openGrid" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">launch</i>
+                                <span>New window</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="openGrid">
+                                New window
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Grid" data-category="quickFindFields" id="quickFindFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">more_horiz</i>
+                                <span>Quick Find fields</span>
+                            </button data-category="">
+                            <div class="mdl-tooltip" data-mdl-for="quickFindFields">
+                                Quick Find fields
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
     <script src="options.js"></script>
-    <span id="version" style="float:right;"></div>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="material.min.css">
+    <script defer src="material.min.js"></script>
+</div>
 </body>
+
 </html>

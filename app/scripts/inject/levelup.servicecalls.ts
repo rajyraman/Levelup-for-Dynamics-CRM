@@ -5,9 +5,6 @@ module LevelUp {
     export class Service {
         constructor(private utility: LevelUp.Common.Utility) {
         }
-        emojis(){
-            this.utility.messageExtension(null, 'emojis');
-        }
 
         environmentDetails() {
             let entity = this.utility.is2016OrGreater ? 'organizations' : 'OrganizationSet';

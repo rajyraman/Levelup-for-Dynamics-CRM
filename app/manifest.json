@@ -1,36 +1,32 @@
 {
-	"background" : {
-		"scripts" : ["background.js"],
-		"persistant" : false
-	},
-	"browser_action" : {
-		"default_icon" : {
-			"16" : "icon-16.png"
-		},
-		"default_title" : "Level up for Dynamics CRM/365",
-		"default_popup" : "options.html"
-	},
-	"name" : "Level up for Dynamics CRM/365",
-	"author": "Natraj Yegnaraman",
-	"description" : "Quickly perform advanced/hidden actions in Dynamics CRM/365, without bookmarklets.",
-	"content_scripts" : [{
-			"matches" : ["http://*/*", "https://*/*"],
-			"js" : ["app.js"]
-		}
-	],
-	"icons" : {
-		"16" : "icon-16.png",
-		"48" : "icon-48.png",
-		"128" : "icon-128.png"
-	},
-	"permissions" : [
-		"activeTab",
-		"tabs",
-		"http://*/*",
-		"https://*/*"
-	],
-	"web_accessible_resources" : ["Sdk.Soap.min.js","levelup.extension.js"],
-	"version" : "3.3.3",
-	"version_name" : "3.3.3",
-	"manifest_version" : 2
+  "background": {
+    "scripts": ["background.js"],
+    "persistant": false
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icon-16.png"
+    },
+    "default_title": "Level up for Dynamics CRM/365",
+    "default_popup": "options.html"
+  },
+  "name": "Level up for Dynamics CRM/365",
+  "author": "Natraj Yegnaraman",
+  "description": "Quickly perform advanced/hidden actions in Dynamics CRM/365, without bookmarklets.",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["app.js"]
+    }
+  ],
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "permissions": ["activeTab", "tabs", "http://*/*", "https://*/*"],
+  "web_accessible_resources": ["Sdk.Soap.min.js", "levelup.extension.js"],
+  "version": "3.4.0",
+  "version_name": "3.4.0",
+  "manifest_version": 2
 }

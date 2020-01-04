@@ -107,6 +107,5 @@ if(process.env.NODE_ENV === 'development'){
 * [Performance Center by Benjamin John](http://www.leicht-bewoelkt.de/en/dynamics-crm-bookmarklets-v2)
 * [Rocket Icon by Jerry Low](https://www.iconfinder.com/jerrylow)
 * [Chrome extension kickstart yo generator by HaNdTrix](https://github.com/HaNdTriX/generator-chrome-extension-kickstart)
-* [Unicode.org Emoji list v5](https://unicode.org/emoji/charts/full-emoji-list.html)
 * [Copy Text to Clipboard by Sindre Sorhus](https://github.com/sindresorhus/copy-text-to-clipboard)
 * [Enable/Disable new navigation by Jared Johnson](https://www.magnetismsolutions.com/blog/jaredjohnson/2018/11/27/dynamics-365-v9-1-enable-unified-interface-ui-updates-on-upgraded-organizations)
