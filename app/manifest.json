@@ -24,9 +24,9 @@
     "48": "icon-48.png",
     "128": "icon-128.png"
   },
-  "permissions": ["activeTab", "tabs", "http://*/*", "https://*/*"],
+  "permissions": ["activeTab", "tabs"],
   "web_accessible_resources": ["Sdk.Soap.min.js", "levelup.extension.js"],
-  "version": "3.4.0",
-  "version_name": "3.4.0",
+  "version": "3.4.2",
+  "version_name": "3.4.2",
   "manifest_version": 2
 }

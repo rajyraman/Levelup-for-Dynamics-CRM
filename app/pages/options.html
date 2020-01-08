@@ -14,6 +14,7 @@
 
     button{
         width: 90%;
+        background-color: rgb(63,81,181);
     }
 
     .material-icons {
@@ -52,7 +53,7 @@
             <nav id="environmentLinks" class="mdl-navigation">
                 <div data-category="API" class="links mdl-navigation__link" id="environmentDetails" data-category="Settings">Environment Settings</div>
                 <div data-category="API" class="links mdl-navigation__link" id="myRoles" data-category="myRoles">My Roles</div>
-                <div data-category="API" class="links mdl-navigation__link" id="allUserRoles" data-category="allUserRoles">Users &amp; Roles</div>
+                <div data-category="API" class="links mdl-navigation__link" id="allUserRoles" data-category="allUserRoles">Users and Roles</div>
                 <div data-category="Navigation" class="links mdl-navigation__link" id="myUserRecord" data-category="">My User Record</div>
                 <div data-category="Navigation" class="links mdl-navigation__link" id="myMailbox" data-category="">My Mailbox</div>
             </nav>
@@ -67,7 +68,7 @@
                                 <span>Logical Names</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="displayLogicalNames">
-                                Logical Names
+                                Shows logical names for fields, tabs, Web resources and subgrid
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -76,7 +77,7 @@
                                 <span>Clear Logical names</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="clearLogicalNames">
-                                Clear Logical names
+                                Removes logical name textboxes from the form
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -85,7 +86,7 @@
                                 <span>God Mode</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="godMode">
-                                God Mode
+                                Unhides controls. Makes all read-only fields editable.🔐
                             </div>                            
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -94,7 +95,7 @@
                             <span>Record Properties</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="formProperties">
-                                Record Properties
+                                Shows legacy form properties dialog.
                             </div>                            
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -103,7 +104,7 @@
                                 <span>Changed fields</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="highlightDirtyFields">
-                                Changed fields
+                                Displays fields modified but not saved yet.
                             </div>                             
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -112,7 +113,7 @@
                                 <span>Record URL</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="copyRecordUrl">
-                                Record URL
+                                Full record URL that can be shared for direct access.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -121,7 +122,7 @@
                                 <span>Record Id</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="copyRecordId">
-                                Record Id
+                                GUID of the record
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -130,7 +131,7 @@
                                 <span>Open Record in Web API</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openRecordWebApi">
-                                Open Record in Web API
+                                Opens the current record in a separate tab with the WebAPI URL
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -148,7 +149,7 @@
                                 <span>Minimum values</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="populateMin">
-                                Minimum values
+                                To be used on a new form during testing. Fills default values based on field type.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -157,7 +158,7 @@
                                 <span>Show Optionset values</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="optionSets">
-                                Show Optionset values
+                                Displays underlying integer values for all optionsets in the current form in a new popup.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -166,7 +167,7 @@
                                 <span>Clone record</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="cloneRecord">
-                                Clone record
+                                Open a new tab with the field values for a current record filled in. The new record has to be saved manually.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -175,7 +176,7 @@
                                 <span>Refresh + Autosave off</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="refresh">
-                                Refresh + Autosave off
+                                De-activate autosave for the current record temporarily.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -184,16 +185,16 @@
                                 <span>Toggle Tabs</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="toggleTabs">
-                                Toggle Tabs
+                                Expands collapsed tabs. Collapses expanded tabs. Not applicable to Unified Interface.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
                             <button data-category="Forms" data-category="workflows" id="workflows" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                                 <i class="material-icons">view_module</i>
-                                <span>Workflows &amp; Business Rules</span>
+                                <span>Workflows and Business Rules</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="workflows">
-                                Workflows &amp; Business Rules
+                                Shows a list of workflows and business rules for the current entity.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -202,7 +203,7 @@
                                 <span>Copy Lookup</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="copyLookup">
-                                Copy Lookup
+                                If the lookup field is focused, the value for this lookup is copied to the clipboard.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -211,7 +212,7 @@
                                 <span>Paste Lookup</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="pasteLookup">
-                                Paste Lookup
+                                Sets the value currently focussed lookup to the clipboard value from the Copy Lookup action.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -220,7 +221,7 @@
                                 <span>Lookup in new window</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openLookupNewWindow">
-                                Lookup in new window
+                                Open the current lookup record in a new tab.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -229,7 +230,7 @@
                                 <span>Customize</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="customize">
-                                Customize
+                                Opens the Default Solution.
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -238,7 +239,7 @@
                                 <span>All Fields</span>
                             </button data-category="">
                             <div class="mdl-tooltip" data-mdl-for="allFields">
-                                All Fields
+                                Displays values for all fields in the current record.
                             </div>                                
                         </div>
                     </div>
@@ -253,7 +254,7 @@
                                 <span>Open record by Id</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openRecord">
-                                Open record by Id
+                                Based on the logical name and GUID, opens the record in a new tab.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -262,7 +263,7 @@
                                 <span>New record</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="newRecord">
-                                New record
+                                Based on the logical name, opens a new record form for this entity.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -271,7 +272,7 @@
                                 <span>Open List</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openList">
-                                Open List
+                                Based on the logical name, opens the list/view page for this entity.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -280,7 +281,7 @@
                                 <span>Security</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openSecurity">
-                                Security
+                                Opens the security area.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -289,7 +290,7 @@
                                 <span>System Jobs</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openSystemJobs">
-                                System Jobs
+                                Opens the list of running/past system jobs view.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -298,7 +299,7 @@
                                 <span>Solutions</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openSolutions">
-                                Solutions
+                                Opens solutions page.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -307,7 +308,7 @@
                                 <span>Processes</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openProcesses">
-                                Processes
+                                Opens Process view.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -316,7 +317,7 @@
                                 <span>Mailboxes</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openMailboxes">
-                                Mailboxes
+                                Opens Mailbox view.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -325,7 +326,7 @@
                                 <span>Open Main</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openMain">
-                                Open Main
+                                Opens homepage (/main.aspx)
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -334,7 +335,7 @@
                                 <span>Advanced Find</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openAdvFind">
-                                Advanced Find
+                                Opens Advanced Find page for querying.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -343,7 +344,7 @@
                                 <span>Mobile Client</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="mocaClient">
-                                Mobile Client
+                                Opens mobile app view for the current app.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -352,7 +353,7 @@
                                 <span>Performance Diag</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="diagnostics">
-                                Performance Diag
+                                Open Performance Dialog page. The results are not accurate in Unified Interface.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -361,7 +362,7 @@
                                 <span>Performance Center</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="perfCenter">
-                                Performance Center
+                                Turns on Performance Centre that can be used to troubleshoot performance issues.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -370,7 +371,7 @@
                                 <span>Instance Picker</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="instancePicker">
-                                Instance Picker
+                                Opens the tenant level environment/instances page for switching into a different environment/instance.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -379,7 +380,7 @@
                                 <span>Power Platform Admin</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openPPAC">
-                                Power Platform Admin
+                                Opens admin.powerplatform.microsoft.com
                             </div>
                         </div>
                     </div>
@@ -394,7 +395,7 @@
                                 <span>New window</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="openGrid">
-                                New window
+                                Open current view in a new tab. Does not work in Unified Interface.
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
@@ -403,7 +404,7 @@
                                 <span>Quick Find fields</span>
                             </button data-category="">
                             <div class="mdl-tooltip" data-mdl-for="quickFindFields">
-                                Quick Find fields
+                                Displays the quick find columns for the current view. Does not work in Unified Interface.
                             </div>
                         </div>
                     </div>
