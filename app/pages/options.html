@@ -8,7 +8,8 @@
     <title>Level up for Dynamics CRM/365</title>
     <style>
     .maincontainer{
-        width: 900px;
+        min-width: 800px;
+        min-height: 400px;
         overflow: hidden;
     }
 
@@ -37,9 +38,9 @@
                 <div class="mdl-layout-spacer"></div>
                 <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation">
-                    <a target="_blank" class="mdl-navigation__link" href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/blob/master/README.md">Report Issue</a>
-                    <a target="_blank" class="mdl-navigation__link" href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/">Help</a target="_blank">
-                </nav>                
+                    <a target="_blank" class="mdl-navigation__link" href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/blob/master/README.md">Help</a>
+                    <a target="_blank" class="mdl-navigation__link" id="issueUrl">Report Issue</a>
+                </nav>                             
             </div>
             <!-- Tabs -->
             <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -58,7 +59,7 @@
                 <div data-category="Navigation" class="links mdl-navigation__link" id="myMailbox" data-category="">My Mailbox</div>
             </nav>
         </div>
-        <main class="mdl-layout__content">
+        <main class="mdl-layout__content"> 
             <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
                 <div class="page-content">
                     <div class="mdl-grid">
@@ -414,6 +415,8 @@
     </div>
     <script src="options.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- <link rel="stylesheet" href="../libraries/material.min.css">
+    <script defer src="../libraries/material.min.js"></script>    -->
     <link rel="stylesheet" href="material.min.css">
     <script defer src="material.min.js"></script>
 </div>

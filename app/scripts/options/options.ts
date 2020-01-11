@@ -1,32 +1,16 @@
 /// <reference path="../types.ts" />
 module LevelUp {
-  function setVisibility(areaName: Types.AreaType) {
-    document
-      .querySelectorAll(".forms")
-      .forEach((x: HTMLDivElement) =>
-        x.setAttribute(
-          "style",
-          areaName !== Types.AreaType.Form
-            ? "display: none!important"
-            : "display: block"
-        )
-      );
-    document
-      .querySelectorAll(".grid")
-      .forEach((x: HTMLDivElement) =>
-        x.setAttribute(
-          "style",
-          areaName !== Types.AreaType.Grid
-            ? "display: none!important"
-            : "display: block"
-        )
-      );
-  }
-
   window.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("version").innerHTML = `v${
-      chrome.runtime.getManifest().version
-    }`;
+    const extensionVersion = chrome.runtime.getManifest().version;
+    document.getElementById("version").innerHTML = `v${extensionVersion}`;
+    const bodyText = encodeURIComponent(`
+    Browser Version: ${navigator.appVersion}
+    Extension Version: ${extensionVersion}
+    ----------------------------------------------------------
+    [DESCRIBE ISSUE HERE]`);
+    const issueUrl = `https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/new?body=${bodyText}`;
+    (<HTMLAnchorElement>document.getElementById("issueUrl")).href = issueUrl;
+
     document.querySelector(".maincontainer").addEventListener(
       "click",
       function(e) {
@@ -44,32 +28,17 @@ module LevelUp {
       false
     );
     document.querySelector("#environmentLinks").addEventListener(
-        "click",
-        function(e) {
-          let targetElement = (<HTMLDivElement>e.target);
-  
-          let category = targetElement.getAttribute("data-category");
-          chrome.runtime.sendMessage(<Types.ExtensionMessage>{
-            category: category || "",
-            type: targetElement.id
-          });
-        },
-        false
-    );    
-    // chrome.tabs.query(
-    //   {
-    //     active: true,
-    //     currentWindow: true
-    //   },
-    //   function(tabs) {
-    //     chrome.tabs.sendMessage(
-    //       tabs[0].id,
-    //       <Types.ExtensionMessage>{
-    //         type: "VisibilityCheck"
-    //       },
-    //       setVisibility
-    //     );
-    //   }
-    // );
+      "click",
+      function(e) {
+        let targetElement = <HTMLDivElement>e.target;
+
+        let category = targetElement.getAttribute("data-category");
+        chrome.runtime.sendMessage(<Types.ExtensionMessage>{
+          category: category || "",
+          type: targetElement.id
+        });
+      },
+      false
+    );
   });
 }
