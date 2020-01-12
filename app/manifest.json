@@ -26,7 +26,7 @@
   },
   "permissions": ["activeTab", "tabs"],
   "web_accessible_resources": ["Sdk.Soap.min.js", "levelup.extension.js"],
-  "version": "3.4.3",
-  "version_name": "3.4.3",
+  "version": "3.4.4",
+  "version_name": "3.4.4",
   "manifest_version": 2
 }
