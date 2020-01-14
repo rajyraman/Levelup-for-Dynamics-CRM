@@ -1,8 +1,8 @@
 {
-  "name": "Levelup-for-Dynamics-CRM-365",
+  "name": "Levelup-for-Dynamics-365-Power-Apps",
   "private": true,
-  "version": "3.4.5",
-  "description": "Quickly perform advanced/hidden actions in Dynamics CRM/365, without bookmarklets.",
+  "version": "3.4.6",
+  "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
   "scripts": {
     "clean": "gulp clean --vendor=chrome & gulp clean --vendor=firefox & gulp clean --vendor=edge",
     "build": "npm run clean & npm run chrome & npm run firefox & npm run edge",
