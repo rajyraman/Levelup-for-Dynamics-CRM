@@ -40,7 +40,7 @@ module LevelUp {
                 return this._version;
             }
 
-            fetch(entityName: string, attributes?: string, filter?: string, id?: string, fetchXML?: string): Promise<Array<any>> {
+            fetch(entityName: string, attributes?: string, filter?: string, id?: string, fetchXML?: string) {
                 let headers = new Headers({
                     "Accept": "application/json",
                     "Content-Type": "application/json; charset=utf-8",

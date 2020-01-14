@@ -1,5 +1,7 @@
 /// <reference path="levelup.common.utility.ts" />
 /// <reference path="../types.ts" />
+/// <reference path="../../tsd/xrm.d.ts" />
+
 module LevelUp {
   export class Navigation {
     constructor(private utility: LevelUp.Common.Utility) {
@@ -25,6 +27,7 @@ module LevelUp {
     }
 
     openSecurity() {
+      //@ts-ignore
       window.top.document.getElementById('navBar').control.raiseNavigateRequest({ uri: '/tools/AdminSecurity/adminsecurity_area.aspx?pagemode=iframe&' });
     }
 
