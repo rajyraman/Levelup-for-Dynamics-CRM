@@ -1,4 +1,5 @@
 /// <reference path="../../tsd/externals.d.ts" />
+/// <reference path="../../tsd/xrm.d.ts" />
 
 module LevelUp {
   export class Forms {
@@ -104,7 +105,7 @@ module LevelUp {
     }
 
     copyRecordId() {
-      let entityId = this.utility.Xrm.Page.data.entity.getId();
+      let entityId = this.utility.Xrm.Page.data.entity.getId().toLowerCase();
       if (entityId) {
         try {
           Common.Utility.copy(entityId.substr(1, 36));
@@ -248,7 +249,7 @@ module LevelUp {
           attributeName === 'ownerid' ||
           attributeName.startsWith('transactioncurrency'))
           return;
-        if (attributeType === 'lookup' && !(<Xrm.Page.LookupAttribute>c).getIsPartyList() && attributeValue.length > 0) {
+        if (attributeType === 'lookup' && !(<Xrm.Attributes.LookupAttribute>c).getIsPartyList() && attributeValue.length > 0) {
           let lookupValue = <Xrm.Page.LookupAttribute>c;
           extraq += (attributeName + 'name=' + attributeValue[0].name + '&');
           fieldCount++;
@@ -279,7 +280,7 @@ module LevelUp {
 
     refresh() {
       this.utility.Xrm.Page.data.refresh(false).then(() => {
-        this.utility.Xrm.Page.data.entity.addOnSave((econtext) => {
+        this.utility.Xrm.Page.data.entity.addOnSave((econtext:Xrm.Events.SaveEventContext) => {
           var eventArgs = econtext.getEventArgs();
           if (eventArgs.getSaveMode() === 70 || eventArgs.getSaveMode() === 2) {
             eventArgs.preventDefault();

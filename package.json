@@ -33,7 +33,7 @@
   "devDependencies": {
     "@types/chrome": "0.0.66",
     "@types/lodash": "^4.14.109",
-    "@types/xrm": "^9.0.14",
+    "@types/xrm": "^9.0.18",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
