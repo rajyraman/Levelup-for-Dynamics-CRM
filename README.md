@@ -5,6 +5,7 @@ Chrome Extension for Dynamics CRM Power users
 
 ## Usage
 Install the extension from Chrome Store. https://chrome.google.com/webstore/detail/level-up-for-dynamics-crm/bjnkkhimoaclnddigpphpgkfgeggokam
+or from Firefox Addons. https://addons.mozilla.org/en-US/firefox/addon/level-up-for-d365-power-apps/
 
 ## Detailed Functionality
 
