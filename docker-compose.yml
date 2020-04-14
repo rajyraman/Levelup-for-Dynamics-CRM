@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  levelup-for-dynamics-powerapps:
+    image: levelup-for-dynamics-365-powerapps
+    build: .
+    volumes:
+      - type: bind
+        source: ./packages
+        target: /usr/src/levelup/packages
+      - type: bind
+        source: ./dist
+        target: /usr/src/levelup/dist        
