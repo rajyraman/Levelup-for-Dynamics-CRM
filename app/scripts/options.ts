@@ -1,4 +1,4 @@
-/// <reference path="../types.ts" />
+/// <reference path="types.ts" />
 module LevelUp {
   window.addEventListener("DOMContentLoaded", function() {
     const extensionVersion = chrome.runtime.getManifest().version;

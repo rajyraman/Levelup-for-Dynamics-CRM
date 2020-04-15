@@ -1,5 +1,5 @@
-/// <reference path="../types.ts" />
-/// <reference path="../inject/levelup.common.utility.ts" />
+/// <reference path="types.ts" />
+/// <reference path="inject/levelup.common.utility.ts" />
 module LevelUp{
     import utility = Common.Utility;
     import types = Types;

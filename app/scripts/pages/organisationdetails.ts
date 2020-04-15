@@ -1,6 +1,6 @@
-/// <reference path="../../../tsd/moment.d.ts" />
-/// <reference path="../../../tsd/externals.d.ts" />
-/// <reference path="../../types.ts" />
+/// <reference path="../../tsd/moment.d.ts" />
+/// <reference path="../../tsd/externals.d.ts" />
+/// <reference path="../types.ts" />
 chrome.runtime.sendMessage(
   {
     type: "Page",

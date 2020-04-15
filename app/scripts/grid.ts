@@ -1,5 +1,5 @@
-/// <reference path="../../tsd/externals.d.ts" />
-/// <reference path="../types.ts" />
+/// <reference path="../tsd/externals.d.ts" />
+/// <reference path="types.ts" />
 namespace LevelUp {
     chrome.runtime.sendMessage({
             type: "Page", 

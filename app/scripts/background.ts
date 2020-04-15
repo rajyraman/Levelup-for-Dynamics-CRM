@@ -1,4 +1,4 @@
-/// <reference path="../types.ts" />
+/// <reference path="types.ts" />
 import types = LevelUp.Types;
 let content: types.ResultRow[] | types.ResultRowKeyValues[][] | string;
 chrome.runtime.onMessage.addListener(function (message: types.ExtensionMessage, sender, sendResponse) {

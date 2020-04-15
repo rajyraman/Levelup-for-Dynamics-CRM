@@ -1,5 +1,5 @@
-/// <reference path="../../types.ts" />
-/// <reference path="../../../tsd/externals.d.ts" />
+/// <reference path="../types.ts" />
+/// <reference path="../../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {
     type: "Page",

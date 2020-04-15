@@ -1,39 +1,15 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "docker-build",
-			"label": "docker-build",
-			"platform": "node",
-			"dockerBuild": {
-				"dockerfile": "${workspaceFolder}/Dockerfile",
-				"context": "${workspaceFolder}",
-				"pull": true
-			}
-		},
-		{
-			"type": "docker-run",
-			"label": "docker-run: release",
-			"dependsOn": [
-				"docker-build"
-			],
-			"platform": "node"
-		},
-		{
-			"type": "docker-run",
-			"label": "docker-run: debug",
-			"dependsOn": [
-				"docker-build"
-			],
-			"dockerRun": {
-				"env": {
-					"DEBUG": "*",
-					"NODE_ENV": "development"
-				}
-			},
-			"node": {
-				"enableDebugging": true
-			}
-		}
-	]
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pack",
+            "command": "npm run pack"
+        },
+        {
+            "label": "build",
+            "command": "npm run build"
+        }
+    ]
 }

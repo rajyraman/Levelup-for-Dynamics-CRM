@@ -1,3 +1,3 @@
 import gulp from 'gulp'
 
-gulp.task('default', ['build'])
+gulp.task('default', gulp.task('build'))
