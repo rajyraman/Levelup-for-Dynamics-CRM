@@ -1,0 +1,56 @@
+{
+  "title": "Code Tour of Level up",
+  "steps": [
+    {
+      "file": "package.json",
+      "line": 27,
+      "description": "Run npm install first and install the dependencies, if you are not running Docker container. If you are running the Docker container, you just need to install the @types repos for local development.",
+      "selection": {
+        "start": {
+          "line": 27,
+          "character": 5
+        },
+        "end": {
+          "line": 64,
+          "character": 22
+        }
+      }
+    },
+    {
+      "file": "package.json",
+      "line": 18,
+      "description": "These are the available npm run scripts. You can also run them from NPM Scripts area in VS Code. Use pack or pack:chrome, if you are building the extension for Chrome.",
+      "selection": {
+        "start": {
+          "line": 7,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 23
+        }
+      }
+    },
+    {
+      "file": "tasks\\scripts.js",
+      "line": 1,
+      "description": "This is the main task for compiling the TypeScript files. The JS files in libraries folder is simply passed through and not compiled. TypeScript files are compiled using ts-loader."
+    },
+    {
+      "file": "docker-compose.yml",
+      "line": 1,
+      "description": "You can also build the extension to a Docker container and have the output mapped to local folder. You need to set this up in Docker Desktop -> Settings -> Resources -> File Sharing. Refer https://docs.docker.com/docker-for-windows/",
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 17,
+          "character": 1
+        }
+      }
+    }
+  ],
+  "ref": "master"
+}
