@@ -4,4 +4,4 @@ COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
 RUN npm install -g gulp-cli --silent && npm install --silent && mv node_modules ../
 COPY . .
 ENV NODE_ENV=development
-CMD npm run build:chrome
+CMD npm run pack
