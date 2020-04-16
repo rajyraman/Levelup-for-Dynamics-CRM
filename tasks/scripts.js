@@ -26,9 +26,6 @@ gulp.task('scripts', (cb) => {
         {
           devtool: args.sourcemaps ? 'inline-source-map' : false,
           watch: args.watch,
-          // entry: {
-          //   ['levelup.extension']: './app/scripts/inject/levelup.main.ts',
-          // },
           output: {
             filename: '[name].js',
           },

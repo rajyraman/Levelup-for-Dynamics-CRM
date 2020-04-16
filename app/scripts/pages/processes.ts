@@ -8,7 +8,7 @@ chrome.runtime.sendMessage(
   function (response) {
     let rows = response
       .map((r) => {
-        var cells = r
+        let cells = r
           .map((c, i) => {
             if (i === 0) return '';
             return i !== 1
