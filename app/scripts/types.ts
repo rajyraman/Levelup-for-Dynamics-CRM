@@ -57,18 +57,19 @@ export type Category =
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
-  | 'optionsets';
+  | 'optionsets'
+  | 'environment';
 
 export type ExtensionState = 'On' | 'Off';
 
-export interface ExtensionMessage {
+export interface IExtensionMessage {
   type: MessageType;
   category?: Category;
-  content?: ResultRow[] | ResultRowKeyValues[][] | string;
+  content?: IResultRow[] | IResultRowKeyValues[][] | string;
 }
 
-export interface CustomMessage extends Event {
-  detail: ExtensionMessage;
+export interface ICustomMessage extends Event {
+  detail: IExtensionMessage;
 }
 
 export enum AreaType {
@@ -77,11 +78,26 @@ export enum AreaType {
   'General',
 }
 
-export interface ResultRow {
+export interface IResultRow {
   cells: string[];
 }
 
-export interface ResultRowKeyValues {
+export interface IResultRowKeyValues {
   key: string;
   value: string;
+}
+
+export interface IRetrieveCurrentOrganizationResponse {
+  Detail: IRetrieveCurrentOrganizationResponseDetail;
+}
+interface IRetrieveCurrentOrganizationResponseDetail {
+  EnvironmentId: string;
+  FriendlyName: string;
+  Geo: string;
+  OrganizationId: string;
+  OrganizationVersion: string;
+  State: string;
+  TenantId: string;
+  UniqueName: string;
+  UrlName: string;
 }

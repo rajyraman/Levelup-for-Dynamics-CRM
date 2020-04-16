@@ -63,5 +63,7 @@
     "webpack-stream": "5.x.x",
     "yargs": "15.x.x"
   },
-  "dependencies": {}
+  "dependencies": {
+    "xrm-webapi-client": "^3.6.16"
+  }
 }

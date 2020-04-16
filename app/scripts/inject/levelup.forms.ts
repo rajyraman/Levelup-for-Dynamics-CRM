@@ -2,7 +2,7 @@
 /// <reference path="../../tsd/xrm.d.ts" />
 
 import { Utility } from './levelup.common.utility';
-import { ResultRowKeyValues } from '../types';
+import { IResultRowKeyValues } from '../types';
 
 export class Forms {
   constructor(private utility: Utility) {}
@@ -330,7 +330,7 @@ export class Forms {
       .then((workflows) => {
         // CRM2015 Data doesn't return attributes in order specified on select
         let results = workflows.map((workflow) => {
-          let resultRow: ResultRowKeyValues[] = [
+          let resultRow: IResultRowKeyValues[] = [
             { key: 'workflowid', value: '' },
             { key: 'name', value: '' },
             { key: 'category', value: '' },
@@ -454,5 +454,11 @@ export class Forms {
       .filter((x) => x.getAttributeType() === 'optionset')
       .map((x: Xrm.Page.OptionSetAttribute) => ({ name: x.getName(), options: x.getOptions() }));
     this.utility.messageExtension(optionSets, 'optionsets');
+  }
+
+  debugRibbon() {
+    if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('ribbondebug=')) {
+      window.location.href = `${location.href}&ribbondebug=true`;
+    }
   }
 }

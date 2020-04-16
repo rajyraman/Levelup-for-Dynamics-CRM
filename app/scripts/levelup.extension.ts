@@ -1,7 +1,7 @@
 /// <reference path="../tsd/xrm.d.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { ExtensionMessage } from './types';
+import { IExtensionMessage } from './types';
 import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';
@@ -15,7 +15,6 @@ window.addEventListener('message', function (event) {
 
   // home.dynamics.com also messaging. Ignore.
   if (location.origin !== event.origin) return;
-  debugger;
   // @ts-ignore
   if (event.source.Xrm && event.data.type) {
     let clientUrl =
@@ -55,12 +54,12 @@ window.addEventListener('message', function (event) {
       utility = new Utility(formDocument, formWindow, xrm, clientUrl);
     }
 
-    if ((<ExtensionMessage>event.data).category === 'Forms' && !xrm.Page.data) {
+    if ((<IExtensionMessage>event.data).category === 'Forms' && !xrm.Page.data) {
       alert('This command can only be performed in the context of a form');
       return;
     }
     try {
-      let message = <ExtensionMessage>event.data;
+      let message = <IExtensionMessage>event.data;
       switch (message.category) {
         case 'Forms':
           new Forms(utility)[message.type]();

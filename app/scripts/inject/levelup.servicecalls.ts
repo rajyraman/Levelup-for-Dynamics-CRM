@@ -2,11 +2,37 @@
 /// <reference path="../types.ts" />
 
 import { Utility } from './levelup.common.utility';
+import { default as WebApiClient } from 'xrm-webapi-client';
+import { IRetrieveCurrentOrganizationResponse } from '../types';
 
 export class Service {
   constructor(private utility: Utility) {}
 
   environmentDetails() {
+    // @ts-ignore
+    const request = WebApiClient.Requests.RetrieveCurrentOrganizationRequest.with({
+      urlParams: {
+        AccessType: `Microsoft.Dynamics.CRM.EndpointAccessType'Default'`,
+      },
+    });
+    let resultsArray = [{ cells: ['Name', 'Value'] }];
+    WebApiClient.Execute(request)
+      .then((r: IRetrieveCurrentOrganizationResponse) => {
+        let keys = Object.keys(r.Detail);
+        keys.forEach((k) => {
+          if (k !== 'Endpoints') {
+            resultsArray.push({ cells: [k, r.Detail[k]] });
+          }
+        });
+        console.log(r);
+        this.utility.messageExtension(resultsArray, 'environment');
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  }
+
+  environmentSettings() {
     let entity = this.utility.is2016OrGreater ? 'organizations' : 'OrganizationSet';
     this.utility
       .fetch(entity)
@@ -115,38 +141,5 @@ export class Service {
         });
         this.utility.messageExtension(resultsArray, 'allUserRoles');
       });
-  }
-  lightUpNavigation() {
-    this.toggleNavigation(true);
-  }
-
-  classicNavigation() {
-    this.toggleNavigation(false);
-  }
-
-  private toggleNavigation(isNewNavigation) {
-    if (this.utility.version.startsWith('9.1')) {
-      let organizationSettings = Xrm.Page.context.organizationSettings;
-      if (organizationSettings) {
-        Xrm.WebApi.updateRecord('organization', organizationSettings.organizationId, {
-          clientfeatureset: `<clientfeatures>
-                            <clientfeature xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-Instance\">
-                                <name>FCB.ShellRefresh</name>
-                                <value>${isNewNavigation}</value>
-                                <location>Organization</location>
-                            </clientfeature>
-                        </clientfeatures>`,
-        }).then((s) => {
-          if (Xrm.Internal.isUci || Xrm.Internal.isUci()) {
-            alert(`New navigation has been ${isNewNavigation ? 'enabled' : 'disabled'}. The page will now reload.`);
-            location.reload();
-          } else {
-            alert(`New navigation has been ${isNewNavigation ? 'enabled' : 'disabled'}.`);
-          }
-        });
-      }
-    } else {
-      alert('New navigation is available only on orgs that are >= 9.1');
-    }
   }
 }

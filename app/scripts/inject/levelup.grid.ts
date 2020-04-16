@@ -2,14 +2,14 @@
 /// <reference path="../types.ts" />
 
 import { Utility } from './levelup.common.utility';
-import { ResultRow } from '../types';
+import { IResultRow } from '../types';
 
 export class Grid {
   constructor(private utility: Utility) {}
 
   quickFindFields() {
     let currentView = this.utility.formDocument.querySelector('span.ms-crm-View-Name'),
-      resultsArray: ResultRow[] = [{ cells: ['Quick Find Attribute'] }],
+      resultsArray: IResultRow[] = [{ cells: ['Quick Find Attribute'] }],
       etc = this.utility.Xrm.Page.context.getQueryStringParameters().etc,
       // @ts-ignore
       entityName = this.utility.Xrm.Internal.getEntityName(parseInt(etc));

@@ -3,6 +3,7 @@
         "sourceMap": false,
         "noImplicitAny": false,
         "module": "es2015",
+        "moduleResolution": "node",
         "target": "ES5",
         "rootDir": "app/scripts",
         "typeRoots": [
@@ -11,8 +12,5 @@
         ],
         "traceResolution": true
     },
-    "lib": [
-        "ES2015",
-        "DOM"
-    ]
+    "lib": ["es6", "dom", "es2017"]
 }

@@ -1,9 +1,9 @@
 /// <reference path="types.ts" />
 
-import { ResultRow, ResultRowKeyValues, ExtensionMessage } from './types';
+import { IResultRow, IResultRowKeyValues, IExtensionMessage } from './types';
 
-let content: ResultRow[] | ResultRowKeyValues[][] | string;
-chrome.runtime.onMessage.addListener(function (message: ExtensionMessage, sender, sendResponse) {
+let content: IResultRow[] | IResultRowKeyValues[][] | string;
+chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
   if (message.type === 'Page') {
     let c = message.category.toString();
     switch (c) {
@@ -16,6 +16,7 @@ chrome.runtime.onMessage.addListener(function (message: ExtensionMessage, sender
       case 'myRoles':
       case 'allFields':
       case 'quickFindFields':
+      case 'environment':
         content = message.content;
         chrome.tabs.create({
           url: `/pages/grid.html`,

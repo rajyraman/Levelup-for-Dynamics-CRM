@@ -32,7 +32,7 @@
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="mdl-layout-title">Levelup for Dynamics 365/Power Apps</span>
+                <span class="mdl-layout-title">Level up for Dynamics 365/Power Apps</span>
                 <span id="version"></span>
                 <!-- Add spacer, to align navigation to the right -->
                 <div class="mdl-layout-spacer"></div>
@@ -46,13 +46,14 @@
             <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
                 <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Forms</a>
                 <a href="#fixed-tab-2" class="mdl-layout__tab">Navigation</a>
-                <a href="#fixed-tab-3" class="mdl-layout__tab">Grid</a>
+                <a href="#fixed-tab-3" class="mdl-layout__tab">View</a>
             </div>
         </header>
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Environment</span>
             <nav id="environmentLinks" class="mdl-navigation">
-                <div data-category="API" class="links mdl-navigation__link" id="environmentDetails" data-category="Settings">Environment Settings</div>
+                <div data-category="API" class="links mdl-navigation__link" id="environmentDetails" data-category="">Environment Details</div>
+                <div data-category="API" class="links mdl-navigation__link" id="environmentSettings" data-category="Settings">Environment Settings</div>
                 <div data-category="API" class="links mdl-navigation__link" id="myRoles" data-category="myRoles">My Roles</div>
                 <div data-category="API" class="links mdl-navigation__link" id="allUserRoles" data-category="allUserRoles">Users and Roles</div>
                 <div data-category="Navigation" class="links mdl-navigation__link" id="myUserRecord" data-category="">My User Record</div>
@@ -192,12 +193,21 @@
                         <div class="mdl-cell mdl-cell--4-col">
                             <button data-category="Forms" data-category="workflows" id="workflows" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                                 <i class="material-icons">view_module</i>
-                                <span>Workflows and Business Rules</span>
+                                <span>Workflows &amp; Business Rules</span>
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="workflows">
                                 Shows a list of workflows and business rules for the current entity.
                             </div>                                
                         </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="debugRibbon" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">settings_input_component</i>
+                                <span>Command Debugger</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="debugRibbon">
+                                Enables Command Debugger for debugging Commandbar/Ribbon buttons
+                            </div>                                
+                        </div>                             
                         <div class="mdl-cell mdl-cell--4-col">
                             <button data-category="Forms" id="copyLookup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                                 <i class="material-icons">file_copy</i>
@@ -235,14 +245,14 @@
                             </div>                                
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" data-category="allFields" id="allFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            <button data-category="Forms" id="allFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                                 <i class="material-icons">list</i>
                                 <span>All Fields</span>
-                            </button data-category="">
+                            </button>
                             <div class="mdl-tooltip" data-mdl-for="allFields">
                                 Displays values for all fields in the current record.
                             </div>                                
-                        </div>
+                        </div>                   
                     </div>
                 </div>
             </section>

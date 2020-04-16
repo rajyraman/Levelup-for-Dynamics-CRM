@@ -2,7 +2,7 @@
 /// <reference path="inject/levelup.common.utility.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { AreaType, ExtensionMessage, CustomMessage } from './types';
+import { AreaType, IExtensionMessage, ICustomMessage } from './types';
 
 class App {
   isCRMPage: boolean;
@@ -29,13 +29,13 @@ class App {
   }
 
   private hookupEventListeners() {
-    document.addEventListener('levelup', (data: CustomMessage) => {
+    document.addEventListener('levelup', (data: ICustomMessage) => {
       if (data.detail && data.detail.type === 'Page') {
         chrome.runtime.sendMessage(data.detail);
       }
     });
 
-    chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, response) => {
+    chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, response) => {
       if (message.type === 'VisibilityCheck') {
         let contentPanels = Array.from(document.querySelectorAll('iframe')).filter((d) => {
           return d.style.visibility !== 'hidden' && d.style.display !== 'none';

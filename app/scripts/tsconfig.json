@@ -2,12 +2,10 @@
     "compilerOptions": {
         "sourceMap": false,
         "module": "es2015",
+        "moduleResolution": "node",
         "noImplicitAny": false,
         "target": "ES5",
         "outDir": "../../dist"
     },
-    "lib": [
-        "dom",
-        "es2016"
-    ]
+    "lib": ["es6", "dom", "es2017"]
 }

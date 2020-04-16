@@ -1,6 +1,6 @@
 /// <reference path="types.ts" />
 
-import { ExtensionMessage } from './types';
+import { IExtensionMessage } from './types';
 
 window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;
@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function () {
       if (targetElement.localName !== 'button') return;
 
       let category = targetElement.getAttribute('data-category');
-      chrome.runtime.sendMessage(<ExtensionMessage>{
+      chrome.runtime.sendMessage(<IExtensionMessage>{
         category: category || '',
         type: targetElement.id,
       });
@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
       let targetElement = <HTMLDivElement>e.target;
 
       let category = targetElement.getAttribute('data-category');
-      chrome.runtime.sendMessage(<ExtensionMessage>{
+      chrome.runtime.sendMessage(<IExtensionMessage>{
         category: category || '',
         type: targetElement.id,
       });
