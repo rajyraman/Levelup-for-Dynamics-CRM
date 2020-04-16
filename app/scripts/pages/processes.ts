@@ -2,27 +2,27 @@
 /// <reference path="../../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {
-    type: "Page",
-    category: "Load"
+    type: 'Page',
+    category: 'Load',
   },
-  function(response) {
+  function (response) {
     let rows = response
-      .map(r => {
+      .map((r) => {
         var cells = r
           .map((c, i) => {
-            if (i === 0) return "";
+            if (i === 0) return '';
             return i !== 1
               ? `<td>${c.value}</td>`
               : `<td class='name'><a target="_blank" href="${r[0].value}">${c.value}</a></td>`;
           })
-          .join("");
+          .join('');
         return `<tr>${cells}</tr>`;
       })
-      .join("");
+      .join('');
     if (response.length > 0) {
-      document.getElementById("results").innerHTML = rows;
-      new List("grid", {
-        valueNames: ["name"]
+      document.getElementById('results').innerHTML = rows;
+      new List('grid', {
+        valueNames: ['name'],
       });
     }
   }

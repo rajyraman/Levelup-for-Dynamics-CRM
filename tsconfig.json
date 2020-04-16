@@ -2,6 +2,7 @@
     "compilerOptions": {
         "sourceMap": false,
         "noImplicitAny": false,
+        "module": "es2015",
         "target": "ES5",
         "rootDir": "app/scripts",
         "typeRoots": [
