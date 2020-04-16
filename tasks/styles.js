@@ -43,8 +43,8 @@ gulp.task('styles:sass', function () {
     .pipe(gulpif(args.watch, livereload()))
 })
 
-gulp.task('styles', [
+gulp.task('styles', gulp.parallel(
   'styles:css',
   'styles:less',
   'styles:sass'
-])
+))

@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
         "sourceMap": false,
+        "module": "es2015",
         "noImplicitAny": false,
-        "target": "ES2015",
+        "target": "ES5",
         "outDir": "../../dist"
     },
     "lib": [

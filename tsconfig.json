@@ -2,7 +2,8 @@
     "compilerOptions": {
         "sourceMap": false,
         "noImplicitAny": false,
-        "target": "ES2015",
+        "module": "es2015",
+        "target": "ES5",
         "rootDir": "app/scripts",
         "typeRoots": [
             "./app/tsd",

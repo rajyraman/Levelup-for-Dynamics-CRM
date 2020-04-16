@@ -8,12 +8,14 @@ function getPackFileType () {
   switch (args.vendor) {
     case 'firefox':
       return '.xpi'
+    case 'opera':
+      return '.crx'
     default:
       return '.zip'
   }
 }
 
-gulp.task('pack', () => {
+gulp.task('pack', gulp.series('build', () => {
   let name = packageDetails.name
   let version = packageDetails.version
   let filetype = getPackFileType()
@@ -26,4 +28,4 @@ gulp.task('pack', () => {
       let filenameStyled = colors.magenta(`./packages/${filename}`)
       log(`Packed ${distStyled} to ${filenameStyled}`)
     })
-})
+}))
