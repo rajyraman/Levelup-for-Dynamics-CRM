@@ -1,3 +1,7 @@
+<p align="left">
+  <a href="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/"><img alt="GitHub Actions status" src="https://github.com/rajyraman/Levelup-for-Dynamics-CRM/workflows/Levelup%20CI/badge.svg"></a>
+</p>
+
 ## Summary
 Chrome Extension for Dynamics CRM Power users
 
