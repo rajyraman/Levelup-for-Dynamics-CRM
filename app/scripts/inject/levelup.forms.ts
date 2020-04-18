@@ -417,8 +417,18 @@ export class Forms {
 
   customize() {
     let etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
-    if (etc && Mscrm.RibbonActions.openEntityEditor && typeof Mscrm.RibbonActions.openEntityEditor === 'function') {
+    if (etc && Mscrm.RibbonActions && Mscrm.RibbonActions.openEntityEditor && typeof Mscrm.RibbonActions.openEntityEditor === 'function') {
       Mscrm.RibbonActions.openEntityEditor(etc);
+    } else {
+      let environmentId = localStorage.getItem("flowEnvironmentId");
+      if(environmentId){
+        this.utility.fetch("solutions()","solutionid","uniquename eq 'Default'").then(solutions=>{
+          let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+          let formId = this.utility.Xrm.Page.ui.formSelector.getCurrentItem().getId();
+          var url = `https://make.powerapps.com/e/${environmentId}/s/${solutions[0].solutionid}/entity/${entityName}/form/edit/${formId}`;
+          window.open(url, '_blank');
+        });        
+      }
     }
   }
 
