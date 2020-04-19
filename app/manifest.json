@@ -5,7 +5,7 @@
   },
   "browser_action": {
     "default_icon": {
-      "16": "/images/icon-16.png"
+      "16": "icon-16.png"
     },
     "default_title": "Level up for Dynamics 365/Power Apps",
     "default_popup": "/pages/options.html"
@@ -20,13 +20,12 @@
     }
   ],
   "icons": {
-    "16": "/images/icon-16.png",
-    "48": "/images/icon-48.png",
-    "128": "/images/icon-128.png"
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
   },
   "permissions": ["activeTab", "tabs"],
   "web_accessible_resources": ["/scripts/Sdk.Soap.min.js", "/scripts/levelup.extension.js"],
-  "version": "3.5.0",
-  "version_name": "3.5.0",
+  "version": "3.5.1",
   "manifest_version": 2
 }
