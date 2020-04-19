@@ -159,4 +159,18 @@ export class Navigation {
   openPPAC() {
     window.open('https://admin.powerplatform.microsoft.com/analytics/d365ce');
   }
+
+  solutionHistory() {
+    if (
+      (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
+    ) {
+      window.open(
+        `https://make.powerapps.com/environments/${this.utility.environmentDetail.EnvironmentId}/history`,
+        '_blank'
+      );
+    } else {
+      this.openList('msdyn_solutionhistory');
+    }
+  }  
 }
