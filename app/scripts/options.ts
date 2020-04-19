@@ -1,6 +1,4 @@
-/// <reference path="types.ts" />
-
-import { IExtensionMessage } from './types';
+import { IExtensionMessage } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;

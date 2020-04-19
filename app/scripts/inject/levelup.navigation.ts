@@ -1,5 +1,4 @@
 /// <reference path="levelup.common.utility.ts" />
-/// <reference path="../types.ts" />
 /// <reference path="../../tsd/xrm.d.ts" />
 
 import { Utility } from './levelup.common.utility';
@@ -172,5 +171,5 @@ export class Navigation {
     } else {
       this.openList('msdyn_solutionhistory');
     }
-  }  
+  }
 }

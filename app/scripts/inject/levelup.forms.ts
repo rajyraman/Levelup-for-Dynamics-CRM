@@ -2,8 +2,7 @@
 /// <reference path="../../tsd/xrm.d.ts" />
 
 import { Utility } from './levelup.common.utility';
-import { IResultRowKeyValues } from '../types';
-import { default as WebApiClient } from 'xrm-webapi-client';
+import { IResultRowKeyValues } from '../interfaces/types';
 export class Forms {
   constructor(private utility: Utility) {}
   clearLogicalNames() {

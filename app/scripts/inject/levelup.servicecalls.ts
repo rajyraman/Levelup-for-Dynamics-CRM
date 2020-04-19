@@ -1,9 +1,6 @@
 /// <reference path="levelup.common.utility.ts" />
-/// <reference path="../types.ts" />
 
 import { Utility } from './levelup.common.utility';
-import { default as WebApiClient } from 'xrm-webapi-client';
-import { IRetrieveCurrentOrganizationResponse } from '../types';
 
 export class Service {
   constructor(private utility: Utility) {}

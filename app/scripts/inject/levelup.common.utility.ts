@@ -1,7 +1,5 @@
-/// <reference path="../types.ts" />
-
-import { Category, IRetrieveCurrentOrganizationResponseDetail, IRetrieveCurrentOrganizationResponse } from '../types';
 import { default as WebApiClient } from 'xrm-webapi-client';
+import { IRetrieveCurrentOrganizationResponseDetail, Category } from '../interfaces/types';
 
 export class Utility {
   private _is2016OrGreater: boolean;

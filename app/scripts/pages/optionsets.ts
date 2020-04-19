@@ -1,4 +1,3 @@
-/// <reference path="../types.ts" />
 /// <reference path="../../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {

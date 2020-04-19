@@ -1,8 +1,7 @@
 /// <reference path="levelup.common.utility.ts" />
-/// <reference path="../types.ts" />
 
 import { Utility } from './levelup.common.utility';
-import { IResultRow } from '../types';
+import { IResultRow } from '../interfaces/types';
 
 export class Grid {
   constructor(private utility: Utility) {}

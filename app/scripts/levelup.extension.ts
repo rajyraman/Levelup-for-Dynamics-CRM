@@ -1,7 +1,7 @@
 /// <reference path="../tsd/xrm.d.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { IExtensionMessage, IRetrieveCurrentOrganizationResponse, IRetrieveCurrentOrganizationResponseDetail } from './types';
+import { IExtensionMessage, IRetrieveCurrentOrganizationResponse, IRetrieveCurrentOrganizationResponseDetail } from './interfaces/types';
 import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';

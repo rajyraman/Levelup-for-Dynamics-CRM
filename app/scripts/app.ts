@@ -1,8 +1,7 @@
-/// <reference path="types.ts" />
 /// <reference path="inject/levelup.common.utility.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { AreaType, IExtensionMessage, ICustomMessage } from './types';
+import { ICustomMessage, IExtensionMessage, AreaType } from './interfaces/types';
 
 class App {
   isCRMPage: boolean;

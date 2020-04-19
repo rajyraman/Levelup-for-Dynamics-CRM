@@ -1,6 +1,4 @@
-/// <reference path="types.ts" />
-
-import { IResultRow, IResultRowKeyValues, IExtensionMessage } from './types';
+import { IResultRow, IResultRowKeyValues, IExtensionMessage } from './interfaces/types';
 
 let content: IResultRow[] | IResultRowKeyValues[][] | string;
 chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
