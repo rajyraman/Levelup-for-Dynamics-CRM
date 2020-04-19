@@ -1,6 +1,7 @@
 /// <reference path="../types.ts" />
 
-import { Category } from '../types';
+import { Category, IRetrieveCurrentOrganizationResponseDetail, IRetrieveCurrentOrganizationResponse } from '../types';
+import { default as WebApiClient } from 'xrm-webapi-client';
 
 export class Utility {
   private _is2016OrGreater: boolean;
@@ -11,12 +12,17 @@ export class Utility {
     private _document: Document,
     private _window: Window,
     private _xrm: Xrm.XrmStatic,
-    private _clientUrl: string
+    private _clientUrl: string,
+    private _environmentDetail: IRetrieveCurrentOrganizationResponseDetail
   ) {
     let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window['APPLICATION_VERSION'];
     this._is2016OrGreater = version.startsWith('8') || version.startsWith('9');
     this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36);
     this._version = version;
+  }
+
+  public get environmentDetail(): IRetrieveCurrentOrganizationResponseDetail {
+    return this._environmentDetail;
   }
 
   public get formDocument(): Document {

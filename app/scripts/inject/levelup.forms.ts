@@ -3,7 +3,7 @@
 
 import { Utility } from './levelup.common.utility';
 import { IResultRowKeyValues } from '../types';
-
+import { default as WebApiClient } from 'xrm-webapi-client';
 export class Forms {
   constructor(private utility: Utility) {}
   clearLogicalNames() {
@@ -417,7 +417,19 @@ export class Forms {
 
   customize() {
     let etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
-    if (etc && Mscrm.RibbonActions.openEntityEditor && typeof Mscrm.RibbonActions.openEntityEditor === 'function') {
+    if (
+      (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
+    ) {
+      window.open(
+        `https://make.powerapps.com/environments/${this.utility.environmentDetail.EnvironmentId}/solutions`,
+        '_blank'
+      );
+    } else if (
+      etc &&
+      Mscrm.RibbonActions.openEntityEditor &&
+      typeof Mscrm.RibbonActions.openEntityEditor === 'function'
+    ) {
       Mscrm.RibbonActions.openEntityEditor(etc);
     }
   }

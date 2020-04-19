@@ -41,7 +41,17 @@ export class Navigation {
   }
 
   openSolutions() {
-    this.openList('solution');
+    if (
+      (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
+    ) {
+      window.open(
+        `https://make.powerapps.com/environments/${this.utility.environmentDetail.EnvironmentId}/solutions`,
+        '_blank'
+      );
+    } else {
+      this.openList('solution');
+    }
   }
 
   openProcesses() {

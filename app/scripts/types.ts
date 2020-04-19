@@ -90,7 +90,7 @@ export interface IResultRowKeyValues {
 export interface IRetrieveCurrentOrganizationResponse {
   Detail: IRetrieveCurrentOrganizationResponseDetail;
 }
-interface IRetrieveCurrentOrganizationResponseDetail {
+export interface IRetrieveCurrentOrganizationResponseDetail {
   EnvironmentId: string;
   FriendlyName: string;
   Geo: string;

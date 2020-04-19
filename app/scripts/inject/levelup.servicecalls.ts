@@ -9,27 +9,15 @@ export class Service {
   constructor(private utility: Utility) {}
 
   environmentDetails() {
-    // @ts-ignore
-    const request = WebApiClient.Requests.RetrieveCurrentOrganizationRequest.with({
-      urlParams: {
-        AccessType: `Microsoft.Dynamics.CRM.EndpointAccessType'Default'`,
-      },
+    const resultsArray = [{ cells: ['Name', 'Value'] }];
+    let keys = Object.keys(this.utility.environmentDetail);
+    keys.forEach((k) => {
+      if (k !== 'Endpoints') {
+        resultsArray.push({ cells: [k, this.utility.environmentDetail[k]] });
+      }
     });
-    let resultsArray = [{ cells: ['Name', 'Value'] }];
-    WebApiClient.Execute(request)
-      .then((r: IRetrieveCurrentOrganizationResponse) => {
-        let keys = Object.keys(r.Detail);
-        keys.forEach((k) => {
-          if (k !== 'Endpoints') {
-            resultsArray.push({ cells: [k, r.Detail[k]] });
-          }
-        });
-        console.log(r);
-        this.utility.messageExtension(resultsArray, 'environment');
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    console.log(this.utility.environmentDetail);
+    this.utility.messageExtension(resultsArray, 'environment');
   }
 
   environmentSettings() {

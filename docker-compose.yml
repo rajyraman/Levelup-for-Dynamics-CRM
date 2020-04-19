@@ -1,16 +1,19 @@
 version: '3.4'
 
+x-levelup:
+  &default-levelup
+  build: .
+  volumes:
+    - type: bind
+      source: ./packages
+      target: /usr/src/levelup/packages
+    - type: bind
+      source: ./dist
+      target: /usr/src/levelup/dist
+  image: levelup-for-dynamics-365-powerapps     
 services:
-  levelup:
-    build: .
-    volumes:
-      - type: bind
-        source: ./packages
-        target: /usr/src/levelup/packages
-      - type: bind
-        source: ./dist
-        target: /usr/src/levelup/dist
   current:
+    << : *default-levelup
     image: levelup-for-dynamics-365-powerapps:3.5.0
   latest:
-    image: levelup-for-dynamics-365-powerapps     
+    *default-levelup

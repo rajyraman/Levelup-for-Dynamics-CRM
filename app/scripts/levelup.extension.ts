@@ -1,13 +1,14 @@
 /// <reference path="../tsd/xrm.d.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { IExtensionMessage } from './types';
+import { IExtensionMessage, IRetrieveCurrentOrganizationResponse, IRetrieveCurrentOrganizationResponseDetail } from './types';
 import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';
 import { Grid } from './inject/levelup.grid';
+import { default as WebApiClient } from 'xrm-webapi-client';
 
-window.addEventListener('message', function (event) {
+window.addEventListener('message', async function (event) {
   let utility: Utility;
   let formWindow: Window;
   let formDocument: Document;
@@ -37,11 +38,18 @@ window.addEventListener('message', function (event) {
       clientUrlForParams += '/main.aspx';
     }
     // @ts-ignore
+    const request = WebApiClient.Requests.RetrieveCurrentOrganizationRequest.with({
+      urlParams: {
+        AccessType: `Microsoft.Dynamics.CRM.EndpointAccessType'Default'`,
+      },
+    });
+    const environmentDetailResponse = <IRetrieveCurrentOrganizationResponse>await WebApiClient.Execute(request);    
+    // @ts-ignore
     if (event.source.Xrm.Internal.isUci && Xrm.Internal.isUci()) {
       formWindow = window;
       formDocument = document;
       xrm = window.Xrm;
-      utility = new Utility(formDocument, formWindow, xrm, clientUrl);
+      utility = new Utility(formDocument, formWindow, xrm, clientUrl, environmentDetailResponse.Detail);
     } else if (contentPanels && contentPanels.length > 0) {
       formWindow = contentPanels[0].contentWindow;
       formDocument = contentPanels[0].contentDocument;
@@ -51,7 +59,7 @@ window.addEventListener('message', function (event) {
         formDocument = document;
         xrm = window.Xrm;
       }
-      utility = new Utility(formDocument, formWindow, xrm, clientUrl);
+      utility = new Utility(formDocument, formWindow, xrm, clientUrl, environmentDetailResponse.Detail);
     }
 
     if ((<IExtensionMessage>event.data).category === 'Forms' && !xrm.Page.data) {
