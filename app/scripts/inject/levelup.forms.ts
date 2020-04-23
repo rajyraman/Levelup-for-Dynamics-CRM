@@ -472,4 +472,23 @@ export class Forms {
       window.location.href = `${location.href}&ribbondebug=true`;
     }
   }
+
+  blurFields() {
+    setFilter(this.utility.Xrm.Page.getAttribute(), 'blur(5px)');
+  }
+
+  resetBlur() {
+    setFilter(this.utility.Xrm.Page.getAttribute(), '');
+  }
+}
+
+function setFilter(attributes, filter) {
+  attributes.forEach((x) => {
+    let e = <HTMLDivElement>(
+      document.querySelector(`div[data-id="${x.getName()}-FieldSectionItemContainer"] div[data-lp-id]`)
+    );
+    if (e) {
+      e.style.filter = filter;
+    }
+  });
 }
