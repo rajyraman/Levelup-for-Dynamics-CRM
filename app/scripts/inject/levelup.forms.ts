@@ -364,41 +364,6 @@ export class Forms {
       });
   }
 
-  copyLookup() {
-    let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
-    if (currentControl && currentControl.getControlType() === 'lookup') {
-      let currentLookup = currentControl.getAttribute().getValue();
-      if (currentLookup) {
-        let serialisedLookupValue = JSON.stringify(
-          currentLookup.map((x: Xrm.Page.LookupValue) => {
-            let c: Xrm.Page.LookupValue;
-            ({ id: c.id, name: c.name, type: c.type, typename: c.typename, entityType: c.entityType } = x);
-            return c;
-          })
-        );
-        sessionStorage.setItem('ryr_serialisedLookup', serialisedLookupValue);
-        alert('Lookup copied. Ready to paste');
-      }
-    } else {
-      alert('No field has been selected or the currently selected field is not a lookup');
-    }
-  }
-
-  pasteLookup() {
-    let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
-    if (currentControl && currentControl.getControlType() === 'lookup') {
-      let currentLookup = currentControl.getAttribute();
-      let copiedLookupValue = sessionStorage.getItem('ryr_serialisedLookup');
-      if (copiedLookupValue) {
-        currentLookup.setValue(JSON.parse(copiedLookupValue));
-      } else {
-        alert('Please select a lookup to copy first before pasting');
-      }
-    } else {
-      alert('No field has been selected or the currently selected field is not a lookup');
-    }
-  }
-
   openLookupNewWindow() {
     let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
     if (currentControl.getControlType() === 'lookup') {
@@ -411,22 +376,6 @@ export class Forms {
       }
     } else {
       alert('The currently selected control is not a lookup');
-    }
-  }
-
-  customize() {
-    let etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
-    if (this.utility.isOnline) {
-      window.open(
-        `https://make.powerapps.com/environments/${this.utility.environmentDetail.EnvironmentId}/solutions`,
-        '_blank'
-      );
-    } else if (
-      etc &&
-      Mscrm.RibbonActions.openEntityEditor &&
-      typeof Mscrm.RibbonActions.openEntityEditor === 'function'
-    ) {
-      Mscrm.RibbonActions.openEntityEditor(etc);
     }
   }
 
