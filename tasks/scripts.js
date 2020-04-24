@@ -13,7 +13,11 @@ const ENV = args.production ? 'production' : 'development';
 
 gulp.task('libraries', (cb) => {
   return gulp
-    .src(['app/libraries/*.js'])
+    .src(['app/libraries/*.js',
+          'node_modules/material-design-lite/dist/material.min.js',
+          'node_modules/jquery/dist/jquery.min.js',
+          'node_modules/jquery-slimscroll/jquery.slimscroll.min.js',
+          'node_modules/list.js/dist/list.min.js'])
     .pipe(gulp.dest(`dist/${args.vendor}/scripts`))
     .pipe(gulpif(args.watch, livereload()));
 });
@@ -26,7 +30,7 @@ gulp.task(
       .pipe(
         plumber({
           // Webpack will log the errors
-          errorHandler() {},
+          errorHandler() { },
         })
       )
       .pipe(named())

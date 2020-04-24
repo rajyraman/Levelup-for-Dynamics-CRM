@@ -24,16 +24,17 @@
 
         body {
             background: #faf9f8;
-            overflow: hidden;
+            overflow:  hidden!important;
         }
 
         .maincontainer {
             min-width: 700px;
-            min-height: 600px;
+            min-height: 450px;
+            overflow:  hidden;
         }
 
         button {
-            width: 90%;
+            width: 100%;
             background-color: #3f51b5;
         }
 
@@ -41,6 +42,10 @@
             top: 5px;
             left: 10px;
             position: absolute;
+        }
+
+        .mdl-layout__content {
+            padding-bottom: 15px;
         }
     </style>
 </head>
@@ -129,14 +134,14 @@
                             </div>                            
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="formProperties" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                            <i class="material-icons">apps</i>
-                            <span>Record Properties</span>
+                            <button data-category="Forms" id="allFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">list</i>
+                                <span>All Fields</span>
                             </button>
-                            <div class="mdl-tooltip" data-mdl-for="formProperties">
-                                Shows legacy form properties dialog.
-                            </div>                            
-                        </div>
+                            <div class="mdl-tooltip" data-mdl-for="allFields">
+                                Displays values for all fields in the current record.
+                            </div>                                
+                        </div>                           
                         <div class="mdl-cell mdl-cell--4-col">
                             <button data-category="Forms" id="highlightDirtyFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                                 <i class="material-icons">warning</i>
@@ -246,50 +251,14 @@
                             </div>                                
                         </div>                             
                         <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="copyLookup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                                <i class="material-icons">file_copy</i>
-                                <span>Copy Lookup</span>
+                            <button data-category="Forms" id="formProperties" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            <i class="material-icons">apps</i>
+                            <span>Record Properties</span>
                             </button>
-                            <div class="mdl-tooltip" data-mdl-for="copyLookup">
-                                If the lookup field is focused, the value for this lookup is copied to the clipboard.
-                            </div>                                
-                        </div>
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="pasteLookup" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                                <i class="material-icons">format_paint</i>
-                                <span>Paste Lookup</span>
-                            </button>
-                            <div class="mdl-tooltip" data-mdl-for="pasteLookup">
-                                Sets the value currently focussed lookup to the clipboard value from the Copy Lookup action.
-                            </div>                                
-                        </div>
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="openLookupNewWindow" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                                <i class="material-icons">vertical_align_top</i>
-                                <span>Lookup in new window</span>
-                            </button>
-                            <div class="mdl-tooltip" data-mdl-for="openLookupNewWindow">
-                                Open the current lookup record in a new tab.
-                            </div>                                
-                        </div>
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="customize" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                                <i class="material-icons">ballot</i>
-                                <span>Customize</span>
-                            </button>
-                            <div class="mdl-tooltip" data-mdl-for="customize">
-                                Opens the Default Solution.
-                            </div>                                
-                        </div>
-                        <div class="mdl-cell mdl-cell--4-col">
-                            <button data-category="Forms" id="allFields" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                                <i class="material-icons">list</i>
-                                <span>All Fields</span>
-                            </button>
-                            <div class="mdl-tooltip" data-mdl-for="allFields">
-                                Displays values for all fields in the current record.
-                            </div>                                
-                        </div>                   
+                            <div class="mdl-tooltip" data-mdl-for="formProperties">
+                                Shows legacy form properties dialog.
+                            </div>                            
+                        </div>                 
                     </div>
                 </div>
             </section>
@@ -469,11 +438,11 @@
             </section>
         </main>
     </div>
-    <script src="../scripts/options.js"></script>
+    </div>
     <link rel="stylesheet" href="../styles/material-icons.min.css">
     <link rel="stylesheet" href="../styles/material.min.css">
-    <script defer src="../scripts/material.min.js"></script>
-</div>
+    <script src="../scripts/options.js"></script>    
+    <script defer src="../scripts/material.min.js"></script>    
 </body>
 
 </html>
