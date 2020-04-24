@@ -39,9 +39,3 @@ window.addEventListener('DOMContentLoaded', function () {
     false
   );
 });
-
-$(document).ready(function () {
-  (<any>$('.page-content')).slimScroll({
-    height: '432px'
-  });
-});
