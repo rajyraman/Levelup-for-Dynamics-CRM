@@ -474,15 +474,15 @@ export class Forms {
   }
 
   blurFields() {
-    setFilter(this.utility.Xrm.Page.getAttribute(), 'blur(5px)');
+    setFilter(this.utility.Xrm.Page.getAttribute(), this.utility.formDocument, 'blur(5px)');
   }
 
   resetBlur() {
-    setFilter(this.utility.Xrm.Page.getAttribute(), '');
+    setFilter(this.utility.Xrm.Page.getAttribute(), this.utility.formDocument, '');
   }
 }
 
-function setFilter(attributes, filter) {
+function setFilter(attributes, formDocument, filter) {
   attributes.forEach((x) => {
     let e = <HTMLDivElement>(
       document.querySelector(`div[data-id="${x.getName()}-FieldSectionItemContainer"] div[data-lp-id]`)
@@ -491,4 +491,8 @@ function setFilter(attributes, filter) {
       e.style.filter = filter;
     }
   });
+  formDocument.querySelector("h1[data-id='header_title']").style.filter = filter;
+  formDocument
+    .querySelectorAll('.wj-row[aria-label="Data"], #headerControlsList > div[role="presentation"] > div:first-child')
+    .forEach((e) => (e.style.filter = filter));
 }
