@@ -14,6 +14,6 @@ x-levelup:
 services:
   current:
     << : *default-levelup
-    image: levelup-for-dynamics-365-powerapps:3.5.1
+    image: levelup-for-dynamics-365-powerapps:3.5.2
   latest:
     *default-levelup
