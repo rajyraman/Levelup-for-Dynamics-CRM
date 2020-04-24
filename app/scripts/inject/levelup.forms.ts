@@ -491,8 +491,10 @@ function setFilter(attributes, formDocument, filter) {
       e.style.filter = filter;
     }
   });
-  formDocument.querySelector("h1[data-id='header_title']").style.filter = filter;
+  formDocument.querySelector(`h1[data-id='header_title']`).style.filter = filter;
   formDocument
-    .querySelectorAll('.wj-row[aria-label="Data"], #headerControlsList > div[role="presentation"] > div:first-child')
+    .querySelectorAll(
+      '.wj-row[aria-label="Data"], #headerControlsList > div[role="presentation"] > div:first-child, div[data-lp-id$="MscrmControls.FieldControls.TextBoxControl"], div[data-lp-id^="MscrmControls.Containers.QuickForm"] div[data-lp-id^="MscrmControls.FieldControls.TextBoxControl"]'
+    )
     .forEach((e) => (e.style.filter = filter));
 }
