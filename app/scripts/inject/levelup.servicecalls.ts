@@ -6,6 +6,10 @@ export class Service {
   constructor(private utility: Utility) {}
 
   environmentDetails() {
+    if (!this.utility.is2016OrGreater) {
+      alert('This functionality is not available on this version of CRM');
+      return;
+    }
     const resultsArray = [{ cells: ['Name', 'Value'] }];
     let keys = Object.keys(this.utility.environmentDetail);
     keys.forEach((k) => {

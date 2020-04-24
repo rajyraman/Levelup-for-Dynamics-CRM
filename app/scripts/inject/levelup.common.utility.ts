@@ -1,17 +1,21 @@
 import { default as WebApiClient } from 'xrm-webapi-client';
-import { IRetrieveCurrentOrganizationResponseDetail, Category } from '../interfaces/types';
+import {
+  IRetrieveCurrentOrganizationResponseDetail,
+  Category,
+  IRetrieveCurrentOrganizationResponse,
+} from '../interfaces/types';
 
 export class Utility {
   private _is2016OrGreater: boolean;
   private _currentUserId: string;
   private _version: string;
+  private _environmentDetail: IRetrieveCurrentOrganizationResponseDetail;
 
   constructor(
     private _document: Document,
     private _window: Window,
     private _xrm: Xrm.XrmStatic,
-    private _clientUrl: string,
-    private _environmentDetail: IRetrieveCurrentOrganizationResponseDetail
+    private _clientUrl: string
   ) {
     let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window['APPLICATION_VERSION'];
     this._is2016OrGreater = version.startsWith('8') || version.startsWith('9');
@@ -53,6 +57,13 @@ export class Utility {
 
   public get version(): string {
     return this._version;
+  }
+
+  public get isOnline(): boolean {
+    return (
+      (this._xrm.Page.context.isOffice365 && this._xrm.Page.context.isOffice365()) ||
+      (this._xrm.Page.context.isOnPremises && !this._xrm.Page.context.isOnPremises())
+    );
   }
 
   fetch(entityName: string, attributes?: string, filter?: string, id?: string, fetchXML?: string) {
@@ -141,5 +152,19 @@ export class Utility {
     t.select();
     document.execCommand('copy');
     t.remove();
+  }
+
+  async retrieveEnvironmentDetails() {
+    // @ts-ignore
+    const request = WebApiClient.Requests.RetrieveCurrentOrganizationRequest.with({
+      urlParams: {
+        AccessType: `Microsoft.Dynamics.CRM.EndpointAccessType'Default'`,
+      },
+    });
+    try {
+      this._environmentDetail = (<IRetrieveCurrentOrganizationResponse>await WebApiClient.Execute(request)).Detail;
+    } catch (e) {
+      console.warn('Level up: No RetrieveCurrentOrganizationRequest');
+    }
   }
 }

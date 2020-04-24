@@ -3,7 +3,7 @@
 </p>
 
 ## Summary
-Chrome Extension for Dynamics CRM Power users
+Chrome Extension for Dynamics CRM/365/ Power Apps Power users
 
 ![Level up screenshot](/screenshots/Levelup.png)
 
@@ -17,6 +17,8 @@ Action | What it does
 --- | ---
 **Logical Names** | Displays logical names for fields, tabs and sections.
 **Clear Logical Names** | Restores the form to the original state, by removing the schema name textboxes.
+**Blur Fields** | Blurs all form fields and subgrids on the form.
+**Reset Blur** | Puts the form back in the default state with fields not blurred.
 **God Mode** | Makes all mandatory fields optional. Makes hidden fields/tabs/sections visible. Makes read-only fields editable.
 **Record Properties** | Displays information about current record like Created By, Created On, Modified By, Modified on, Permissions and Owner. 
 **Changed Fields** | Highlights fields in the form that have been changed, but not saved yet.
@@ -30,10 +32,6 @@ Action | What it does
 **Refresh + Autosave off** | Refreshes the current form without saving it. It also turns off the auto-save after refresh.
 **Toggle Tabs** | Collapses or expands the tabs in the form.
 **Workflows & Business Rules** | Displays any workflows and business rules for the current entity.
-**Copy Lookup** | Copies the lookup field selected on the form
-**Paste Lookup** | Paste the copied lookup field
-**Lookup in new window** | Opens the selected lookup in a new window/tab
-**Customize** | Opens the entity in the default solution. Do not use this solution to add new fields, unless you have changed the default publisher prefix, which is "new_"
 **All Fields** | Displays values for all fields not in the current form
 **Open record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 **New record** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to create a new record.
@@ -51,20 +49,17 @@ Action | What it does
 **Perf Diag** | Displays the performance diagnostics page. Primarily useful for assessing network performance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
 **Perf Center** | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
 **Instance Picker** | Displays the instance picker page (applicable to Dynamics CRM/365 Online only).
+**Power Platform Admin** | Opens admin.powerplatform.microsoft.com
+**Solutions History** | Display Solutions History page to see the list of solutions imported into the environment.
 **New window** | Displays the current grid (Saved Query) in a new window.
 **Quick Find fields** | Displays the search fields for the current entity that is displayed in the grid.
-**Org Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
+**Environment Details** | Displays information that can be used for support requests like TenantId, EnvironmentId, OrganizationVersion etc.
+**Environment Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
 **User & Roles** | Displays the users and their roles.
-**Enable new navigation** | Enable the new UCI/modern interface navigation. Refer [UI updates in October release](https://community.dynamics.com/365/b/365teamblog/archive/2018/10/01/announcing-ui-updates-in-october-for-sitemap-and-command-bar) for the official announcement.
-**Disable new navigation** | Disbles the new UCI/modern interface navigation.
-## Functionality
-Please watch this animation below for quick functionality intro.
 
-![Levelup up extension introduction](/screenshots/Functionality%20Quick%20Intro.gif "Functionality")
-
-## YouTube Demo (Thank you [@daryllabar](https://github.com/daryllabar))
-[![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://youtu.be/zqPGeOH1OF4 "YouTube")
+## YouTube Demo (Thank you [Dynamix Academy](https://www.youtube.com/channel/UCIwcIGHhKDM0Te6R2BuZ5_g))
+[![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://www.youtube.com/watch?v=oDadS8UPxmE "YouTube")
 
 ## Build instructions
 

@@ -364,41 +364,6 @@ export class Forms {
       });
   }
 
-  copyLookup() {
-    let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
-    if (currentControl && currentControl.getControlType() === 'lookup') {
-      let currentLookup = currentControl.getAttribute().getValue();
-      if (currentLookup) {
-        let serialisedLookupValue = JSON.stringify(
-          currentLookup.map((x: Xrm.Page.LookupValue) => {
-            let c: Xrm.Page.LookupValue;
-            ({ id: c.id, name: c.name, type: c.type, typename: c.typename, entityType: c.entityType } = x);
-            return c;
-          })
-        );
-        sessionStorage.setItem('ryr_serialisedLookup', serialisedLookupValue);
-        alert('Lookup copied. Ready to paste');
-      }
-    } else {
-      alert('No field has been selected or the currently selected field is not a lookup');
-    }
-  }
-
-  pasteLookup() {
-    let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
-    if (currentControl && currentControl.getControlType() === 'lookup') {
-      let currentLookup = currentControl.getAttribute();
-      let copiedLookupValue = sessionStorage.getItem('ryr_serialisedLookup');
-      if (copiedLookupValue) {
-        currentLookup.setValue(JSON.parse(copiedLookupValue));
-      } else {
-        alert('Please select a lookup to copy first before pasting');
-      }
-    } else {
-      alert('No field has been selected or the currently selected field is not a lookup');
-    }
-  }
-
   openLookupNewWindow() {
     let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
     if (currentControl.getControlType() === 'lookup') {
@@ -411,25 +376,6 @@ export class Forms {
       }
     } else {
       alert('The currently selected control is not a lookup');
-    }
-  }
-
-  customize() {
-    let etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
-    if (
-      (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
-      (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
-    ) {
-      window.open(
-        `https://make.powerapps.com/environments/${this.utility.environmentDetail.EnvironmentId}/solutions`,
-        '_blank'
-      );
-    } else if (
-      etc &&
-      Mscrm.RibbonActions.openEntityEditor &&
-      typeof Mscrm.RibbonActions.openEntityEditor === 'function'
-    ) {
-      Mscrm.RibbonActions.openEntityEditor(etc);
     }
   }
 
@@ -472,4 +418,29 @@ export class Forms {
       window.location.href = `${location.href}&ribbondebug=true`;
     }
   }
+
+  blurFields() {
+    setFilter(this.utility.Xrm.Page.getAttribute(), this.utility.formDocument, 'blur(5px)');
+  }
+
+  resetBlur() {
+    setFilter(this.utility.Xrm.Page.getAttribute(), this.utility.formDocument, '');
+  }
+}
+
+function setFilter(attributes, formDocument, filter) {
+  attributes.forEach((x) => {
+    let e = <HTMLDivElement>(
+      document.querySelector(`div[data-id="${x.getName()}-FieldSectionItemContainer"] div[data-lp-id]`)
+    );
+    if (e) {
+      e.style.filter = filter;
+    }
+  });
+  formDocument.querySelector(`h1[data-id='header_title']`).style.filter = filter;
+  formDocument
+    .querySelectorAll(
+      '.wj-row[aria-label="Data"], #headerControlsList > div[role="presentation"] > div:first-child, div[data-lp-id$="MscrmControls.FieldControls.TextBoxControl"], div[data-lp-id^="MscrmControls.Containers.QuickForm"] div[data-lp-id^="MscrmControls.FieldControls.TextBoxControl"]'
+    )
+    .forEach((e) => (e.style.filter = filter));
 }
