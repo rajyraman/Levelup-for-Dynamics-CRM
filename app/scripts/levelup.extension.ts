@@ -1,7 +1,7 @@
 /// <reference path="../tsd/xrm.d.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { IExtensionMessage, IRetrieveCurrentOrganizationResponse, IRetrieveCurrentOrganizationResponseDetail } from './interfaces/types';
+import { IExtensionMessage } from './interfaces/types';
 import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';
@@ -16,15 +16,12 @@ window.addEventListener('message', async function (event) {
 
   // home.dynamics.com also messaging. Ignore.
   if (location.origin !== event.origin) return;
-  // @ts-ignore
-  if (event.source.Xrm && event.data.type) {
+  const source = <Window>event.source;
+  if (source.Xrm && event.data.type) {
     let clientUrl =
-      // @ts-ignore
-      (event.source.Xrm.Page.context.getCurrentAppUrl &&
-        // @ts-ignore
-        event.source.Xrm.Page.context.getCurrentAppUrl()) ||
-      // @ts-ignore
-      event.source.Xrm.Page.context.getClientUrl();
+      (source.Xrm.Page.context.getCurrentAppUrl && source.Xrm.Page.context.getCurrentAppUrl()) ||
+      source.Xrm.Page.context.getClientUrl();
+
     // This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
     let cleanedClientUrl = !clientUrl.endsWith(Xrm.Page.context.getOrgUniqueName())
       ? clientUrl
@@ -37,19 +34,11 @@ window.addEventListener('message', async function (event) {
     if (!clientUrl.includes('main.aspx')) {
       clientUrlForParams += '/main.aspx';
     }
-    // @ts-ignore
-    const request = WebApiClient.Requests.RetrieveCurrentOrganizationRequest.with({
-      urlParams: {
-        AccessType: `Microsoft.Dynamics.CRM.EndpointAccessType'Default'`,
-      },
-    });
-    const environmentDetailResponse = <IRetrieveCurrentOrganizationResponse>await WebApiClient.Execute(request);    
-    // @ts-ignore
-    if (event.source.Xrm.Internal.isUci && Xrm.Internal.isUci()) {
+    if (source.Xrm.Internal.isUci && Xrm.Internal.isUci()) {
       formWindow = window;
       formDocument = document;
       xrm = window.Xrm;
-      utility = new Utility(formDocument, formWindow, xrm, clientUrl, environmentDetailResponse.Detail);
+      utility = new Utility(formDocument, formWindow, xrm, clientUrl);
     } else if (contentPanels && contentPanels.length > 0) {
       formWindow = contentPanels[0].contentWindow;
       formDocument = contentPanels[0].contentDocument;
@@ -59,9 +48,11 @@ window.addEventListener('message', async function (event) {
         formDocument = document;
         xrm = window.Xrm;
       }
-      utility = new Utility(formDocument, formWindow, xrm, clientUrl, environmentDetailResponse.Detail);
+      utility = new Utility(formDocument, formWindow, xrm, clientUrl);
     }
-
+    if (utility.is2016OrGreater) {
+      await utility.retrieveEnvironmentDetails();
+    }
     if ((<IExtensionMessage>event.data).category === 'Forms' && !xrm.Page.data) {
       alert('This command can only be performed in the context of a form');
       return;

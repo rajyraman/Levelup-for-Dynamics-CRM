@@ -101,3 +101,9 @@ export interface IRetrieveCurrentOrganizationResponseDetail {
   UniqueName: string;
   UrlName: string;
 }
+
+declare global {
+  interface Window {
+    Xrm: Xrm.XrmStatic
+  }
+}
