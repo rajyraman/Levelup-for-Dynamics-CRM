@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: 12.x
+        node-version: [12.x]
     env:
       filename: Levelup-for-Dynamics-365-Power-Apps
     
