@@ -22,7 +22,7 @@ jobs:
       matrix:
         node-version: [12.x]
     env:
-      filename: Levelup-for-Dynamics-365-Power-Apps
+      filename: levelup-for-dynamics-365-power-apps
     
     steps:
     - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-draft-release.outputs.upload_url }}
-        asset_path: packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
+        asset_path: ./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
         asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome-DRAFT.zip
         asset_content_type: application/zip    
     
@@ -84,6 +84,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
+        asset_path: ./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
         asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
         asset_content_type: application/zip
