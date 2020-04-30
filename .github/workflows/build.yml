@@ -6,6 +6,10 @@ name: build
 on:
   push:
     branches: [ master ]
+    tags:
+      - "v*"
+      - "-draft*"
+      - "-rc*"    
   pull_request:
     branches: [ master ]
 
