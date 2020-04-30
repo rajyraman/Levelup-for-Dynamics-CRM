@@ -36,8 +36,32 @@ jobs:
 
     - run: npm run pack
     
+    - name: Create Draft Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
+      id: create-draft-release
+      uses: actions/create-release@v1
+      if: contains(github.ref, '-draft')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}
+        draft: true
+        prerelease: true
+
+    - name: Upload Draft Release Asset for Chrome ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
+      id: draft-release-zip-file
+      uses: actions/upload-release-asset@v1
+      if: steps.create-draft-release.conclusion == 'success'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-draft-release.outputs.upload_url }}
+        asset_path: packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
+        asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome-DRAFT.zip
+        asset_content_type: application/zip    
+    
     - name: Create Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
-      id: create_release
+      id: create-release
       uses: actions/create-release@v1
       if: contains(github.ref, 'refs/tags/v')
       env:
@@ -51,11 +75,11 @@ jobs:
     - name: Upload Release Asset for Chrome ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
       id: release-zip-file
       uses: actions/upload-release-asset@v1
-      if: steps.create_release.conclusion == 'success'
+      if: steps.create-release.conclusion == 'success'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
         asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
         asset_content_type: application/zip
