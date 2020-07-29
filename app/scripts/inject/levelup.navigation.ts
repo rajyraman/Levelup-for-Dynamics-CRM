@@ -169,4 +169,10 @@ export class Navigation {
       this.openList('msdyn_solutionhistory');
     }
   }
+
+  debugRibbon() {
+    if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('ribbondebug=')) {
+      window.location.href = `${location.href}&ribbondebug=true`;
+    }
+  }
 }

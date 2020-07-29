@@ -413,12 +413,6 @@ export class Forms {
     this.utility.messageExtension(optionSets, 'optionsets');
   }
 
-  debugRibbon() {
-    if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('ribbondebug=')) {
-      window.location.href = `${location.href}&ribbondebug=true`;
-    }
-  }
-
   blurFields() {
     setFilter(this.utility.Xrm.Page.getAttribute(), this.utility.formDocument, 'blur(5px)');
   }
