@@ -4,6 +4,14 @@
 name: build
 
 on:
+  workflow_dispatch:
+    inputs:
+      productionRelease:
+        description: 'Release Package - Draft'     
+        default: false
+      draftRelease:
+        description: 'Release Package - Production'     
+        default: false        
   push:
     branches: [ master ]
     tags:
@@ -11,8 +19,7 @@ on:
       - "-draft*"
       - "-rc*"    
   pull_request:
-    branches: [ master ]
-
+    types: [opened, synchronize, reopened, closed]
 jobs:
   build:
 
@@ -43,7 +50,7 @@ jobs:
     - name: Create Draft Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
       id: create-draft-release
       uses: actions/create-release@v1
-      if: contains(github.ref, '-draft')
+      if: contains(github.ref, '-draft') || github.event.inputs.draftRelease
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -67,7 +74,7 @@ jobs:
     - name: Create Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
       id: create-release
       uses: actions/create-release@v1
-      if: contains(github.ref, 'refs/tags/v')
+      if: contains(github.ref, 'refs/tags/v') || github.event.inputs.productionRelease
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
