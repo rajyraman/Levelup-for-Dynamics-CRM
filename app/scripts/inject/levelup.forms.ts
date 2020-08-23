@@ -12,13 +12,13 @@ export class Forms {
 
   objectTypeCodes() {
     this.utility.fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode').then((records) => {
-      let resultsArray = [{cells: ['Entity Logical Name', 'Object Type Code']}];
+      let resultsArray = [{ cells: ['Entity Logical Name', 'Object Type Code'] }];
       // sort by object type code
       records.sort(function (r1, r2) {
         return r1.ObjectTypeCode - r2.ObjectTypeCode;
       });
       records.forEach(function (r) {
-        resultsArray.push({cells: [r.LogicalName, r.ObjectTypeCode]});
+        resultsArray.push({ cells: [r.LogicalName, r.ObjectTypeCode] });
       });
       this.utility.messageExtension(resultsArray, 'objectTypeCodes');
     });
@@ -337,8 +337,8 @@ export class Forms {
       attributes = attributes.toLowerCase();
     }
     let filter = this.utility.is2016OrGreater
-      ? `type eq 1 and ( category eq 2 or  category eq 0) and  primaryentity eq '${entityName}'`
-      : `Type/Value eq 1 and PrimaryEntity eq '${entityName}' and (Category/Value eq 0 or Category/Value eq 2)`;
+      ? `type eq 1 and (category eq 0 or category eq 2 or category eq 2 or category eq 3) and  primaryentity eq '${entityName}'`
+      : `Type/Value eq 1 and PrimaryEntity eq '${entityName}' and (Category/Value eq 0 or Category/Value eq 2 or Category/Value eq 3)`;
     this.utility
       .fetch(entitySetName, attributes, filter)
       .then((workflows) => {
@@ -353,12 +353,17 @@ export class Forms {
             { key: 'statecode', value: '' },
           ];
           Object.keys(workflow)
-            .filter((o) => o.indexOf('_') == -1 && o.indexOf('@') == -1)
+            .filter((o) => o.indexOf('_') === -1 && o.indexOf('@') === -1)
             .forEach((p) => {
               let keyName = p.toLowerCase(),
                 workflowKeyValue = workflow[p];
               if (keyName === 'category') {
-                workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Process' : 'Business Rule';
+                workflowKeyValue =
+                  workflowKeyValue === 0 || workflowKeyValue.Value === 0
+                    ? 'Process'
+                    : workflowKeyValue === 2 || workflowKeyValue.Value === 2
+                    ? 'Business Rule'
+                    : 'Action';
               } else if (keyName === 'mode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Background' : 'Real-time';
               } else if (keyName === 'ismanaged') {
@@ -366,7 +371,10 @@ export class Forms {
               } else if (keyName === 'statecode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Draft' : 'Activated';
               } else if (keyName === 'workflowid') {
-                workflowKeyValue = `${this.utility.clientUrlForParams}etn=workflow&id=${workflowKeyValue}&newWindow=true&pagetype=entityrecord`;
+                workflowKeyValue = `${this.utility.clientUrl.substr(
+                  0,
+                  this.utility.clientUrl.lastIndexOf('/')
+                )}/sfa/workflow/edit.aspx?id=${workflowKeyValue}&newWindow=true`;
               }
               resultRow.find((k) => k.key === keyName).value = workflowKeyValue;
             });
