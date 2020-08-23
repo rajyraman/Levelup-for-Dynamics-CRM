@@ -5,8 +5,23 @@ import { Utility } from './levelup.common.utility';
 import { IResultRowKeyValues } from '../interfaces/types';
 export class Forms {
   constructor(private utility: Utility) {}
+
   clearLogicalNames() {
     this.utility.formDocument.querySelectorAll('.levelupschema').forEach((x) => x.remove());
+  }
+
+  objectTypeCodes() {
+    this.utility.fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode').then((records) => {
+      let resultsArray = [{cells: ['Entity Logical Name', 'Object Type Code']}];
+      // sort by object type code
+      records.sort(function (r1, r2) {
+        return r1.ObjectTypeCode - r2.ObjectTypeCode;
+      });
+      records.forEach(function (r) {
+        resultsArray.push({cells: [r.LogicalName, r.ObjectTypeCode]});
+      });
+      this.utility.messageExtension(resultsArray, 'objectTypeCodes');
+    });
   }
 
   displayLogicalNames() {

@@ -131,4 +131,20 @@ export class Service {
         this.utility.messageExtension(resultsArray, 'allUserRoles');
       });
   }
+
+  objectTypeCodes() {
+    this.utility.fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode').then((records) => {
+      let resultsArray = [{ cells: ['Entity Logical Name', 'Object Type Code'] }];
+      // sort by object type code
+      records.sort(function (r1, r2) {
+        if (r1.LogicalName > r2.LogicalName) return 1;
+        else if (r1.LogicalName < r2.LogicalName) return -1;
+        return 0;
+      });
+      records.forEach(function (r) {
+        resultsArray.push({ cells: [r.LogicalName, r.ObjectTypeCode] });
+      });
+      this.utility.messageExtension(resultsArray, 'objectTypeCodes');
+    });
+  }
 }

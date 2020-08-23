@@ -54,6 +54,7 @@ export type Category =
   | 'Extension'
   | 'myRoles'
   | 'allFields'
+  | 'objectTypeCodes'
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
