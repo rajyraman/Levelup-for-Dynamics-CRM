@@ -5,6 +5,7 @@ import { Utility } from './levelup.common.utility';
 import { IResultRowKeyValues } from '../interfaces/types';
 export class Forms {
   constructor(private utility: Utility) {}
+
   clearLogicalNames() {
     this.utility.formDocument.querySelectorAll('.levelupschema').forEach((x) => x.remove());
   }
