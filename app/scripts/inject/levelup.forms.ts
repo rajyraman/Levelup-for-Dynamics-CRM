@@ -430,9 +430,9 @@ export class Forms {
   }
 
   optionSets() {
-    let optionSets = this.utility.Xrm.Page.getAttribute()
-      .filter((x) => x.getAttributeType() === 'optionset')
-      .map((x: Xrm.Page.OptionSetAttribute) => ({ name: x.getName(), options: x.getOptions() }));
+    let optionSets = this.utility.Xrm.Page.getControl()
+      .filter((x) => x.getControlType() === 'boolean' || x.getControlType() === 'optionset')
+      .map((x) => ({ name: x.getName(), options: (<Xrm.Page.OptionSetAttribute>x.getAttribute()).getOptions() }));
     this.utility.messageExtension(optionSets, 'optionsets');
   }
 
