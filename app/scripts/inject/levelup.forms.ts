@@ -10,7 +10,7 @@ export class Forms {
     this.utility.formDocument.querySelectorAll('.levelupschema').forEach((x) => x.remove());
   }
 
-  objectTypeCodes() {
+  entityMetadata() {
     this.utility.fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode').then((records) => {
       let resultsArray = [{ cells: ['Entity Logical Name', 'Object Type Code'] }];
       // sort by object type code
@@ -20,7 +20,7 @@ export class Forms {
       records.forEach(function (r) {
         resultsArray.push({ cells: [r.LogicalName, r.ObjectTypeCode] });
       });
-      this.utility.messageExtension(resultsArray, 'objectTypeCodes');
+      this.utility.messageExtension(resultsArray, 'entityMetadata');
     });
   }
 
@@ -81,6 +81,8 @@ export class Forms {
   }
 
   godMode() {
+    const selectedTab = Xrm.Page.ui.tabs.get((x) => x.getDisplayState() === 'expanded')[0];
+
     this.utility.Xrm.Page.data.entity.attributes.forEach((a) => a.setRequiredLevel('none'));
 
     this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
@@ -98,6 +100,11 @@ export class Forms {
       t.setDisplayState('expanded');
       t.sections.forEach((s) => s.setVisible(true));
     });
+
+    if (selectedTab.setFocus) {
+      selectedTab.setDisplayState('expanded');
+      selectedTab.setFocus();
+    }
   }
 
   formProperties() {

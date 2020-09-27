@@ -175,4 +175,10 @@ export class Navigation {
       window.location.href = `${location.href}&ribbondebug=true`;
     }
   }
+
+  formMonitor() {
+    if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('monitor=')) {
+      window.location.href = `${location.href}&monitor=true`;
+    }
+  }
 }

@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
       case 'myRoles':
       case 'allFields':
       case 'quickFindFields':
-      case 'objectTypeCodes':
+      case 'entityMetadata':
       case 'environment':
         content = message.content;
         chrome.tabs.create({

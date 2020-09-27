@@ -54,7 +54,7 @@ export type Category =
   | 'Extension'
   | 'myRoles'
   | 'allFields'
-  | 'objectTypeCodes'
+  | 'entityMetadata'
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
@@ -105,6 +105,6 @@ export interface IRetrieveCurrentOrganizationResponseDetail {
 
 declare global {
   interface Window {
-    Xrm: Xrm.XrmStatic
+    Xrm: Xrm.XrmStatic;
   }
 }

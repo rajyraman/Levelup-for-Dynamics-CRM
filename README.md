@@ -55,6 +55,8 @@ Action | What it does
 **Environment Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 **My Roles** | Displays the user roles, that you user record has.
 **User & Roles** | Displays the users and their roles.
+**Entity Metadata** | Displays Object Type Code, Collection Name, Change Tracking and Display Name of all entities
+**Forms Monitor** | Turns on Forms Monitor. Refer https://powerapps.microsoft.com/en-us/blog/troubleshoot-forms-in-a-model-driven-app/ for more information.
 
 ## YouTube Demo (Thank you [Dynamix Academy](https://www.youtube.com/channel/UCIwcIGHhKDM0Te6R2BuZ5_g))
 [![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://www.youtube.com/watch?v=oDadS8UPxmE "YouTube")

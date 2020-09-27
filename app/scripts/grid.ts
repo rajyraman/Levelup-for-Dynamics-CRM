@@ -12,7 +12,7 @@ chrome.runtime.sendMessage(
           '<tr>' +
           rows[i].cells
             .map((x, i) => {
-              return `<td class=${i % 2 === 0 ? 'name' : 'value'}>${x}</td>`;
+              return `<td class=${i % 2 === 0 ? 'name' : 'value'}>${x || ''}</td>`;
             })
             .join('') +
           '</tr>';
