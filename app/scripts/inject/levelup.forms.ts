@@ -81,7 +81,7 @@ export class Forms {
   }
 
   godMode() {
-    const selectedTab = Xrm.Page.ui.tabs.get((x) => x.getDisplayState() === 'expanded')[0];
+    const selectedTab = this.utility.Xrm.Page.ui.tabs.get((x) => x.getDisplayState() === 'expanded')[0];
 
     this.utility.Xrm.Page.data.entity.attributes.forEach((a) => a.setRequiredLevel('none'));
 

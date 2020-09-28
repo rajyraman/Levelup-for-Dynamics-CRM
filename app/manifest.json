@@ -26,6 +26,6 @@
   },
   "permissions": ["activeTab", "tabs"],
   "web_accessible_resources": ["/scripts/Sdk.Soap.min.js", "/scripts/levelup.extension.js"],
-  "version": "3.5.4",
+  "version": "3.5.5",
   "manifest_version": 2
 }
