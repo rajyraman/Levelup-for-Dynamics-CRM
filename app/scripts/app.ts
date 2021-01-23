@@ -17,6 +17,8 @@ class App {
   }
 
   start() {
+    chrome.storage.local.clear();
+
     this.hookupEventListeners();
     if (this.isCRMPage) {
       Utility.injectScript(chrome.extension.getURL('scripts/Sdk.Soap.min.js'));

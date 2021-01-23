@@ -38,10 +38,13 @@ export type MessageType =
   | 'environmentDetails'
   | 'myRoles'
   | 'allUserRoles'
+  | 'allUsers'
   | 'processes'
   | 'Settings'
   | 'Extension'
-  | 'Load';
+  | 'Load'
+  | 'Impersonate'
+  | 'API';
 
 export type Category =
   | 'Settings'
@@ -58,15 +61,18 @@ export type Category =
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
+  | 'allUsers'
   | 'optionsets'
-  | 'environment';
+  | 'environment'
+  | 'activation'
+  | 'changeUser'
 
 export type ExtensionState = 'On' | 'Off';
 
 export interface IExtensionMessage {
   type: MessageType;
   category?: Category;
-  content?: IResultRow[] | IResultRowKeyValues[][] | string;
+  content?: IResultRow[] | IResultRowKeyValues[][] | ImpersonateMessage | string;
 }
 
 export interface ICustomMessage extends Event {
@@ -86,6 +92,11 @@ export interface IResultRow {
 export interface IResultRowKeyValues {
   key: string;
   value: string;
+}
+
+export interface ImpersonateMessage {
+  UserId: string;
+  IsActive: boolean;
 }
 
 export interface IRetrieveCurrentOrganizationResponse {

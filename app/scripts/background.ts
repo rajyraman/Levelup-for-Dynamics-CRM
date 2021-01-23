@@ -1,10 +1,24 @@
-import { IResultRow, IResultRowKeyValues, IExtensionMessage } from './interfaces/types';
+import { IResultRow, IResultRowKeyValues, IExtensionMessage, ImpersonateMessage } from './interfaces/types';
 
-let content: IResultRow[] | IResultRowKeyValues[][] | string;
+let content: IResultRow[] | IResultRowKeyValues[][] | ImpersonateMessage | string;
+let userId: string;
+
 chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
   if (message.type === 'Page') {
     let c = message.category.toString();
     switch (c) {
+      case 'allUsers':
+        chrome.tabs.query({ active: true }, function (tabs) {
+          chrome.tabs.sendMessage(
+            tabs[0].id,
+            {
+              category: "allUsers",
+              type: "Background",
+              content: message.content
+            }
+          )
+        });
+        break;
       case 'Settings':
         content = message.content;
         chrome.tabs.create({
@@ -49,11 +63,52 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
       default:
         break;
     }
+  } else if (message.type === 'Impersonate') {
+    let category = message.category;
+    let impersonizationMessage = <ImpersonateMessage>message.content;
+
+    switch (category) {
+      case 'activation':
+        userId = impersonizationMessage.UserId;
+
+        chrome.webRequest.onBeforeSendHeaders.removeListener(headerListener);
+
+        if (impersonizationMessage.IsActive) {
+          chrome.webRequest.onBeforeSendHeaders.addListener(
+            headerListener,
+            {
+              urls: ['*://*.dynamics.com/api/*']
+            },
+            ['blocking', 'requestHeaders', 'extraHeaders']
+          );
+        }
+        break;
+      case 'changeUser':
+        userId = impersonizationMessage.UserId;
+        break;
+    }
+  } else if (message.type === 'API') {
+    let c = message.category.toString();
+    switch (c) {
+      case 'allUsers':
+        chrome.tabs.query(
+          {
+            active: true
+          },
+          function (tabs) {
+            chrome.tabs.executeScript(tabs[0].id, {
+              code: `window.postMessage({ type: '${c}', category: '${message.type}' }, '*');`,
+            }
+            );
+          }
+        );
+        break;
+    }
   } else {
     chrome.tabs.query(
       {
         active: true,
-        currentWindow: true,
+        currentWindow: true
       },
       function (tabs) {
         if (!tabs || tabs.length === 0) return;
@@ -64,3 +119,12 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
     );
   }
 });
+
+function headerListener(details: chrome.webRequest.WebRequestHeadersDetails) {
+  details.requestHeaders.push({
+    name: 'MSCRMCallerID',
+    value: userId
+  });
+
+  return { requestHeaders: details.requestHeaders };
+}

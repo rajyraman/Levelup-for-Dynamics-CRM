@@ -3,7 +3,7 @@
 import { Utility } from './levelup.common.utility';
 
 export class Service {
-  constructor(private utility: Utility) {}
+  constructor(private utility: Utility) { }
 
   environmentDetails() {
     if (!this.utility.is2016OrGreater) {
@@ -129,6 +129,40 @@ export class Service {
           });
         });
         this.utility.messageExtension(resultsArray, 'allUserRoles');
+      })
+      .catch((err) => {
+        console.log(err);
+      });;
+  }
+
+  allUsers() {
+    this.utility
+      .fetch(
+        'systemusers',
+        null,
+        null,
+        null,
+        `
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+          <entity name="systemuser" >
+            <attribute name="fullname" />
+            <attribute name="systemuserid" />
+            <filter>
+              <condition attribute="islicensed" operator="eq" value="1" />
+              <condition attribute="isdisabled" operator="eq" value="0" />
+            </filter>
+            <order attribute="fullname" descending="false" />
+            <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" visible="false" intersect="true" >
+              <link-entity name="role" from="roleid" to="roleid" alias="r" />
+            </link-entity>
+          </entity>
+        </fetch>`
+      )
+      .then((entities) => {
+        this.utility.messageExtension(entities, 'allUsers');
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 
