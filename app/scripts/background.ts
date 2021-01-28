@@ -3,6 +3,8 @@ import { IResultRow, IResultRowKeyValues, IExtensionMessage, ImpersonateMessage 
 let content: IResultRow[] | IResultRowKeyValues[][] | ImpersonateMessage | string;
 let userId: string;
 
+chrome.storage.local.clear();
+
 chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
   if (message.type === 'Page') {
     let c = message.category.toString();
@@ -77,7 +79,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
           chrome.webRequest.onBeforeSendHeaders.addListener(
             headerListener,
             {
-              urls: ['*://*.dynamics.com/api/*']
+              urls: [impersonizationMessage.Url + 'api/*']
             },
             ['blocking', 'requestHeaders', 'extraHeaders']
           );

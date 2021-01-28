@@ -97,6 +97,7 @@ export interface IResultRowKeyValues {
 export interface ImpersonateMessage {
   UserId: string;
   IsActive: boolean;
+  Url: string;
 }
 
 export interface IRetrieveCurrentOrganizationResponse {

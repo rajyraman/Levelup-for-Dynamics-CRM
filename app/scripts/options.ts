@@ -67,20 +67,25 @@ window.addEventListener('DOMContentLoaded', function () {
 
       let userId = (<HTMLSelectElement>document.getElementById("users-dropdown")).value;
 
-      let msg: IExtensionMessage = <IExtensionMessage>{
-        type: 'Impersonate',
-        category: 'activation',
-        content: {
-          IsActive: checked,
-          UserId: userId
-        }
-      };
+      chrome.tabs.query({ active: true }, function (tabs) {
+        var url = tabs[0].url.split('main.aspx')[0];
 
-      chrome.storage.local.set({
-        'impersonizationOn': onOff,
+        let msg: IExtensionMessage = <IExtensionMessage>{
+          type: 'Impersonate',
+          category: 'activation',
+          content: {
+            IsActive: checked,
+            UserId: userId,
+            Url: url
+          }
+        };
+
+        chrome.storage.local.set({
+          'impersonizationOn': onOff,
+        });
+
+        chrome.runtime.sendMessage(msg);
       });
-
-      chrome.runtime.sendMessage(msg);
     });
 
   document.getElementById("users-dropdown").addEventListener(

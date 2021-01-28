@@ -1,7 +1,7 @@
 /// <reference path="inject/levelup.common.utility.ts" />
 
 import { Utility } from './inject/levelup.common.utility';
-import { ICustomMessage, IExtensionMessage, AreaType } from './interfaces/types';
+import { ICustomMessage, IExtensionMessage, AreaType, ImpersonateMessage } from './interfaces/types';
 
 class App {
   isCRMPage: boolean;
@@ -17,7 +17,7 @@ class App {
   }
 
   start() {
-    chrome.storage.local.clear();
+    this.initializeStorage();
 
     this.hookupEventListeners();
     if (this.isCRMPage) {
@@ -27,6 +27,18 @@ class App {
     } else {
       Utility.enableExtension(false);
     }
+  }
+
+  private initializeStorage(){
+    chrome.storage.local.get(["lastUrl"], function (result) {
+      let lastUrl = result["lastUrl"];
+      let currentUrl = document.location.origin;
+
+      if (lastUrl != currentUrl) {
+        chrome.storage.local.clear();
+        chrome.storage.local.set({ 'lastUrl': currentUrl });
+      }
+    });
   }
 
   private hookupEventListeners() {
