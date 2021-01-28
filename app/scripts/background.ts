@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
 
 function headerListener(details: chrome.webRequest.WebRequestHeadersDetails) {
   details.requestHeaders.push({
-    name: 'MSCRMCallerID',
+    name: 'CallerObjectId',
     value: userId
   });
 

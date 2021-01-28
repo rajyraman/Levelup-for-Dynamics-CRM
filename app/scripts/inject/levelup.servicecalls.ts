@@ -146,7 +146,7 @@ export class Service {
         <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
           <entity name="systemuser" >
             <attribute name="fullname" />
-            <attribute name="systemuserid" />
+            <attribute name="azureactivedirectoryobjectid" />
             <filter>
               <condition attribute="islicensed" operator="eq" value="1" />
               <condition attribute="isdisabled" operator="eq" value="0" />

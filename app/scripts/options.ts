@@ -141,7 +141,7 @@ function populateUsersDropdown(users) {
 
   for (var i = 0; i < users.length; i++) {
     let opt = document.createElement('option');
-    opt.value = users[i].systemuserid;
+    opt.value = users[i].azureactivedirectoryobjectid;
     opt.innerHTML = users[i].fullname;
     select.appendChild(opt);
   }
