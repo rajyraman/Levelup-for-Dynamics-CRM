@@ -1,12 +1,11 @@
-import { IExtensionMessage } from './interfaces/types';
+import { IExtensionMessage, LocalStorage, IExtensionLocalStorage } from './interfaces/types';
 
 chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, response) => {
-  if (message.type === "Page") {
+  if (message.type === 'Page') {
     switch (message.category) {
-
-      case "allUsers":
+      case 'allUsers':
         chrome.storage.local.set({
-          'usersList': message.content
+          [LocalStorage.usersList]: message.content,
         });
 
         populateUsersDropdown(message.content);
@@ -40,6 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     false
   );
+
   document.querySelector('#environmentLinks').addEventListener(
     'click',
     function (e) {
@@ -54,78 +54,70 @@ window.addEventListener('DOMContentLoaded', function () {
     false
   );
 
-  document.getElementById("impersonate-toggle").addEventListener(
-    "change",
-    function () {
-      let checboxElement = <HTMLInputElement>document.getElementById("impersonate-toggle");
-      let checkboxLabel = <HTMLInputElement>document.getElementById("impersonate-cbx-label");
+  document.getElementById('impersonate-toggle').addEventListener('change', function () {
+    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+    let checkboxLabel = <HTMLInputElement>document.getElementById('impersonate-cbx-label');
 
-      let checked = checboxElement.checked;
+    checkboxLabel.innerHTML = checkboxElement.checked ? 'IMPERSONATING' : '';
 
-      let onOff = checked ? "on" : "off";
-      checkboxLabel.innerHTML = onOff.toUpperCase();
+    let selectedUser = (<HTMLSelectElement>document.getElementById('users-dropdown'));
 
-      let userId = (<HTMLSelectElement>document.getElementById("users-dropdown")).value;
-
-      chrome.tabs.query({ active: true }, function (tabs) {
-        var url = tabs[0].url.split('main.aspx')[0];
-
-        let msg: IExtensionMessage = <IExtensionMessage>{
-          type: 'Impersonate',
-          category: 'activation',
-          content: {
-            IsActive: checked,
-            UserId: userId,
-            Url: url
-          }
-        };
-
-        chrome.storage.local.set({
-          'impersonizationOn': onOff,
-        });
-
-        chrome.runtime.sendMessage(msg);
-      });
-    });
-
-  document.getElementById("users-dropdown").addEventListener(
-    "change",
-    function () {
-      let userId = (<HTMLSelectElement>document.getElementById("users-dropdown")).value;
-      let checboxElement = <HTMLInputElement>document.getElementById("impersonate-toggle");
-
-      let checked = checboxElement.checked;
+    chrome.tabs.query({ active: true }, function (tabs) {
+      var url = tabs[0].url.split('main.aspx')[0];
 
       let msg: IExtensionMessage = <IExtensionMessage>{
         type: 'Impersonate',
-        category: 'changeUser',
+        category: 'activation',
         content: {
-          IsActive: checked,
-          UserId: userId
-        }
+          IsActive: checkboxElement.checked,
+          UserId: selectedUser.value,
+          Url: url,
+        },
       };
 
       chrome.storage.local.set({
-        'userId': userId,
+        [LocalStorage.isImpersonating]: checkboxElement.checked,
+        [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text
       });
 
       chrome.runtime.sendMessage(msg);
     });
+  });
+
+  document.getElementById('users-dropdown').addEventListener('change', function () {
+    let userId = (<HTMLSelectElement>document.getElementById('users-dropdown')).value;
+    let checboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+
+    let checked = checboxElement.checked;
+
+    let msg: IExtensionMessage = <IExtensionMessage>{
+      type: 'Impersonate',
+      category: 'changeUser',
+      content: {
+        IsActive: checked,
+        UserId: userId,
+      },
+    };
+
+    chrome.storage.local.set({
+      [LocalStorage.userId]: userId,
+    });
+
+    chrome.runtime.sendMessage(msg);
+  });
 
   initImpersonateTab();
 });
 
 function initImpersonateTab() {
-  chrome.storage.local.get(["usersList"], function (result) {
-    let users = result["usersList"];
+  chrome.storage.local.get([LocalStorage.usersList], function (result: IExtensionLocalStorage) {
+    let users = result.usersList;
 
-    if (users === undefined) {
-      chrome.runtime.sendMessage(
-        {
-          category: "allUsers",
-          type: "API",
-        }
-      );
+    if (!users) {
+      chrome.runtime.sendMessage({
+        category: 'allUsers',
+        type: 'API',
+      });
     } else {
       populateUsersDropdown(users);
     }
@@ -150,26 +142,30 @@ function populateUsersDropdown(users) {
 }
 
 function setSavedValues() {
-  chrome.storage.local.get(['userId', 'impersonizationOn'], function (result) {
-    let onOff = result['impersonizationOn'] || "off";
-    let userId = result['userId'];
+  chrome.storage.local.get([LocalStorage.userId, LocalStorage.isImpersonating], function (
+    result: IExtensionLocalStorage
+  ) {
+    let isImpersonating = result.isImpersonating || false;
+    let userId = result.userId;
 
-    let selectElement = <HTMLInputElement>document.getElementById("impersonate-toggle");
+    let selectElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
 
-    if (onOff == "on") {
-      selectElement.parentElement.classList.add("is-checked");
+    if (isImpersonating) {
+      selectElement.parentElement.classList.add('is-checked');
     } else {
-      selectElement.parentElement.classList.remove("is-checked");
+      selectElement.parentElement.classList.remove('is-checked');
     }
 
-    selectElement.checked = onOff === "on";
-    (<HTMLInputElement>document.getElementById("impersonate-cbx-label")).innerHTML = onOff.toUpperCase();
+    selectElement.checked = isImpersonating;
+    (<HTMLInputElement>document.getElementById('impersonate-cbx-label')).innerHTML = selectElement.checked
+      ? 'IMPERSONATING'
+      : '';
 
-    let dropdown = <HTMLSelectElement>document.getElementById("users-dropdown");
-    dropdown.value = userId === undefined ? null : userId;
+    let dropdown = <HTMLSelectElement>document.getElementById('users-dropdown');
+    dropdown.value = userId;
 
-    if (userId !== undefined) {
-      dropdown.parentElement.classList.add('is-dirty')
+    if (userId) {
+      dropdown.parentElement.classList.add('is-dirty');
     }
   });
 }

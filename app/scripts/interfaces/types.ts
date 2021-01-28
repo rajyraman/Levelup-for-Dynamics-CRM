@@ -65,14 +65,14 @@ export type Category =
   | 'optionsets'
   | 'environment'
   | 'activation'
-  | 'changeUser'
+  | 'changeUser';
 
 export type ExtensionState = 'On' | 'Off';
 
 export interface IExtensionMessage {
   type: MessageType;
   category?: Category;
-  content?: IResultRow[] | IResultRowKeyValues[][] | ImpersonateMessage | string;
+  content?: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
 }
 
 export interface ICustomMessage extends Event {
@@ -94,7 +94,7 @@ export interface IResultRowKeyValues {
   value: string;
 }
 
-export interface ImpersonateMessage {
+export interface IImpersonateMessage {
   UserId: string;
   IsActive: boolean;
   Url: string;
@@ -119,4 +119,22 @@ declare global {
   interface Window {
     Xrm: Xrm.XrmStatic;
   }
+}
+
+export enum LocalStorage {
+  lastUrl = 'lastUrl',
+  currentUrl = 'currentUrl',
+  usersList = 'usersList',
+  isImpersonating = 'isImpersonating',
+  userId = 'userId',
+  userName = 'userName',
+}
+
+export interface IExtensionLocalStorage {
+  lastUrl: string;
+  currentUrl: string;
+  usersList: any[];
+  isImpersonating: boolean;
+  userId: string;
+  userName: string;
 }

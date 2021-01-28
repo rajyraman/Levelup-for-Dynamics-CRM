@@ -47,7 +47,6 @@
     "gulp-less": "4.x.x",
     "gulp-livereload": "4.x.x",
     "gulp-plumber": "1.x.x",
-    "gulp-sass": "^4.x.x",
     "gulp-sourcemaps": "^2.x.x",
     "gulp-tag-version": "1.x.x",
     "gulp-util": "3.x.x",

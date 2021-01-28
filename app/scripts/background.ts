@@ -1,6 +1,13 @@
-import { IResultRow, IResultRowKeyValues, IExtensionMessage, ImpersonateMessage } from './interfaces/types';
+import {
+  IResultRow,
+  IResultRowKeyValues,
+  IExtensionMessage,
+  IImpersonateMessage,
+  LocalStorage,
+  IExtensionLocalStorage,
+} from './interfaces/types';
 
-let content: IResultRow[] | IResultRowKeyValues[][] | ImpersonateMessage | string;
+let content: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
 let userId: string;
 
 chrome.storage.local.clear();
@@ -11,14 +18,11 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
     switch (c) {
       case 'allUsers':
         chrome.tabs.query({ active: true }, function (tabs) {
-          chrome.tabs.sendMessage(
-            tabs[0].id,
-            {
-              category: "allUsers",
-              type: "Background",
-              content: message.content
-            }
-          )
+          chrome.tabs.sendMessage(tabs[0].id, {
+            category: 'allUsers',
+            type: 'Background',
+            content: message.content,
+          });
         });
         break;
       case 'Settings':
@@ -44,8 +48,28 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
         });
         break;
       case 'Extension':
-        if (message.content === 'On') chrome.browserAction.enable(sender.tab.id);
-        else if (message.content === 'Off') chrome.browserAction.disable(sender.tab.id);
+        if (message.content === 'On') {
+          chrome.browserAction.enable(sender.tab.id);
+          chrome.storage.local.get([LocalStorage.isImpersonating, LocalStorage.userName], function (
+            result: IExtensionLocalStorage
+          ) {
+            if (result.isImpersonating) {
+              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: [255, 0, 0, 255] });
+              chrome.browserAction.setTitle({ tabId: sender.tab.id, title: `Impersonating ${result.userName}` });
+              chrome.browserAction.setBadgeText({
+                tabId: sender.tab.id,
+                text: result.userName
+                  .split(' ')
+                  .map((x) => x[0])
+                  .join(''),
+              });
+            } else {
+              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: null });
+              chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: null });
+              chrome.browserAction.setTitle({ tabId: sender.tab.id, title: '' });
+            }
+          });
+        } else if (message.content === 'Off') chrome.browserAction.disable(sender.tab.id);
         break;
       case 'Load':
         sendResponse(content);
@@ -67,7 +91,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
     }
   } else if (message.type === 'Impersonate') {
     let category = message.category;
-    let impersonizationMessage = <ImpersonateMessage>message.content;
+    let impersonizationMessage = <IImpersonateMessage>message.content;
 
     switch (category) {
       case 'activation':
@@ -79,7 +103,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
           chrome.webRequest.onBeforeSendHeaders.addListener(
             headerListener,
             {
-              urls: [impersonizationMessage.Url + 'api/*']
+              urls: [impersonizationMessage.Url + 'api/*'],
             },
             ['blocking', 'requestHeaders', 'extraHeaders']
           );
@@ -95,13 +119,12 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
       case 'allUsers':
         chrome.tabs.query(
           {
-            active: true
+            active: true,
           },
           function (tabs) {
             chrome.tabs.executeScript(tabs[0].id, {
               code: `window.postMessage({ type: '${c}', category: '${message.type}' }, '*');`,
-            }
-            );
+            });
           }
         );
         break;
@@ -110,7 +133,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
     chrome.tabs.query(
       {
         active: true,
-        currentWindow: true
+        currentWindow: true,
       },
       function (tabs) {
         if (!tabs || tabs.length === 0) return;
@@ -125,7 +148,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
 function headerListener(details: chrome.webRequest.WebRequestHeadersDetails) {
   details.requestHeaders.push({
     name: 'CallerObjectId',
-    value: userId
+    value: userId,
   });
 
   return { requestHeaders: details.requestHeaders };
