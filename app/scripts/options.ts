@@ -85,7 +85,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('users-dropdown').addEventListener('change', function () {
-    let userId = (<HTMLSelectElement>document.getElementById('users-dropdown')).value;
+    let selectedUser = (<HTMLSelectElement>document.getElementById('users-dropdown'));
     let checboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
 
     let checked = checboxElement.checked;
@@ -95,12 +95,13 @@ window.addEventListener('DOMContentLoaded', function () {
       category: 'changeUser',
       content: {
         IsActive: checked,
-        UserId: userId,
+        UserId: selectedUser.value,
       },
     };
 
     chrome.storage.local.set({
-      [LocalStorage.userId]: userId,
+      [LocalStorage.userId]: selectedUser.value,
+      [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text
     });
 
     chrome.runtime.sendMessage(msg);

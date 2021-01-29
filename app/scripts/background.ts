@@ -48,27 +48,9 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
         });
         break;
       case 'Extension':
+        renderBadge();
         if (message.content === 'On') {
           chrome.browserAction.enable(sender.tab.id);
-          chrome.storage.local.get([LocalStorage.isImpersonating, LocalStorage.userName], function (
-            result: IExtensionLocalStorage
-          ) {
-            if (result.isImpersonating) {
-              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: [255, 0, 0, 255] });
-              chrome.browserAction.setTitle({ tabId: sender.tab.id, title: `Impersonating ${result.userName}` });
-              chrome.browserAction.setBadgeText({
-                tabId: sender.tab.id,
-                text: result.userName
-                  .split(' ')
-                  .map((x) => x[0])
-                  .join(''),
-              });
-            } else {
-              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: [0, 0, 0, 0] });
-              chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: null });
-              chrome.browserAction.setTitle({ tabId: sender.tab.id, title: '' });
-            }
-          });
         } else if (message.content === 'Off') chrome.browserAction.disable(sender.tab.id);
         break;
       case 'Load':
@@ -92,6 +74,8 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
   } else if (message.type === 'Impersonate') {
     let category = message.category;
     let impersonizationMessage = <IImpersonateMessage>message.content;
+
+    renderBadge();
 
     switch (category) {
       case 'activation':
@@ -152,4 +136,25 @@ function headerListener(details: chrome.webRequest.WebRequestHeadersDetails) {
   });
 
   return { requestHeaders: details.requestHeaders };
+}
+
+function renderBadge(){
+  chrome.storage.local.get([LocalStorage.isImpersonating, LocalStorage.userName], function (
+    result: IExtensionLocalStorage
+  ) {
+    if (result.isImpersonating) {
+      chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+      chrome.browserAction.setTitle({ title: `Impersonating ${result.userName}` });
+      chrome.browserAction.setBadgeText({
+        text: result.userName
+          .split(' ')
+          .map((x) => x[0])
+          .join(''),
+      });
+    } else {
+      chrome.browserAction.setBadgeBackgroundColor({ color: [0, 0, 0, 0] });
+      chrome.browserAction.setBadgeText({ text: null });
+      chrome.browserAction.setTitle({ title: '' });
+    }
+  });
 }
