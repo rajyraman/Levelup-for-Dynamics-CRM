@@ -1,7 +1,7 @@
 {
   "name": "levelup-for-dynamics-365-power-apps",
   "private": true,
-  "version": "3.5.5",
+  "version": "3.5.6",
   "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
   "scripts": {
     "start": "npm run dev:chrome",

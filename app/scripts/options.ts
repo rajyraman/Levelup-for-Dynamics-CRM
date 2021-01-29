@@ -68,7 +68,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     checkboxLabel.innerHTML = checkboxElement.checked ? 'IMPERSONATING' : '';
 
-    let selectedUser = (<HTMLSelectElement>document.getElementById('users-dropdown'));
+    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
 
     chrome.tabs.query({ active: true }, function (tabs) {
       var url = tabs[0].url.split('main.aspx')[0];
@@ -85,18 +85,19 @@ window.addEventListener('DOMContentLoaded', function () {
 
       chrome.storage.local.set({
         [LocalStorage.isImpersonating]: checkboxElement.checked,
-        [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text
+        [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
       });
 
       chrome.runtime.sendMessage(msg);
+      chrome.tabs.reload(tabs[0].id, { bypassCache: true });
     });
   });
 
   document.getElementById('users-dropdown').addEventListener('change', function () {
-    let selectedUser = (<HTMLSelectElement>document.getElementById('users-dropdown'));
-    let checboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
+    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
 
-    let checked = checboxElement.checked;
+    let checked = checkboxElement.checked;
 
     let msg: IExtensionMessage = <IExtensionMessage>{
       type: 'Impersonate',
@@ -109,7 +110,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     chrome.storage.local.set({
       [LocalStorage.userId]: selectedUser.value,
-      [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text
+      [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
     });
 
     chrome.runtime.sendMessage(msg);
