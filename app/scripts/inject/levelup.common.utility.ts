@@ -115,7 +115,7 @@ export class Utility {
       });
   }
 
-  messageExtension(message: any[], category: Category): void {
+  messageExtension(message: any[] | boolean, category: Category): void {
     let extensionMessage = {
       type: 'Page',
       category: category,

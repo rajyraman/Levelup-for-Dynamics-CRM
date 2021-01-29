@@ -65,7 +65,8 @@ export type Category =
   | 'optionsets'
   | 'environment'
   | 'activation'
-  | 'changeUser';
+  | 'changeUser'
+  | 'canImpersonate';
 
 export type ExtensionState = 'On' | 'Off';
 
@@ -128,6 +129,7 @@ export enum LocalStorage {
   isImpersonating = 'isImpersonating',
   userId = 'userId',
   userName = 'userName',
+  canImpersonate = 'canImpersonate'
 }
 
 export interface IExtensionLocalStorage {
@@ -137,4 +139,5 @@ export interface IExtensionLocalStorage {
   isImpersonating: boolean;
   userId: string;
   userName: string;
+  canImpersonate: boolean;
 }
