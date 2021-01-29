@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
                   .join(''),
               });
             } else {
-              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: null });
+              chrome.browserAction.setBadgeBackgroundColor({ tabId: sender.tab.id, color: [0, 0, 0, 0] });
               chrome.browserAction.setBadgeText({ tabId: sender.tab.id, text: null });
               chrome.browserAction.setTitle({ tabId: sender.tab.id, title: '' });
             }

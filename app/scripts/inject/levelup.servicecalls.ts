@@ -3,7 +3,7 @@
 import { Utility } from './levelup.common.utility';
 
 export class Service {
-  constructor(private utility: Utility) { }
+  constructor(private utility: Utility) {}
 
   environmentDetails() {
     if (!this.utility.is2016OrGreater) {
@@ -132,10 +132,12 @@ export class Service {
       })
       .catch((err) => {
         console.log(err);
-      });;
+      });
   }
 
   allUsers() {
+    const userId =
+      this.utility.Xrm?.Utility?.getGlobalContext()?.getUserId() ?? this.utility.Xrm.Page.context.getUserId();
     this.utility
       .fetch(
         'systemusers',
@@ -150,6 +152,7 @@ export class Service {
             <filter>
               <condition attribute="islicensed" operator="eq" value="1" />
               <condition attribute="isdisabled" operator="eq" value="0" />
+              <condition attribute='systemuserid' operator='neq' value='${userId}' />              
             </filter>
             <order attribute="fullname" descending="false" />
             <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" visible="false" intersect="true" >
