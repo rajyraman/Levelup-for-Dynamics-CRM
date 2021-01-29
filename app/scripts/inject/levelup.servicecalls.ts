@@ -86,24 +86,24 @@ export class Service {
         null,
         null,
         `
-            <fetch>
-                <entity name="systemuser" >
-                    <attribute name="domainname" />
-                    <attribute name="businessunitid" />
-                    <attribute name="fullname" />
-                    <filter>
-                        <condition entityname="role" attribute="parentroleid" operator="null" />
-                    </filter>
-                    <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" link-type="outer" alias="systemuserroles" >
-                        <attribute name="roleid" />
-                        <attribute name="systemuserid" />
-                        <link-entity name="role" from="roleid" to="roleid" link-type="outer" alias="role" >
-                            <attribute name="name" />
-                            <order attribute="name" />
-                        </link-entity>
-                    </link-entity>
-                </entity>
-            </fetch>`
+        <fetch>
+          <entity name='systemuser' >
+              <attribute name='domainname' />
+              <attribute name='businessunitid' />
+              <attribute name='fullname' />
+              <filter>
+                  <condition entityname='role' attribute='parentroleid' operator='null' />
+              </filter>
+              <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' link-type='outer' alias='systemuserroles' >
+                  <attribute name='roleid' />
+                  <attribute name='systemuserid' />
+                  <link-entity name='role' from='roleid' to='roleid' link-type='outer' alias='role' >
+                      <attribute name='name' />
+                      <order attribute='name' />
+                  </link-entity>
+              </link-entity>
+          </entity>
+        </fetch>`
       )
       .then((entities) => {
         console.log(entities);
@@ -145,18 +145,18 @@ export class Service {
         null,
         null,
         `
-        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
-          <entity name="systemuser" >
-            <attribute name="fullname" />
-            <attribute name="azureactivedirectoryobjectid" />
+        <fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
+          <entity name='systemuser' >
+            <attribute name='fullname' />
+            <attribute name='azureactivedirectoryobjectid' />
             <filter>
-              <condition attribute="islicensed" operator="eq" value="1" />
-              <condition attribute="isdisabled" operator="eq" value="0" />
+              <condition attribute='islicensed' operator='eq' value='1' />
+              <condition attribute='isdisabled' operator='eq' value='0' />
               <condition attribute='systemuserid' operator='neq' value='${userId}' />              
             </filter>
-            <order attribute="fullname" descending="false" />
-            <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" visible="false" intersect="true" >
-              <link-entity name="role" from="roleid" to="roleid" alias="r" />
+            <order attribute='fullname' descending='false' />
+            <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' visible='false' intersect='true' >
+              <link-entity name='role' from='roleid' to='roleid' alias='r' />
             </link-entity>
           </entity>
         </fetch>`
