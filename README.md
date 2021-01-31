@@ -6,8 +6,13 @@ Chrome Extension for Dynamics CRM/365/ Power Apps Power users
 ![Level up screenshot](/screenshots/Levelup.png)
 
 ## Usage
-Install the extension from Chrome Store. https://chrome.google.com/webstore/detail/level-up-for-dynamics-crm/bjnkkhimoaclnddigpphpgkfgeggokam
-or from Firefox Addons. https://addons.mozilla.org/en-US/firefox/addon/level-up-for-d365-power-apps/
+You can install the extension on Edge, Firefox and Chrome.
+
+Browser | Store Link
+--- | ---
+**Chrome** | https://chrome.google.com/webstore/detail/level-up-for-dynamics-crm/bjnkkhimoaclnddigpphpgkfgeggokam
+**Firefox** | https://addons.mozilla.org/en-US/firefox/addon/level-up-for-d365-power-apps/
+**Edge** | https://microsoftedge.microsoft.com/addons/detail/level-up-for-dynamics-365/mdjlgdkgmhlmcikdmeehcecolehipicf
 
 ## Detailed Functionality
 
@@ -57,6 +62,7 @@ Action | What it does
 **User & Roles** | Displays the users and their roles.
 **Entity Metadata** | Displays Object Type Code, Collection Name, Change Tracking and Display Name of all entities
 **Forms Monitor** | Turns on Forms Monitor. Refer https://powerapps.microsoft.com/en-us/blog/troubleshoot-forms-in-a-model-driven-app/ for more information.
+**Impersonate** | Impersonate a user in model driven app. Works only on Edge and Chrome + Online. Created by [Ivan Ficko](https://dynamicsninja.blog/)
 
 ## YouTube Demo (Thank you [Dynamix Academy](https://www.youtube.com/channel/UCIwcIGHhKDM0Te6R2BuZ5_g))
 [![YouTube Demo](/screenshots/YouTubeVideoThumbnail.jpg)](https://www.youtube.com/watch?v=oDadS8UPxmE "YouTube")
@@ -99,7 +105,7 @@ if(process.env.NODE_ENV === 'development'){
 ```
 
 ## Credits
-* [Impersonation by Ivan Fico](https://dynamicsninja.blog/)
+* [Impersonation by Ivan Ficko](https://dynamicsninja.blog/)
 * [God mode adapted from original script by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
 * [Customize by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/28/customize-and-publish-from-crm-2013-forms-with-bookmarklets/)
 * [Form Properties by Jared Johnson](http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
