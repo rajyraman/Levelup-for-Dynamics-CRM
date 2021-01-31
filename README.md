@@ -99,6 +99,7 @@ if(process.env.NODE_ENV === 'development'){
 ```
 
 ## Credits
+* [Impersonation by Ivan Fico](https://dynamicsninja.blog/)
 * [God mode adapted from original script by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
 * [Customize by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/28/customize-and-publish-from-crm-2013-forms-with-bookmarklets/)
 * [Form Properties by Jared Johnson](http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
