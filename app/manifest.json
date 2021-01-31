@@ -1,7 +1,9 @@
 {
   "background": {
-    "scripts": ["/scripts/background.js"],
-    "persistant": false
+    "scripts": [
+      "/scripts/background.js"
+    ],
+    "persistant": true
   },
   "browser_action": {
     "default_icon": {
@@ -15,8 +17,13 @@
   "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["/scripts/app.js"]
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "/scripts/app.js"
+      ]
     }
   ],
   "icons": {
@@ -24,8 +31,18 @@
     "48": "icon-48.png",
     "128": "icon-128.png"
   },
-  "permissions": ["activeTab", "tabs"],
-  "web_accessible_resources": ["/scripts/Sdk.Soap.min.js", "/scripts/levelup.extension.js"],
-  "version": "3.5.5",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.dynamics.com/api/*"
+  ],
+  "web_accessible_resources": [
+    "/scripts/Sdk.Soap.min.js",
+    "/scripts/levelup.extension.js"
+  ],
+  "version": "3.5.6",
   "manifest_version": 2
 }

@@ -1,4 +1,26 @@
-import { IExtensionMessage } from './interfaces/types';
+import { IExtensionMessage, LocalStorage, IExtensionLocalStorage } from './interfaces/types';
+
+chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, response) => {
+  if (message.type === 'Page') {
+    switch (message.category) {
+      case 'canImpersonate':
+        var canImpersonate = message.content;
+        document.getElementById('impersonate-tab').style.display = !canImpersonate ? 'none' : 'block';
+
+        chrome.storage.local.set({
+          [LocalStorage.canImpersonate]: canImpersonate,
+        });
+        break;
+      case 'allUsers':
+        chrome.storage.local.set({
+          [LocalStorage.usersList]: message.content,
+        });
+
+        populateUsersDropdown(message.content);
+        break;
+    }
+  }
+});
 
 window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;
@@ -25,6 +47,7 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     false
   );
+
   document.querySelector('#environmentLinks').addEventListener(
     'click',
     function (e) {
@@ -38,4 +61,131 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     false
   );
+
+  document.getElementById('impersonate-toggle').addEventListener('change', function () {
+    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+    let checkboxLabel = <HTMLInputElement>document.getElementById('impersonate-cbx-label');
+
+    checkboxLabel.innerHTML = checkboxElement.checked ? 'IMPERSONATING' : '';
+
+    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
+
+    chrome.tabs.query({ active: true }, function (tabs) {
+      var url = tabs[0].url.split('main.aspx')[0];
+
+      let msg: IExtensionMessage = <IExtensionMessage>{
+        type: 'Impersonate',
+        category: 'activation',
+        content: {
+          IsActive: checkboxElement.checked,
+          UserId: selectedUser.value,
+          Url: url,
+        },
+      };
+
+      chrome.storage.local.set({
+        [LocalStorage.isImpersonating]: checkboxElement.checked,
+        [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
+      });
+
+      chrome.runtime.sendMessage(msg);
+      chrome.tabs.reload(tabs[0].id, { bypassCache: true });
+    });
+  });
+
+  document.getElementById('users-dropdown').addEventListener('change', function () {
+    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
+    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+
+    let checked = checkboxElement.checked;
+
+    let msg: IExtensionMessage = <IExtensionMessage>{
+      type: 'Impersonate',
+      category: 'changeUser',
+      content: {
+        IsActive: checked,
+        UserId: selectedUser.value,
+      },
+    };
+
+    chrome.storage.local.set({
+      [LocalStorage.userId]: selectedUser.value,
+      [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
+    });
+
+    chrome.runtime.sendMessage(msg);
+  });
+
+  initImpersonateTab();
 });
+
+function initImpersonateTab() {
+  chrome.storage.local.get([LocalStorage.usersList,LocalStorage.canImpersonate], function (result: IExtensionLocalStorage) {
+    let users = result.usersList;
+    let canImpersonate = result.canImpersonate;
+
+    if(canImpersonate == undefined){
+      chrome.runtime.sendMessage({
+        category: 'canImpersonate',
+        type: 'API',
+      });
+    }else{
+      document.getElementById('impersonate-tab').style.display = !canImpersonate ? 'none' : 'block';
+    }
+
+    if (!users) {
+      chrome.runtime.sendMessage({
+        category: 'allUsers',
+        type: 'API',
+      });
+    } else {
+      populateUsersDropdown(users);
+    }
+  });
+}
+
+function populateUsersDropdown(users) {
+  let select = <HTMLSelectElement>document.getElementById('users-dropdown');
+
+  while (select.firstChild) {
+    select.removeChild(select.lastChild);
+  }
+
+  for (var i = 0; i < users.length; i++) {
+    let opt = document.createElement('option');
+    opt.value = users[i].azureactivedirectoryobjectid;
+    opt.innerHTML = users[i].fullname;
+    select.appendChild(opt);
+  }
+
+  setSavedValues();
+}
+
+function setSavedValues() {
+  chrome.storage.local.get([LocalStorage.userId, LocalStorage.isImpersonating], function (
+    result: IExtensionLocalStorage
+  ) {
+    let isImpersonating = result.isImpersonating || false;
+    let userId = result.userId;
+
+    let selectElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+
+    if (isImpersonating) {
+      selectElement.parentElement.classList.add('is-checked');
+    } else {
+      selectElement.parentElement.classList.remove('is-checked');
+    }
+
+    selectElement.checked = isImpersonating;
+    (<HTMLInputElement>document.getElementById('impersonate-cbx-label')).innerHTML = selectElement.checked
+      ? 'IMPERSONATING'
+      : '';
+
+    let dropdown = <HTMLSelectElement>document.getElementById('users-dropdown');
+    dropdown.value = userId;
+
+    if (userId) {
+      dropdown.parentElement.classList.add('is-dirty');
+    }
+  });
+}

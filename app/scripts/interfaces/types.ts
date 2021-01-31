@@ -38,10 +38,13 @@ export type MessageType =
   | 'environmentDetails'
   | 'myRoles'
   | 'allUserRoles'
+  | 'allUsers'
   | 'processes'
   | 'Settings'
   | 'Extension'
-  | 'Load';
+  | 'Load'
+  | 'Impersonate'
+  | 'API';
 
 export type Category =
   | 'Settings'
@@ -58,15 +61,19 @@ export type Category =
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
+  | 'allUsers'
   | 'optionsets'
-  | 'environment';
+  | 'environment'
+  | 'activation'
+  | 'changeUser'
+  | 'canImpersonate';
 
 export type ExtensionState = 'On' | 'Off';
 
 export interface IExtensionMessage {
   type: MessageType;
   category?: Category;
-  content?: IResultRow[] | IResultRowKeyValues[][] | string;
+  content?: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
 }
 
 export interface ICustomMessage extends Event {
@@ -88,6 +95,12 @@ export interface IResultRowKeyValues {
   value: string;
 }
 
+export interface IImpersonateMessage {
+  UserId: string;
+  IsActive: boolean;
+  Url: string;
+}
+
 export interface IRetrieveCurrentOrganizationResponse {
   Detail: IRetrieveCurrentOrganizationResponseDetail;
 }
@@ -107,4 +120,24 @@ declare global {
   interface Window {
     Xrm: Xrm.XrmStatic;
   }
+}
+
+export enum LocalStorage {
+  lastUrl = 'lastUrl',
+  currentUrl = 'currentUrl',
+  usersList = 'usersList',
+  isImpersonating = 'isImpersonating',
+  userId = 'userId',
+  userName = 'userName',
+  canImpersonate = 'canImpersonate'
+}
+
+export interface IExtensionLocalStorage {
+  lastUrl: string;
+  currentUrl: string;
+  usersList: any[];
+  isImpersonating: boolean;
+  userId: string;
+  userName: string;
+  canImpersonate: boolean;
 }
