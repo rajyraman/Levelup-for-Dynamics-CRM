@@ -337,7 +337,7 @@ export class Forms {
   }
 
   workflows() {
-    let attributes = 'WorkflowId,Name,Category,Mode,RunAs,IsManaged,OnDemand,SubProcess,TriggerOnCreate,TriggerOnDelete,TriggerOnUpdateAttributeList,StateCode',
+    let attributes = 'WorkflowId,Name,Category,Mode,RunAs,IsManaged,SubProcess,OnDemand,TriggerOnCreate,TriggerOnDelete,TriggerOnUpdateAttributeList,StateCode',
       entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
       entitySetName = this.utility.is2016OrGreater ? 'workflows' : 'WorkflowSet';
     if (this.utility.is2016OrGreater) {
@@ -391,7 +391,7 @@ export class Forms {
               } else if (keyName === 'subprocess' || keyName === 'ondemand' || keyName === 'triggeroncreate' || keyName === 'triggerondelete') {
                 workflowKeyValue = workflowKeyValue || workflowKeyValue.Value ? '&#10004;' : '';
               } else if (keyName === 'triggeronupdateattributelist' ) {
-                workflowKeyValue = workflowKeyValue ? workflowKeyValue : '';
+                workflowKeyValue = workflowKeyValue ? workflowKeyValue.replace(/,/g, '<br>') : '';
               } else if (keyName === 'statecode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Draft' : 'Activated';
               } else if (keyName === 'workflowid') {
@@ -404,6 +404,8 @@ export class Forms {
             });
           return resultRow;
         });
+        // Sort results by category, then by name
+        results = results ? results.sort((a, b) => (a[2].value < b[2].value) ? 1 : (a[2].value === b[2].value) ? ((a[1].value > b[1].value) ? 1 : -1) : -1 ) : results;
         this.utility.messageExtension(results, 'workflows');
       })
       .catch((err) => {
