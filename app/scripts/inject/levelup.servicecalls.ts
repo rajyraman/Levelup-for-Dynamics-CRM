@@ -169,42 +169,6 @@ export class Service {
       });
   }
 
-  canImpersonate() {
-    const userId = this.utility.Xrm?.Utility?.getGlobalContext()?.getUserId() ?? this.utility.Xrm.Page.context.getUserId();
-    this.utility
-      .fetch(
-        'systemusers',
-        null,
-        null,
-        null,
-        `<fetch top="1" >
-        <entity name="systemuser" >
-          <filter>
-            <condition attribute="systemuserid" operator="eq" value="${userId}" />
-          </filter>
-          <link-entity name="systemuserroles" from="systemuserid" to="systemuserid" intersect="true" >
-            <link-entity name="role" from="roleid" to="roleid" intersect="true" >
-              <link-entity name="roleprivileges" from="roleid" to="roleid" intersect="true" >
-                <link-entity name="privilege" from="privilegeid" to="privilegeid" intersect="true" >
-                  <filter>
-                    <condition attribute="name" operator="eq" value="prvActOnBehalfOfAnotherUser " />
-                  </filter>
-                </link-entity>
-              </link-entity>
-            </link-entity>
-          </link-entity>
-        </entity>
-      </fetch>`
-      )
-      .then((entities) => {
-        let canImpersonate = entities.length > 0;
-        this.utility.messageExtension(canImpersonate, 'canImpersonate');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
   entityMetadata() {
     this.utility
       .fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode,LogicalCollectionName,ChangeTrackingEnabled,DisplayName')
