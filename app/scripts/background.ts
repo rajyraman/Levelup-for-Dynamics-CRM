@@ -16,15 +16,6 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
   if (message.type === 'Page') {
     let c = message.category.toString();
     switch (c) {
-      case 'canImpersonate':
-        chrome.tabs.query({ active: true }, function (tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            category: 'canImpersonate',
-            type: 'Background',
-            content: message.content,
-          });
-        });
-        break;
       case 'allUsers':
         chrome.tabs.query({ active: true }, function (tabs) {
           chrome.tabs.sendMessage(tabs[0].id, {
@@ -121,18 +112,6 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
           }
         );
         break;
-        case 'canImpersonate':
-          chrome.tabs.query(
-            {
-              active: true,
-            },
-            function (tabs) {
-              chrome.tabs.executeScript(tabs[0].id, {
-                code: `window.postMessage({ type: '${c}', category: '${message.type}' }, '*');`,
-              });
-            }
-          );
-          break;
     }
   } else {
     chrome.tabs.query(
