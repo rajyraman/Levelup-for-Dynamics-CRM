@@ -3,14 +3,6 @@ import { IExtensionMessage, LocalStorage, IExtensionLocalStorage } from './inter
 chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, response) => {
   if (message.type === 'Page') {
     switch (message.category) {
-      case 'canImpersonate':
-        var canImpersonate = message.content;
-        document.getElementById('impersonate-tab').style.display = !canImpersonate ? 'none' : 'block';
-
-        chrome.storage.local.set({
-          [LocalStorage.canImpersonate]: canImpersonate,
-        });
-        break;
       case 'allUsers':
         chrome.storage.local.set({
           [LocalStorage.usersList]: message.content,
@@ -120,18 +112,9 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 function initImpersonateTab() {
-  chrome.storage.local.get([LocalStorage.usersList,LocalStorage.canImpersonate], function (result: IExtensionLocalStorage) {
+  chrome.storage.local.get([LocalStorage.usersList], function (result: IExtensionLocalStorage) {
     let users = result.usersList;
-    let canImpersonate = result.canImpersonate;
-
-    if(canImpersonate == undefined){
-      chrome.runtime.sendMessage({
-        category: 'canImpersonate',
-        type: 'API',
-      });
-    }else{
-      document.getElementById('impersonate-tab').style.display = !canImpersonate ? 'none' : 'block';
-    }
+    document.getElementById('impersonate-tab').style.display = 'block';
 
     if (!users) {
       chrome.runtime.sendMessage({
