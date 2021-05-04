@@ -144,6 +144,18 @@ export class Forms {
     }
   }
 
+  copyEntityName(){
+    let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+    if (entityName) {
+      try {
+        Utility.copy(entityName);
+        alert('Entity Name has been copied to clipboard');
+      } catch (e) {
+        prompt('Ctrl+C to copy. OK to close.', entityName);
+      }
+    }
+  }
+
   openRecordWebApi() {
     if (!this.utility.is2016OrGreater) {
       alert('This feature only works on CRM instances > v8');

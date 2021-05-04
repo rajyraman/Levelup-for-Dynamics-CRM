@@ -7,6 +7,7 @@ export type MessageType =
   | 'highlightDirtyFields'
   | 'copyRecordUrl'
   | 'copyRecordId'
+  | 'copyEntityName'
   | 'refreshAllSubgrids'
   | 'populateMin'
   | 'optionSetValues'

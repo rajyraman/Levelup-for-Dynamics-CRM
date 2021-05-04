@@ -72,6 +72,14 @@
         .mdl-snackbar{
             background-color: #752375 !important;
         }
+
+        .mdl-cell {
+            margin: 6px 8px !important;
+        }
+
+        .mdl-layout__content{
+            padding: 0px;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +204,15 @@
                             </button>
                             <div class="mdl-tooltip" data-mdl-for="copyRecordId">
                                 GUID of the record
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <button data-category="Forms" id="copyEntityName" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                <i class="material-icons">short_text</i>
+                                <span>Entity Name</span>
+                            </button>
+                            <div class="mdl-tooltip" data-mdl-for="copyEntityName">
+                                Logical name of the entity
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col">
