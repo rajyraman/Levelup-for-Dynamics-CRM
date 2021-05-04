@@ -4,9 +4,17 @@ chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, respon
   if (message.type === 'Page') {
     switch (message.category) {
       case 'allUsers':
+        let users = <any>message.content;
+
         chrome.storage.local.set({
           [LocalStorage.usersList]: message.content,
         });
+
+        if (users.length == 0) {
+          showToast('Users found: 0');
+        } else {
+          showToast('Users found: ' + users.length);
+        }
 
         populateUsersDropdown(message.content);
         break;
@@ -53,6 +61,28 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     false
   );
+
+  document.getElementById('refresh-impersonate').addEventListener('click', function () {
+    chrome.tabs.query({ active: true }, function (tabs) {
+      chrome.storage.local.clear(function () {
+        let msg: IExtensionMessage = <IExtensionMessage>{
+          type: 'Impersonate',
+          category: 'activation',
+          content: {
+            IsActive: false,
+            UserId: '',
+            Url: '',
+          },
+        };
+
+        chrome.runtime.sendMessage(msg);
+
+        chrome.tabs.reload(tabs[0].id, { bypassCache: true });
+
+        window.close();
+      });
+    });
+  });
 
   document.getElementById('impersonate-toggle').addEventListener('change', function () {
     let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
@@ -171,4 +201,13 @@ function setSavedValues() {
       dropdown.parentElement.classList.add('is-dirty');
     }
   });
+}
+
+function showToast(msg: string) {
+  var notification = <any>document.querySelector('.mdl-js-snackbar');
+  var data = {
+    message: msg,
+    timeout: 3000,
+  };
+  notification.MaterialSnackbar.showSnackbar(data);
 }

@@ -13,3 +13,4 @@ packages/
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/tours/code-tour-of-level-up.json
+.vscode/launch.json

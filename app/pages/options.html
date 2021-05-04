@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Level up for Dynamics CRM/365/Power Apps</title>
+    <link rel="stylesheet" href="/node_modules/material-design-lite/material.min.css">
+    <script src="/node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
         ::-webkit-scrollbar {
             width: 5px;
@@ -60,6 +63,14 @@
 
         label.mdl-switch{
             width: auto;
+        }
+
+        #refresh-impersonate{
+            float: right;
+        }
+
+        .mdl-snackbar{
+            background-color: #752375 !important;
         }
     </style>
 </head>
@@ -466,6 +477,11 @@
             <section class="mdl-layout__tab-panel" id="fixed-tab-4">
                 <div class="page-content">
                     <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--8-col">
+                            <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="refresh-impersonate">
+                                <i class="material-icons">refresh</i>
+                              </button>
+                        </div>
                         <div class="mdl-cell mdl-cell--8-col impersonization-rows">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <select class="mdl-textfield__input" id="users-dropdown" name="users-dropdown"></select>
@@ -478,7 +494,11 @@
                                 <span id="impersonate-cbx-label" class="mdl-switch__label">OFF</span>
                             </label>
                         </div>
-                    </div>                   
+                        <div aria-live="assertive" aria-atomic="true" aria-relevant="text" class="mdl-snackbar mdl-js-snackbar">
+                            <div class="mdl-snackbar__text"></div>
+                            <button type="button" class="mdl-snackbar__action"></button>
+                        </div>   
+                    </div>                
                 </div>
             </section>
         </main>

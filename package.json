@@ -63,6 +63,7 @@
     "yargs": "15.x.x"
   },
   "dependencies": {
+    "@types/material-design-lite": "^1.1.16",
     "list.js": "^1.5.0",
     "material-design-lite": "^1.3.0",
     "xrm-webapi-client": "^3.6.16"

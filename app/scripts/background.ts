@@ -10,7 +10,10 @@ import {
 let content: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
 let userId: string;
 
-chrome.storage.local.clear();
+chrome.runtime.onStartup.addListener(function(){
+  chrome.webRequest.onBeforeSendHeaders.removeListener(headerListener);
+  chrome.storage.local.clear();
+});
 
 chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
   if (message.type === 'Page') {
