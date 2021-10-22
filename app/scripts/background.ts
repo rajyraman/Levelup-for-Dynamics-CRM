@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
     let c = message.category.toString();
     switch (c) {
       case 'allUsers':
-        chrome.tabs.query({ active: true }, function (tabs) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
           chrome.tabs.sendMessage(tabs[0].id, {
             category: 'allUsers',
             type: 'Background',
@@ -104,6 +104,7 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
         chrome.tabs.query(
           {
             active: true,
+            currentWindow: true
           },
           function (tabs) {
             chrome.tabs.executeScript(tabs[0].id, {
