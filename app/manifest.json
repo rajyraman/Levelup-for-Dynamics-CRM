@@ -43,6 +43,6 @@
     "/scripts/Sdk.Soap.min.js",
     "/scripts/levelup.extension.js"
   ],
-  "version": "3.5.7",
+  "version": "3.5.8",
   "manifest_version": 2
 }
