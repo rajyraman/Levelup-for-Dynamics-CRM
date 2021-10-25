@@ -137,7 +137,7 @@ export class Service {
 
   allUsers() {
     const userId =
-      this.utility.Xrm?.Utility?.getGlobalContext()?.getUserId() ?? this.utility.Xrm.Page.context.getUserId();
+      this.utility.Xrm?.Utility?.getGlobalContext?.().getUserId() ?? this.utility.Xrm.Page.context.getUserId();
     this.utility
       .fetch(
         'systemusers',
