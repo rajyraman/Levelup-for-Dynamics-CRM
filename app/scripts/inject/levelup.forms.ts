@@ -337,7 +337,7 @@ export class Forms {
   }
 
   workflows() {
-    let attributes = 'WorkflowId,Name,Category,Mode,IsManaged,StateCode',
+    let attributes = 'WorkflowId,Name,Category,Mode,RunAs,IsManaged,SubProcess,OnDemand,TriggerOnCreate,TriggerOnDelete,TriggerOnUpdateAttributeList,StateCode',
       entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
       entitySetName = this.utility.is2016OrGreater ? 'workflows' : 'WorkflowSet';
     if (this.utility.is2016OrGreater) {
@@ -356,7 +356,13 @@ export class Forms {
             { key: 'name', value: '' },
             { key: 'category', value: '' },
             { key: 'mode', value: '' },
+            { key: 'runas', value: '' },
             { key: 'ismanaged', value: '' },
+            { key: 'subprocess', value: '' },
+            { key: 'ondemand', value: '' },
+            { key: 'triggeroncreate', value: '' },
+            { key: 'triggerondelete', value: '' },
+            { key: 'triggeronupdateattributelist', value: '' },
             { key: 'statecode', value: '' },
           ];
           Object.keys(workflow)
@@ -373,8 +379,19 @@ export class Forms {
                     : 'Action';
               } else if (keyName === 'mode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Background' : 'Real-time';
+              } else if (keyName === 'runas' ) {
+                workflowKeyValue =
+                    workflowKeyValue === 0 || workflowKeyValue.Value === 0
+                        ? 'Owner'
+                        : workflowKeyValue === 1 || workflowKeyValue.Value === 1
+                        ? 'User'
+                        : '';
               } else if (keyName === 'ismanaged') {
                 workflowKeyValue = workflowKeyValue || workflowKeyValue.Value ? 'Managed' : 'Unmanaged';
+              } else if (keyName === 'subprocess' || keyName === 'ondemand' || keyName === 'triggeroncreate' || keyName === 'triggerondelete') {
+                workflowKeyValue = workflowKeyValue || workflowKeyValue.Value ? '&#10004;' : '';
+              } else if (keyName === 'triggeronupdateattributelist' ) {
+                workflowKeyValue = workflowKeyValue ? workflowKeyValue.replace(/,/g, '<br>') : '';
               } else if (keyName === 'statecode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Draft' : 'Activated';
               } else if (keyName === 'workflowid') {
@@ -387,6 +404,8 @@ export class Forms {
             });
           return resultRow;
         });
+        // Sort results by category, then by name
+        results = results ? results.sort((a, b) => (a[2].value < b[2].value) ? 1 : (a[2].value === b[2].value) ? ((a[1].value > b[1].value) ? 1 : -1) : -1 ) : results;
         this.utility.messageExtension(results, 'workflows');
       })
       .catch((err) => {

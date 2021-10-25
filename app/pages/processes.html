@@ -30,6 +30,9 @@
         td{
             padding: 0.5em;
         }
+        th:nth-child(n+6):nth-child(-n+9), td:nth-child(n+6):nth-child(-n+9){
+            text-align: center;
+        }
         input {
             font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
             border: solid 1px #ccc;
@@ -54,13 +57,19 @@
                 <th>Name</th>
                 <th>Type</th>
                 <th>Execution</th>
-                <th>Managed/Unmanaged</th>
+                <th>Run As</th>
+                <th>Is Managed</th>
+                <th>Is Child</th> 
+                <th>On Demand</th>
+                <th>On Create</th> 
+                <th>On Delete</th> 
+                <th>Attribute Triggers</th>
                 <th>Status</th>                
             </tr>
             </thead>
             <tbody id="results" class="list">
             <tr>
-                <td colspan="5">No workflows/business rules found for this entity</td>
+                <td colspan="11">No workflows/business rules found for this entity</td>
             </tr>
             </tbody>
         </table>
