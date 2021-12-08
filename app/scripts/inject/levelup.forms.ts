@@ -39,21 +39,23 @@ export class Forms {
     };
 
     this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
-      let controlName = c.getName(),
-        controlType = c.getControlType(),
-        controlNode =
-          this.utility.formDocument.getElementById(controlName) ||
-          this.utility.formDocument.querySelector(`label[id$="${controlName}-field-label"]`);
-      if (!controlNode) {
-        return;
-      }
+      let controlName = c.getName();
       if (!c.getAttribute) {
         createSchemaNameInput(controlName, this.utility.formDocument.getElementById(`${controlName}_d`));
       } else {
+        let attributeName = c.getAttribute().getName(),
+        controlNode =
+          this.utility.formDocument.getElementById(controlName) ||
+          this.utility.formDocument.querySelector(`div[data-control-name="${controlName}"]`)
+                                   .querySelector(`label[id$="${attributeName}-field-label"]`) ||
+          this.utility.formDocument.querySelector(`label[id$="${controlName}-field-label"]`);
+        if (!controlNode) {
+          return;
+        }
         if (!c.getVisible()) {
           return;
         }
-        createSchemaNameInput(c.getAttribute().getName(), controlNode);
+        createSchemaNameInput(attributeName, controlNode);
       }
     });
 
