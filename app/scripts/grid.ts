@@ -5,22 +5,28 @@ chrome.runtime.sendMessage(
     category: 'Load',
   },
   (rows) => {
-    let rowsHtml = '';
+    let virtualResults = document.createDocumentFragment();
     for (let i = 0; i < rows.length; i++) {
-      if (i > 0)
-        rowsHtml +=
-          '<tr>' +
-          rows[i].cells
-            .map((x, i) => {
-              return `<td class=${i % 2 === 0 ? 'name' : 'value'}>${x || ''}</td>`;
-            })
-            .join('') +
-          '</tr>';
-      else
-        document.getElementById('tableheader').innerHTML =
-          '<tr>' + rows[i].cells.map((x) => `<td>${x}</td>`).join('') + '</tr>';
+      if (i > 0) {
+        const row = document.createElement('tr');
+        rows[i].cells.forEach((x, i) => {
+          const cell = document.createElement('td');
+          cell.className = i % 2 === 0 ? 'name' : 'value';
+          cell.innerText = x;
+          row.appendChild(cell);
+        });
+        virtualResults.appendChild(row);
+      } else {
+        const row = document.createElement('tr');
+        rows[i].cells.forEach((x, i) => {
+          const cell = document.createElement('td');
+          cell.innerText = x;
+          row.appendChild(cell);
+        });
+        document.getElementById('tableheader').appendChild(row);
+      }
     }
-    document.getElementById('results').innerHTML = rowsHtml;
+    document.getElementById('results').appendChild(virtualResults);
     new List('grid', {
       valueNames: ['name', 'value'],
     });
