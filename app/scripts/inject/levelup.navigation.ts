@@ -8,7 +8,12 @@ export class Navigation {
 
   openRecord(entityName: string, entityId?: string): void {
     if (!entityName) {
-      entityName = prompt('Entity?', '');
+      let defaultEntity = this.utility.Xrm.Page?.data?.entity?.getEntityName();
+      if (!defaultEntity) {
+        const params = new URLSearchParams(this.utility.formWindow.location.search);
+        defaultEntity = params.get('etn');
+      }
+      entityName = prompt('Entity?', defaultEntity || '');
     }
     if (entityName && !entityId) {
       entityId = prompt('Id?', '');
