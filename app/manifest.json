@@ -34,7 +34,6 @@
   "permissions": [
     "storage",
     "activeTab",
-    "tabs",
     "webRequest",
     "webRequestBlocking",
     "*://*.dynamics.com/api/*"
@@ -43,6 +42,6 @@
     "/scripts/Sdk.Soap.min.js",
     "/scripts/levelup.extension.js"
   ],
-  "version": "3.5.8",
+  "version": "3.5.9",
   "manifest_version": 2
 }
