@@ -6,7 +6,6 @@ import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';
 import { Grid } from './inject/levelup.grid';
-import { default as WebApiClient } from 'xrm-webapi-client';
 
 window.addEventListener('message', async function (event) {
   let utility: Utility;

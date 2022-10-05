@@ -1,4 +1,5 @@
-import { default as WebApiClient } from 'xrm-webapi-client';
+import * as WebApiClient from "xrm-webapi-client";
+
 import {
   IRetrieveCurrentOrganizationResponseDetail,
   Category,

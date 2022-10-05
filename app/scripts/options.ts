@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
 
-    chrome.tabs.query({ active: true }, function (tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var url = tabs[0].url.split('main.aspx')[0];
 
       let msg: IExtensionMessage = <IExtensionMessage>{

@@ -1,7 +1,12 @@
 /// <reference path="levelup.common.utility.ts" />
 
 import { Utility } from './levelup.common.utility';
+import * as WebApiClient from "xrm-webapi-client";
 
+// @ts-ignore
+WebApiClient.Configure({
+  ReturnAllPages: true
+});
 export class Service {
   constructor(private utility: Utility) { }
 
@@ -79,35 +84,33 @@ export class Service {
 
   allUserRoles() {
     let resultsArray: any[] = [{ cells: ['Business Unit', 'Role', 'User', 'AD Name'] }];
-    this.utility
-      .fetch(
-        'systemusers',
-        null,
-        null,
-        null,
-        `
-        <fetch>
-          <entity name='systemuser' >
-              <attribute name='domainname' />
-              <attribute name='businessunitid' />
-              <attribute name='fullname' />
-              <filter>
-                  <condition entityname='role' attribute='parentroleid' operator='null' />
-              </filter>
-              <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' link-type='outer' alias='systemuserroles' >
-                  <attribute name='roleid' />
-                  <attribute name='systemuserid' />
-                  <link-entity name='role' from='roleid' to='roleid' link-type='outer' alias='role' >
-                      <attribute name='name' />
-                      <order attribute='name' />
-                  </link-entity>
-              </link-entity>
-          </entity>
-        </fetch>`
-      )
+    const request = {
+      entityName: 'systemuser',
+      fetchXml: `<fetch>
+        <entity name='systemuser' >
+            <attribute name='domainname' />
+            <attribute name='businessunitid' />
+            <attribute name='fullname' />
+            <filter>
+                <condition entityname='role' attribute='parentroleid' operator='null' />
+            </filter>
+            <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' link-type='outer' alias='systemuserroles' >
+                <attribute name='roleid' />
+                <attribute name='systemuserid' />
+                <link-entity name='role' from='roleid' to='roleid' link-type='outer' alias='role' >
+                    <attribute name='name' />
+                    <order attribute='name' />
+                </link-entity>
+            </link-entity>
+        </entity>
+      </fetch>`
+    };
+    const utility = this.utility;
+
+    WebApiClient.Retrieve(request)
       .then((entities) => {
         console.log(entities);
-        let cells = entities.forEach((attributes) => {
+        let cells = entities.value.forEach((attributes) => {
           let roleId = attributes['systemuserroles.roleid'] || 'No Role',
             roleName = attributes['role.name'] || 'No Role',
             userId = attributes['systemuserid'],
@@ -118,55 +121,44 @@ export class Service {
             role: {
               id: roleId,
               name: roleName,
-              url: `${this.utility.clientUrlForParams}etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`,
+              url: `${utility.clientUrlForParams}etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`,
             },
             user: {
               id: userId,
               name: userName,
-              url: `${this.utility.clientUrlForParams}etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`,
+              url: `${utility.clientUrlForParams}etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`,
             },
             adname: attributes['domainname'],
           });
         });
-        this.utility.messageExtension(resultsArray, 'allUserRoles');
+        utility.messageExtension(resultsArray, 'allUserRoles');
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(err => console.log(err));
   }
 
   allUsers() {
     const userId =
       this.utility.Xrm?.Utility?.getGlobalContext?.().getUserId() ?? this.utility.Xrm.Page.context.getUserId();
-    this.utility
-      .fetch(
-        'systemusers',
-        null,
-        null,
-        null,
-        `
-        <fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
-          <entity name='systemuser' >
-            <attribute name='fullname' />
-            <attribute name='azureactivedirectoryobjectid' />
-            <filter>
-              <condition attribute='islicensed' operator='eq' value='1' />
-              <condition attribute='isdisabled' operator='eq' value='0' />
-              <condition attribute='systemuserid' operator='neq' value='${userId}' />              
-            </filter>
-            <order attribute='fullname' descending='false' />
-            <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' visible='false' intersect='true' >
-              <link-entity name='role' from='roleid' to='roleid' alias='r' />
-            </link-entity>
-          </entity>
-        </fetch>`
-      )
-      .then((entities) => {
-        this.utility.messageExtension(entities, 'allUsers');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const request = {
+      entityName: 'systemuser',
+      fetchXml: `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
+        <entity name='systemuser' >
+          <attribute name='fullname' />
+          <attribute name='azureactivedirectoryobjectid' />
+          <filter>
+            <condition attribute='isdisabled' operator='eq' value='0' />
+            condition attribute='islicensed' operator='eq' value='1' />
+            <condition attribute='systemuserid' operator='neq' value='${userId}' />
+            <condition attribute='accessmode' operator='eq' value='0' />
+          </filter>
+          <order attribute='fullname' descending='false' />
+        </entity>
+      </fetch>`
+    };
+
+    WebApiClient.Retrieve(request)
+      .then(entities => this.utility.messageExtension(entities.value, 'allUsers'))
+      .catch(err => console.log(err));
   }
 
   entityMetadata() {
