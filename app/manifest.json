@@ -43,5 +43,6 @@
     "/scripts/levelup.extension.js"
   ],
   "version": "3.6.0",
-  "manifest_version": 2
+  "manifest_version": 2,
+  "incognito": "split"
 }
