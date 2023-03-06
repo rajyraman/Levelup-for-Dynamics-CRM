@@ -7,12 +7,15 @@ class App {
   isCRMPage: boolean;
 
   constructor() {
+    let pwaScriptsRegex = "\/resource\/uci-infra\/scripts\/(es6-shim|app).([A-Za-z0-9]*).js";
+
     this.isCRMPage = Array.from(document.scripts).some(
       (x) =>
         x.src.indexOf('/_static/_common/scripts/PageLoader.js') !== -1 ||
         x.src.indexOf('/uclient/scripts/app.js') !== -1 ||
         x.src.indexOf('/uclient/scripts/es6-shim.js') !== -1 ||
-        x.src.indexOf('/_static/_common/scripts/crminternalutility.js') !== -1
+        x.src.indexOf('/_static/_common/scripts/crminternalutility.js') !== -1 ||
+        x.src.match(pwaScriptsRegex) !== null
     );
   }
 
