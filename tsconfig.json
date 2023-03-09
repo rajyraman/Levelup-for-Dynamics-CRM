@@ -1,16 +1,20 @@
 {
     "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
         "sourceMap": false,
         "noImplicitAny": false,
-        "module": "es2015",
+        "module": "commonjs",
         "moduleResolution": "node",
-        "target": "ES5",
+        "lib": [
+            "ES2017",
+            "dom"
+        ],
         "rootDir": "app/scripts",
         "typeRoots": [
             "./app/tsd",
-            "./node_modules/@types"
+            "./node_modules/@types",
+            "/node_modules/xrm-webapi-client/dist/WebApiClient.d.ts"
         ],
-        "traceResolution": true
-    },
-    "lib": ["es6", "dom", "es2017"]
+        "pretty": true,
+    }
 }

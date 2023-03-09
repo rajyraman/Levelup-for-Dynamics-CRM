@@ -4,9 +4,9 @@ chrome.runtime.sendMessage(
     category: 'Load',
   },
   function (response) {
-    let rows = response
+    const rows = response
       .map((r) => {
-        let cells = r
+        const cells = r
           .map((c, i) => {
             if (i === 0) return '';
             return i !== 1

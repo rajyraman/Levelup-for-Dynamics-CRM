@@ -1,6 +1,3 @@
-/// <reference path="../../tsd/externals.d.ts" />
-/// <reference path="../../tsd/xrm.d.ts" />
-
 import { Utility } from './levelup.common.utility';
 import { IResultRowKeyValues } from '../interfaces/types';
 export class Forms {
@@ -12,7 +9,7 @@ export class Forms {
 
   entityMetadata() {
     this.utility.fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode').then((records) => {
-      let resultsArray = [{ cells: ['Entity Logical Name', 'Object Type Code'] }];
+      const resultsArray = [{ cells: ['Entity Logical Name', 'Object Type Code'] }];
       // sort by object type code
       records.sort(function (r1, r2) {
         return r1.ObjectTypeCode - r2.ObjectTypeCode;
@@ -27,8 +24,8 @@ export class Forms {
   displayLogicalNames() {
     this.utility.formDocument.querySelectorAll('.levelupschema').forEach((x) => x.remove());
 
-    let createSchemaNameInput = (controlName, controlNode) => {
-      let schemaNameInput = this.utility.formDocument.createElement('input');
+    const createSchemaNameInput = (controlName, controlNode) => {
+      const schemaNameInput = this.utility.formDocument.createElement('input');
       schemaNameInput.setAttribute('type', 'text');
       schemaNameInput.setAttribute('class', 'levelupschema');
       schemaNameInput.setAttribute('style', 'background: darkslategray; color: #f9fcfe; font-size: 14px;');
@@ -39,16 +36,17 @@ export class Forms {
     };
 
     this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
-      let controlName = c.getName();
+      const controlName = c.getName();
       if (!c.getAttribute) {
         createSchemaNameInput(controlName, this.utility.formDocument.getElementById(`${controlName}_d`));
       } else {
-        let attributeName = c.getAttribute().getName(),
-        controlNode =
-          this.utility.formDocument.getElementById(controlName) ||
-          this.utility.formDocument.querySelector(`div[data-control-name="${controlName}"]`)
-                                   .querySelector(`label[id$="${attributeName}-field-label"]`) ||
-          this.utility.formDocument.querySelector(`label[id$="${controlName}-field-label"]`);
+        const attributeName = c.getAttribute().getName(),
+          controlNode =
+            this.utility.formDocument.getElementById(controlName) ||
+            this.utility.formDocument
+              .querySelector(`div[data-control-name="${controlName}"]`)
+              .querySelector(`label[id$="${attributeName}-field-label"]`) ||
+            this.utility.formDocument.querySelector(`label[id$="${controlName}-field-label"]`);
         if (!controlNode) {
           return;
         }
@@ -60,7 +58,7 @@ export class Forms {
     });
 
     this.utility.Xrm.Page.ui.tabs.forEach((t) => {
-      let tabName = t.getName();
+      const tabName = t.getName();
       if (t.getVisible()) {
         createSchemaNameInput(
           tabName,
@@ -70,7 +68,7 @@ export class Forms {
       }
 
       t.sections.forEach((s) => {
-        let sectionName = s.getName();
+        const sectionName = s.getName();
         if (s.getVisible()) {
           createSchemaNameInput(
             sectionName,
@@ -110,15 +108,16 @@ export class Forms {
   }
 
   formProperties() {
-    let id = this.utility.Xrm.Page.data.entity.getId();
-    let etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
+    const id = this.utility.Xrm.Page.data.entity.getId();
+    const etc = <number>this.utility.Xrm.Page.context.getQueryStringParameters().etc;
+    //@ts-ignore
     Mscrm.RibbonActions.openFormProperties(id, etc);
   }
 
   copyRecordUrl() {
-    let entityId = this.utility.Xrm.Page.data.entity.getId();
+    const entityId = this.utility.Xrm.Page.data.entity.getId();
     if (entityId) {
-      let locationUrl = `${
+      const locationUrl = `${
         this.utility.clientUrlForParams
       }etn=${this.utility.Xrm.Page.data.entity.getEntityName()}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
       try {
@@ -133,7 +132,7 @@ export class Forms {
   }
 
   copyRecordId() {
-    let entityId = this.utility.Xrm.Page.data.entity.getId().toLowerCase();
+    const entityId = this.utility.Xrm.Page.data.entity.getId().toLowerCase();
     if (entityId) {
       try {
         Utility.copy(entityId.substr(1, 36));
@@ -151,12 +150,12 @@ export class Forms {
       alert('This feature only works on CRM instances > v8');
       return;
     }
-    let entityId = this.utility.Xrm.Page.data.entity.getId();
+    const entityId = this.utility.Xrm.Page.data.entity.getId();
     if (entityId) {
-      let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+      const entityName = this.utility.Xrm.Page.data.entity.getEntityName();
       this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then((entity) => {
         if (entity && entity.EntitySetName) {
-          let url = `${this.utility.Xrm.Page.context.getClientUrl()}/api/data/v${Xrm.Page.context
+          const url = `${this.utility.Xrm.Page.context.getClientUrl()}/api/data/v${Xrm.Page.context
             .getVersion()
             .substr(0, 3)}/${entity.EntitySetName}(${entityId.substr(1, 36)})`;
           window.open(url, '_blank');
@@ -168,9 +167,9 @@ export class Forms {
   highlightDirtyFields() {
     this.utility.Xrm.Page.ui.controls.forEach((c: Xrm.Page.StandardControl) => {
       if (c.getAttribute) {
-        let dirtyAttribute = c.getAttribute();
+        const dirtyAttribute = c.getAttribute();
         if (!dirtyAttribute || !dirtyAttribute.getIsDirty()) return;
-        let attributeNode =
+        const attributeNode =
           this.utility.formWindow.document.getElementById(dirtyAttribute.getName()) ||
           this.utility.formDocument.querySelector(
             `div[data-id="${dirtyAttribute.getName()}-FieldSectionItemContainer"]`
@@ -218,7 +217,7 @@ export class Forms {
             a.setValue((<Xrm.Page.NumberAttribute>a).getMin());
             break;
           case 'optionset':
-            let options = (<Xrm.Page.OptionSetAttribute>a).getOptions();
+            const options = (<Xrm.Page.OptionSetAttribute>a).getOptions();
             a.setValue(options[0].value);
             break;
         }
@@ -229,7 +228,7 @@ export class Forms {
   optionSetValues() {
     this.utility.Xrm.Page.getControl().forEach((c: Xrm.Page.OptionSetControl) => {
       if (c.getControlType() !== 'optionset') return;
-      let attribute = (<Xrm.Page.OptionSetControl>c).getAttribute(),
+      const attribute = (<Xrm.Page.OptionSetControl>c).getAttribute(),
         selectedOptionValue = attribute.getValue(),
         options = attribute.getOptions(),
         isClearOptions = options.some(function (o) {
@@ -247,7 +246,7 @@ export class Forms {
       if (selectedOptionValue && isClearOptions) {
         attribute.setValue(selectedOptionValue);
       }
-      let selectElement = this.utility.formDocument.getElementById(`${attribute.getName()}_i`);
+      const selectElement = this.utility.formDocument.getElementById(`${attribute.getName()}_i`);
       if (selectElement) {
         selectElement.parentElement.removeAttribute('style');
         selectElement.parentElement.removeAttribute('class');
@@ -257,17 +256,17 @@ export class Forms {
 
   cloneRecord() {
     let extraq = '',
-      entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
       fieldCount = 0,
       isFieldCountLimitExceeded = false;
+    const entityName = this.utility.Xrm.Page.data.entity.getEntityName();
     this.utility.Xrm.Page.data.entity.attributes.forEach((c: Xrm.Page.Attribute) => {
       if (fieldCount > 45) {
         isFieldCountLimitExceeded = true;
         return;
       }
-      let attributeType = c.getAttributeType(),
-        attributeName = c.getName(),
-        attributeValue = c.getValue();
+      const attributeType = c.getAttributeType(),
+        attributeName = c.getName();
+      let attributeValue = c.getValue();
 
       if (
         !attributeValue ||
@@ -286,14 +285,16 @@ export class Forms {
         !(<Xrm.Attributes.LookupAttribute>c).getIsPartyList() &&
         attributeValue.length > 0
       ) {
-        let lookupValue = <Xrm.Page.LookupAttribute>c;
+        const lookupValue = <Xrm.Page.LookupAttribute>c;
         extraq += attributeName + 'name=' + attributeValue[0].name + '&';
         fieldCount++;
         if (
           attributeName === 'customerid' ||
           attributeName === 'parentcustomerid' ||
-          (typeof lookupValue.getLookupTypes === 'function' &&
+          (typeof lookupValue['getLookupTypes'] === 'function' &&
+            //@ts-ignore
             Array.isArray(lookupValue.getLookupTypes()) &&
+            //@ts-ignore
             lookupValue.getLookupTypes().length > 1)
         ) {
           extraq += attributeName + 'type=' + attributeValue[0].entityType + '&';
@@ -310,7 +311,7 @@ export class Forms {
     if (isFieldCountLimitExceeded) {
       alert('This form contains more than 45 fields and cannot be cloned');
     } else {
-      let newWindowUrl =
+      const newWindowUrl =
         this.utility.clientUrlForParams +
         'etn=' +
         entityName +
@@ -325,7 +326,7 @@ export class Forms {
     this.utility.Xrm.Page.data.refresh(false).then(
       () => {
         this.utility.Xrm.Page.data.entity.addOnSave((econtext: Xrm.Events.SaveEventContext) => {
-          let eventArgs = econtext.getEventArgs();
+          const eventArgs = econtext.getEventArgs();
           if (eventArgs.getSaveMode() === 70 || eventArgs.getSaveMode() === 2) {
             eventArgs.preventDefault();
           }
@@ -339,13 +340,14 @@ export class Forms {
   }
 
   workflows() {
-    let attributes = 'WorkflowId,Name,Category,Mode,RunAs,IsManaged,SubProcess,OnDemand,TriggerOnCreate,TriggerOnDelete,TriggerOnUpdateAttributeList,StateCode',
-      entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
+    let attributes =
+      'WorkflowId,Name,Category,Mode,RunAs,IsManaged,SubProcess,OnDemand,TriggerOnCreate,TriggerOnDelete,TriggerOnUpdateAttributeList,StateCode';
+    const entityName = this.utility.Xrm.Page.data.entity.getEntityName(),
       entitySetName = this.utility.is2016OrGreater ? 'workflows' : 'WorkflowSet';
     if (this.utility.is2016OrGreater) {
       attributes = attributes.toLowerCase();
     }
-    let filter = this.utility.is2016OrGreater
+    const filter = this.utility.is2016OrGreater
       ? `type eq 1 and (category eq 0 or category eq 2 or category eq 2 or category eq 3) and  primaryentity eq '${entityName}'`
       : `Type/Value eq 1 and PrimaryEntity eq '${entityName}' and (Category/Value eq 0 or Category/Value eq 2 or Category/Value eq 3)`;
     this.utility
@@ -353,7 +355,7 @@ export class Forms {
       .then((workflows) => {
         // CRM2015 Data doesn't return attributes in order specified on select
         let results = workflows.map((workflow) => {
-          let resultRow: IResultRowKeyValues[] = [
+          const resultRow: IResultRowKeyValues[] = [
             { key: 'workflowid', value: '' },
             { key: 'name', value: '' },
             { key: 'category', value: '' },
@@ -370,8 +372,8 @@ export class Forms {
           Object.keys(workflow)
             .filter((o) => o.indexOf('_') === -1 && o.indexOf('@') === -1)
             .forEach((p) => {
-              let keyName = p.toLowerCase(),
-                workflowKeyValue = workflow[p];
+              const keyName = p.toLowerCase();
+              let workflowKeyValue = workflow[p];
               if (keyName === 'category') {
                 workflowKeyValue =
                   workflowKeyValue === 0 || workflowKeyValue.Value === 0
@@ -381,18 +383,23 @@ export class Forms {
                     : 'Action';
               } else if (keyName === 'mode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Background' : 'Real-time';
-              } else if (keyName === 'runas' ) {
+              } else if (keyName === 'runas') {
                 workflowKeyValue =
-                    workflowKeyValue === 0 || workflowKeyValue.Value === 0
-                        ? 'Owner'
-                        : workflowKeyValue === 1 || workflowKeyValue.Value === 1
-                        ? 'User'
-                        : '';
+                  workflowKeyValue === 0 || workflowKeyValue.Value === 0
+                    ? 'Owner'
+                    : workflowKeyValue === 1 || workflowKeyValue.Value === 1
+                    ? 'User'
+                    : '';
               } else if (keyName === 'ismanaged') {
                 workflowKeyValue = workflowKeyValue || workflowKeyValue.Value ? 'Managed' : 'Unmanaged';
-              } else if (keyName === 'subprocess' || keyName === 'ondemand' || keyName === 'triggeroncreate' || keyName === 'triggerondelete') {
+              } else if (
+                keyName === 'subprocess' ||
+                keyName === 'ondemand' ||
+                keyName === 'triggeroncreate' ||
+                keyName === 'triggerondelete'
+              ) {
                 workflowKeyValue = workflowKeyValue || workflowKeyValue.Value ? '&#10004;' : '';
-              } else if (keyName === 'triggeronupdateattributelist' ) {
+              } else if (keyName === 'triggeronupdateattributelist') {
                 workflowKeyValue = workflowKeyValue ? workflowKeyValue.replace(/,/g, '<br>') : '';
               } else if (keyName === 'statecode') {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Draft' : 'Activated';
@@ -407,7 +414,11 @@ export class Forms {
           return resultRow;
         });
         // Sort results by category, then by name
-        results = results ? results.sort((a, b) => (a[2].value < b[2].value) ? 1 : (a[2].value === b[2].value) ? ((a[1].value > b[1].value) ? 1 : -1) : -1 ) : results;
+        results = results
+          ? results.sort((a, b) =>
+              a[2].value < b[2].value ? 1 : a[2].value === b[2].value ? (a[1].value > b[1].value ? 1 : -1) : -1
+            )
+          : results;
         this.utility.messageExtension(results, 'workflows');
       })
       .catch((err) => {
@@ -416,13 +427,14 @@ export class Forms {
   }
 
   openLookupNewWindow() {
-    let currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
+    //@ts-ignore
+    const currentControl = this.utility.Xrm.Page.ui.getCurrentControl();
     if (currentControl.getControlType() === 'lookup') {
-      let currentLookup = currentControl.getAttribute().getValue();
+      const currentLookup = currentControl.getAttribute().getValue();
       if (currentLookup) {
-        let entityName = currentLookup[0].type,
+        const entityName = currentLookup[0].type,
           entityId = currentLookup[0].id;
-        let url = `${this.utility.clientUrlForParams}etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
+        const url = `${this.utility.clientUrlForParams}etc=${entityName}&id=${entityId}&newWindow=true&pagetype=entityrecord`;
         window.open(url, '_blank');
       }
     } else {
@@ -431,14 +443,14 @@ export class Forms {
   }
 
   allFields() {
-    let entityId = this.utility.Xrm.Page.data.entity.getId();
+    const entityId = this.utility.Xrm.Page.data.entity.getId();
     if (entityId) {
-      let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
-      let resultsArray = [{ cells: ['Attribute Name', 'Value'] }];
+      const entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+      const resultsArray = [{ cells: ['Attribute Name', 'Value'] }];
       this.utility.fetch(`EntityDefinitions(LogicalName='${entityName}')`, 'EntitySetName').then((entity) => {
         if (entity && entity.EntitySetName) {
           this.utility.fetch(entity.EntitySetName, null, null, entityId.substr(1, 36).toLowerCase()).then((r) => {
-            let keys = Object.keys(r);
+            const keys = Object.keys(r);
             keys.forEach((k) => {
               resultsArray.push({ cells: [k, r[k]] });
             });
@@ -452,14 +464,15 @@ export class Forms {
 
   toggleTabs() {
     this.utility.Xrm.Page.ui.tabs.forEach((t) => {
-      let currentState = t.getDisplayState();
+      const currentState = t.getDisplayState();
       t.setDisplayState(currentState === 'expanded' ? 'collapsed' : 'expanded');
     });
   }
 
   optionSets() {
-    let optionSets = this.utility.Xrm.Page.getControl()
+    const optionSets = this.utility.Xrm.Page.getControl()
       .filter((x) => x.getControlType() === 'boolean' || x.getControlType() === 'optionset')
+      //@ts-ignore
       .map((x) => ({ name: x.getName(), options: (<Xrm.Page.OptionSetAttribute>x.getAttribute()).getOptions() }));
     this.utility.messageExtension(optionSets, 'optionsets');
   }
@@ -475,7 +488,7 @@ export class Forms {
 
 function setFilter(attributes, formDocument, filter) {
   attributes.forEach((x) => {
-    let e = <HTMLDivElement>(
+    const e = <HTMLDivElement>(
       document.querySelector(`div[data-id="${x.getName()}-FieldSectionItemContainer"] div[data-lp-id]`)
     );
     if (e) {

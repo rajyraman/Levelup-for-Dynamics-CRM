@@ -1,13 +1,12 @@
-/// <reference path="../../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {
     type: 'Page',
     category: 'Load',
   },
   function (response) {
-    let rows = response
+    const rows = response
       .map((r) => {
-        let cells = `<td class="name">${r.name}</td>
+        const cells = `<td class="name">${r.name}</td>
                     <td>
                     <table>
                     <thead>
