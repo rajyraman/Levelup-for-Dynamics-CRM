@@ -1,12 +1,9 @@
-/// <reference path="../tsd/xrm.d.ts" />
-
 import { Utility } from './inject/levelup.common.utility';
-import { IExtensionMessage } from './interfaces/types';
+import { IExtensionMessage, IImpersonateMessage } from './interfaces/types';
 import { Forms } from './inject/levelup.forms';
 import { Service } from './inject/levelup.servicecalls';
 import { Navigation } from './inject/levelup.navigation';
 import { Grid } from './inject/levelup.grid';
-import { default as WebApiClient } from 'xrm-webapi-client';
 
 window.addEventListener('message', async function (event) {
   let utility: Utility;
@@ -15,25 +12,22 @@ window.addEventListener('message', async function (event) {
   let xrm: Xrm.XrmStatic;
 
   // home.dynamics.com also messaging. Ignore.
-  if (location.origin !== event.origin) return;
+  if (location.origin !== event.origin && location.origin !== `${event.origin}.mcas.ms`) return;
   const source = <Window>event.source;
   if (source.Xrm && event.data.type) {
-    let clientUrl =
+    const clientUrl =
       (source.Xrm.Page.context.getCurrentAppUrl && source.Xrm.Page.context.getCurrentAppUrl()) ||
       source.Xrm.Page.context.getClientUrl();
 
     // This is for differentiating between OnPrem, OnPrem on IFD or CRM Online
-    let cleanedClientUrl = !clientUrl.endsWith(Xrm.Page.context.getOrgUniqueName())
+    const cleanedClientUrl = !clientUrl.endsWith(Xrm.Page.context.getOrgUniqueName())
       ? clientUrl
       : clientUrl.substr(0, clientUrl.lastIndexOf('/'));
     if (!cleanedClientUrl.startsWith(event.origin)) return;
-    let clientUrlForParams = clientUrl;
-    let contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
+    const contentPanels = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
       return d.style.visibility !== 'hidden';
     });
-    if (!clientUrl.includes('main.aspx')) {
-      clientUrlForParams += '/main.aspx';
-    }
+    //@ts-ignore
     if (source.Xrm.Internal.isUci && Xrm.Internal.isUci()) {
       formWindow = window;
       formDocument = document;
@@ -58,7 +52,7 @@ window.addEventListener('message', async function (event) {
       return;
     }
     try {
-      let message = <IExtensionMessage>event.data;
+      const message = <IExtensionMessage>event.data;
       switch (message.category) {
         case 'Forms':
           new Forms(utility)[message.type]();
@@ -71,6 +65,10 @@ window.addEventListener('message', async function (event) {
           break;
         case 'Navigation':
           new Navigation(utility)[message.type]();
+          break;
+        case 'Impersonation':
+          const impersonateMessage = <IImpersonateMessage>message.content;
+          new Service(utility).impersonateUser(impersonateMessage);
           break;
       }
     } catch (e) {

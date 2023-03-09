@@ -34,8 +34,8 @@
         }
 
         button {
-            width: 100%;
             background-color: #3f51b5;
+            width:100%;
         }
 
         .material-icons {
@@ -48,10 +48,6 @@
             padding-bottom: 15px;
         }
 
-        #impersonate-tab{
-            display: none;
-        }
-
         .impersonization-rows{
             display: flex;
             align-items: center;
@@ -60,6 +56,10 @@
 
         label.mdl-switch{
             width: auto;
+        }
+        button.reset {
+            width: 50%;
+            background-color: rgb(210, 42, 148)!important;
         }
     </style>
 </head>
@@ -468,8 +468,8 @@
                     <div class="mdl-grid">
                         <div class="mdl-cell mdl-cell--8-col impersonization-rows">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <select class="mdl-textfield__input" id="users-dropdown" name="users-dropdown"></select>
-                                <label id="users-dropdown-label" class="mdl-textfield__label" for="users-dropdown">User to impersonate</label>
+                                <input class="mdl-textfield__input" id="user-to-impersonate-input" name="user-to-impersonate-input" type="email"></input>
+                                <label id="user-to-impersonate-label" class="mdl-textfield__label" for="user-to-impersonate-input">Account Name e.g. satya@crm.onmicrosoft.com</label>
                             </div>
                         </div>
                         <div class="mdl-cell mdl-cell--8-col impersonization-rows">
@@ -477,8 +477,14 @@
                                 <input type="checkbox" id="impersonate-toggle" class="mdl-switch__input">
                                 <span id="impersonate-cbx-label" class="mdl-switch__label">OFF</span>
                             </label>
+
                         </div>
-                    </div>                   
+                        <div class="mdl-cell mdl-cell--8-col impersonization-rows">
+                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent reset" id="resetImpersonationButton">
+                            <i class="material-icons">blur_off</i>
+                            <span>Reset Impersonation</span>
+                        </button></div>
+                    </div>
                 </div>
             </section>
         </main>

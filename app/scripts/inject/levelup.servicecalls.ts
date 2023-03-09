@@ -1,9 +1,14 @@
-/// <reference path="levelup.common.utility.ts" />
-
 import { Utility } from './levelup.common.utility';
+import * as WebApiClient from 'xrm-webapi-client';
+import { IImpersonateMessage, IImpersonationResponse, UserDetail } from '../interfaces/types';
+
+// @ts-ignore
+WebApiClient.Configure({
+  ReturnAllPages: true,
+});
 
 export class Service {
-  constructor(private utility: Utility) { }
+  constructor(private utility: Utility) {}
 
   environmentDetails() {
     if (!this.utility.is2016OrGreater) {
@@ -11,7 +16,7 @@ export class Service {
       return;
     }
     const resultsArray = [{ cells: ['Name', 'Value'] }];
-    let keys = Object.keys(this.utility.environmentDetail);
+    const keys = Object.keys(this.utility.environmentDetail);
     keys.forEach((k) => {
       if (k !== 'Endpoints') {
         resultsArray.push({ cells: [k, this.utility.environmentDetail[k]] });
@@ -22,17 +27,17 @@ export class Service {
   }
 
   environmentSettings() {
-    let entity = this.utility.is2016OrGreater ? 'organizations' : 'OrganizationSet';
+    const entity = this.utility.is2016OrGreater ? 'organizations' : 'OrganizationSet';
     this.utility
       .fetch(entity)
       .then((c) => {
         let settings = {};
-        let settingsArray = [];
+        const settingsArray = [];
         if (c.length > 0) {
           settings = c[0];
         }
-        for (let s in settings) {
-          if (s.indexOf('@') == -1 && s.indexOf('_') == -1) {
+        for (const s in settings) {
+          if (s.indexOf('@') === -1 && s.indexOf('_') === -1) {
             settingsArray.push({ name: s, value: settings[s] });
           }
         }
@@ -44,7 +49,7 @@ export class Service {
   }
 
   myRoles() {
-    let resultsArray = [{ cells: ['Name', 'Role Id'] }];
+    const resultsArray = [{ cells: ['Name', 'Role Id'] }];
     let attributes = 'RoleId,Name';
     let entity = 'RoleSet';
     let filter = Xrm.Page.context
@@ -78,102 +83,53 @@ export class Service {
   }
 
   allUserRoles() {
-    let resultsArray: any[] = [{ cells: ['Business Unit', 'Role', 'User', 'AD Name'] }];
-    this.utility
-      .fetch(
-        'systemusers',
-        null,
-        null,
-        null,
-        `
-        <fetch>
-          <entity name='systemuser' >
-              <attribute name='domainname' />
-              <attribute name='businessunitid' />
-              <attribute name='fullname' />
-              <filter>
-                  <condition entityname='role' attribute='parentroleid' operator='null' />
-              </filter>
-              <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' link-type='outer' alias='systemuserroles' >
-                  <attribute name='roleid' />
-                  <attribute name='systemuserid' />
-                  <link-entity name='role' from='roleid' to='roleid' link-type='outer' alias='role' >
-                      <attribute name='name' />
-                      <order attribute='name' />
-                  </link-entity>
-              </link-entity>
-          </entity>
-        </fetch>`
-      )
+    const resultsArray: any[] = [{ cells: ['Business Unit', 'User', 'AD Name', 'Roles'] }];
+    const request = {
+      entityName: 'systemuser',
+      queryParams:
+        '?$select=systemuserid,domainname,_businessunitid_value,fullname&$expand=systemuserroles_association($select=roleid,name;$filter=(_parentroleid_value eq null))&$filter=(islicensed eq true)',
+      headers: [
+        { key: 'Prefer', value: 'odata.include-annotations="*"' },
+        { key: 'OData-MaxVersion', value: '4.0' },
+        { key: 'OData-Version', value: '4.0' },
+      ],
+    };
+    const utility = this.utility;
+
+    WebApiClient.Retrieve(request)
+      .then(function (response) {
+        //@ts-ignore
+        return WebApiClient.Expand({
+          records: response.value,
+        });
+      })
       .then((entities) => {
         console.log(entities);
-        let cells = entities.forEach((attributes) => {
-          let roleId = attributes['systemuserroles.roleid'] || 'No Role',
-            roleName = attributes['role.name'] || 'No Role',
-            userId = attributes['systemuserid'],
+        entities.forEach((attributes) => {
+          const userId = attributes['systemuserid'],
             userName = attributes['fullname'];
 
           resultsArray.push({
             bu: attributes['_businessunitid_value@OData.Community.Display.V1.FormattedValue'],
-            role: {
-              id: roleId,
-              name: roleName,
-              url: `${this.utility.clientUrlForParams}etn=role&id=${roleId}&newWindow=true&pagetype=entityrecord`,
-            },
             user: {
               id: userId,
               name: userName,
-              url: `${this.utility.clientUrlForParams}etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`,
+              url: `${utility.clientUrlForParams}etn=systemuser&id=${userId}&newWindow=true&pagetype=entityrecord`,
             },
             adname: attributes['domainname'],
+            roles: attributes.systemuserroles_association.value.map((x) => x.name),
           });
         });
-        this.utility.messageExtension(resultsArray, 'allUserRoles');
+        utility.messageExtension(resultsArray, 'allUserRoles');
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  allUsers() {
-    const userId =
-      this.utility.Xrm?.Utility?.getGlobalContext?.().getUserId() ?? this.utility.Xrm.Page.context.getUserId();
-    this.utility
-      .fetch(
-        'systemusers',
-        null,
-        null,
-        null,
-        `
-        <fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
-          <entity name='systemuser' >
-            <attribute name='fullname' />
-            <attribute name='azureactivedirectoryobjectid' />
-            <filter>
-              <condition attribute='islicensed' operator='eq' value='1' />
-              <condition attribute='isdisabled' operator='eq' value='0' />
-              <condition attribute='systemuserid' operator='neq' value='${userId}' />              
-            </filter>
-            <order attribute='fullname' descending='false' />
-            <link-entity name='systemuserroles' from='systemuserid' to='systemuserid' visible='false' intersect='true' >
-              <link-entity name='role' from='roleid' to='roleid' alias='r' />
-            </link-entity>
-          </entity>
-        </fetch>`
-      )
-      .then((entities) => {
-        this.utility.messageExtension(entities, 'allUsers');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.log(err));
   }
 
   entityMetadata() {
     this.utility
       .fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode,LogicalCollectionName,ChangeTrackingEnabled,DisplayName')
       .then((records) => {
-        let resultsArray = [
+        const resultsArray = [
           {
             cells: [
               'Entity Logical Name',
@@ -203,5 +159,36 @@ export class Service {
         });
         this.utility.messageExtension(resultsArray, 'entityMetadata');
       });
+  }
+  async impersonateUser(impersonateRequest: IImpersonateMessage) {
+    const request = {
+      entityName: 'systemuser',
+      fetchXml: `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
+        <entity name='systemuser' >
+          <attribute name='systemuserid' />
+          <attribute name='fullname' />
+          <attribute name='domainname' />
+          <attribute name='azureactivedirectoryobjectid' />
+          <filter>
+            <condition attribute='isdisabled' operator='eq' value='0' />
+            condition attribute='islicensed' operator='eq' value='1' />
+            <condition attribute='accessmode' operator='eq' value='0' />
+            <condition attribute='domainname' operator='eq' value='${impersonateRequest.userName}' />
+          </filter>
+          <order attribute='fullname' descending='false' />
+        </entity>
+      </fetch>`,
+    };
+
+    const users = await WebApiClient.Retrieve(request);
+    const resultsArray = (<[]>users.value).map<UserDetail>(
+      (x) =>
+        <UserDetail>{ fullName: x['fullname'], userId: x['azureactivedirectoryobjectid'], userName: x['domainname'] }
+    );
+    this.utility.messageExtension(
+      <IImpersonationResponse>{ users: resultsArray, impersonateRequest: impersonateRequest },
+      'impersonation'
+    );
+    return resultsArray;
   }
 }

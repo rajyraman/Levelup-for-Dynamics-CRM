@@ -1,15 +1,13 @@
-/// <reference path="../../tsd/moment.d.ts" />
-/// <reference path="../../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {
     type: 'Page',
     category: 'Load',
   },
   function (response) {
-    let rows = response
+    const rows = response
       .filter((x) => x.value)
       .map((x) => {
-        let key = x.name.toLowerCase();
+        const key = x.name.toLowerCase();
         if (_.isBoolean(x.value)) {
           x.value = x.value ? 'Yes' : 'No';
         } else if (_.isObject(x.value)) {

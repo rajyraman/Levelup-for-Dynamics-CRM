@@ -1,11 +1,10 @@
-/// <reference path="../tsd/externals.d.ts" />
 chrome.runtime.sendMessage(
   {
     type: 'Page',
     category: 'Load',
   },
   (rows) => {
-    let virtualResults = document.createDocumentFragment();
+    const virtualResults = document.createDocumentFragment();
     for (let i = 0; i < rows.length; i++) {
       if (i > 0) {
         const row = document.createElement('tr');
@@ -18,7 +17,7 @@ chrome.runtime.sendMessage(
         virtualResults.appendChild(row);
       } else {
         const row = document.createElement('tr');
-        rows[i].cells.forEach((x, i) => {
+        rows[i].cells.forEach((x) => {
           const cell = document.createElement('td');
           cell.innerText = x;
           row.appendChild(cell);
@@ -27,6 +26,7 @@ chrome.runtime.sendMessage(
       }
     }
     document.getElementById('results').appendChild(virtualResults);
+    //@ts-ignore
     new List('grid', {
       valueNames: ['name', 'value'],
     });

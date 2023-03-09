@@ -1,30 +1,22 @@
 import {
-  IResultRow,
-  IResultRowKeyValues,
   IExtensionMessage,
+  IImpersonationResponse,
+  ExtensionMessageContent,
   IImpersonateMessage,
-  LocalStorage,
-  IExtensionLocalStorage,
+  ImpersonationStorage,
 } from './interfaces/types';
 
-let content: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
 let userId: string;
+let content: ExtensionMessageContent;
 
-chrome.storage.local.clear();
-
-chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async function (
+  message: IExtensionMessage,
+  sender: chrome.runtime.MessageSender,
+  sendResponse
+) {
   if (message.type === 'Page') {
-    let c = message.category.toString();
+    const c = message.category;
     switch (c) {
-      case 'allUsers':
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            category: 'allUsers',
-            type: 'Background',
-            content: message.content,
-          });
-        });
-        break;
       case 'Settings':
         content = message.content;
         chrome.tabs.create({
@@ -50,8 +42,8 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
       case 'Extension':
         renderBadge();
         if (message.content === 'On') {
-          chrome.browserAction.enable(sender.tab.id);
-        } else if (message.content === 'Off') chrome.browserAction.disable(sender.tab.id);
+          chrome.action.enable(sender.tab.id);
+        } else if (message.content === 'Off') chrome.action.disable(sender.tab.id);
         break;
       case 'Load':
         sendResponse(content);
@@ -68,94 +60,127 @@ chrome.runtime.onMessage.addListener(function (message: IExtensionMessage, sende
           url: `/pages/optionsets.html`,
         });
         break;
+      case 'impersonation':
+        const impersonationResponse = <IImpersonationResponse>message.content;
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab || impersonationResponse.users.length === 0) return;
+        userId = impersonationResponse.users[0].userId;
+
+        chrome.storage.local.set({
+          [impersonationResponse.impersonateRequest.url]: <ImpersonationStorage>{
+            isImpersonationActive: impersonationResponse.impersonateRequest.isActive,
+            userName: impersonationResponse.impersonateRequest.userName,
+            userFullName: impersonationResponse.users[0].fullName,
+          },
+        });
+        if (impersonationResponse.impersonateRequest.isActive) {
+          chrome.declarativeNetRequest.updateDynamicRules(
+            {
+              removeRuleIds: [1],
+              addRules: [
+                {
+                  id: 1,
+                  priority: 1,
+                  action: {
+                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+                    requestHeaders: [
+                      {
+                        header: 'CallerObjectId',
+                        operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                        value: userId,
+                      },
+                    ],
+                  },
+                  condition: {
+                    regexFilter: `${impersonationResponse.impersonateRequest.url}api/*`,
+                    resourceTypes: [
+                      chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
+                      chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
+                      chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
+                    ],
+                  },
+                },
+              ],
+            },
+            async () => {
+              renderBadge(impersonationResponse.impersonateRequest.url);
+            }
+          );
+        } else {
+          chrome.declarativeNetRequest.getDynamicRules((rules) => {
+            const ruleIds = rules.map((x) => x.id);
+            chrome.declarativeNetRequest.updateDynamicRules({
+              removeRuleIds: ruleIds,
+            });
+          });
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (!tab) return;
+
+          chrome.storage.local.clear();
+        }
+        chrome.tabs.reload(tab.id, { bypassCache: true });
+        break;
       default:
         break;
     }
-  } else if (message.type === 'Impersonate') {
-    let category = message.category;
-    let impersonizationMessage = <IImpersonateMessage>message.content;
+  } else if (message.type === 'reset') {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
+    chrome.declarativeNetRequest.getDynamicRules((rules) => {
+      const ruleIds = rules.map((x) => x.id);
+      chrome.declarativeNetRequest.updateDynamicRules({
+        removeRuleIds: ruleIds,
+      });
+    });
+    chrome.storage.local.clear();
+    chrome.tabs.reload(tab.id, { bypassCache: true });
+  } else if (message.type === 'impersonation') {
+    const impersonizationMessage = <IImpersonateMessage>message.content,
+      [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
 
-    renderBadge();
-
-    switch (category) {
-      case 'activation':
-        userId = impersonizationMessage.UserId;
-
-        chrome.webRequest.onBeforeSendHeaders.removeListener(headerListener);
-
-        if (impersonizationMessage.IsActive) {
-          chrome.webRequest.onBeforeSendHeaders.addListener(
-            headerListener,
-            {
-              urls: [impersonizationMessage.Url + 'api/*'],
-            },
-            ['blocking', 'requestHeaders', 'extraHeaders']
-          );
-        }
-        break;
-      case 'changeUser':
-        userId = impersonizationMessage.UserId;
-        break;
-    }
-  } else if (message.type === 'API') {
-    let c = message.category.toString();
-    switch (c) {
-      case 'allUsers':
-        chrome.tabs.query(
-          {
-            active: true,
-            currentWindow: true
-          },
-          function (tabs) {
-            chrome.tabs.executeScript(tabs[0].id, {
-              code: `window.postMessage({ type: '${c}', category: '${message.type}' }, '*');`,
-            });
-          }
-        );
-        break;
-    }
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: postExtensionMessageWithData,
+      args: [message.type.toString(), message.category.toString(), impersonizationMessage],
+    });
   } else {
-    chrome.tabs.query(
-      {
-        active: true,
-        currentWindow: true,
-      },
-      function (tabs) {
-        if (!tabs || tabs.length === 0) return;
-        chrome.tabs.executeScript(tabs[0].id, {
-          code: `window.postMessage({ type: '${message.type}', category: '${message.category}' }, '*');`,
-        });
-      }
-    );
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
+
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: postExtensionMessage,
+      args: [message.type.toString(), message.category.toString()],
+    });
   }
 });
 
-function headerListener(details: chrome.webRequest.WebRequestHeadersDetails) {
-  details.requestHeaders.push({
-    name: 'CallerObjectId',
-    value: userId,
-  });
-
-  return { requestHeaders: details.requestHeaders };
+async function renderBadge(url?: string) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return;
+  console.log(tab.url);
+  if (!url) url = `${new URL(tab.url).origin}/`;
+  const localSettingForEnv: ImpersonationStorage = (await chrome.storage.local.get(url))[url];
+  if (!localSettingForEnv) {
+    chrome.action.setBadgeBackgroundColor({ color: [0, 0, 0, 0] });
+    chrome.action.setBadgeText({ text: '' });
+    chrome.action.setTitle({ title: '' });
+    return;
+  }
+  if (localSettingForEnv.isImpersonationActive) {
+    chrome.action.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+    chrome.action.setTitle({ title: `Impersonating ${localSettingForEnv.userName}` });
+    chrome.action.setBadgeText({
+      text: localSettingForEnv.userFullName,
+    });
+  }
 }
 
-function renderBadge(){
-  chrome.storage.local.get([LocalStorage.isImpersonating, LocalStorage.userName], function (
-    result: IExtensionLocalStorage
-  ) {
-    if (result.isImpersonating) {
-      chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
-      chrome.browserAction.setTitle({ title: `Impersonating ${result.userName}` });
-      chrome.browserAction.setBadgeText({
-        text: result.userName
-          .split(' ')
-          .map((x) => x[0])
-          .join(''),
-      });
-    } else {
-      chrome.browserAction.setBadgeBackgroundColor({ color: [0, 0, 0, 0] });
-      chrome.browserAction.setBadgeText({ text: null });
-      chrome.browserAction.setTitle({ title: '' });
-    }
-  });
+function postExtensionMessage(message: string, category: string) {
+  window.postMessage({ type: message, category: category }, '*');
+}
+
+function postExtensionMessageWithData(message: string, category: string, data: object) {
+  window.postMessage({ type: message, category: category, content: data }, '*');
 }

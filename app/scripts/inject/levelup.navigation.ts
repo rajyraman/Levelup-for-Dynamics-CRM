@@ -1,6 +1,3 @@
-/// <reference path="levelup.common.utility.ts" />
-/// <reference path="../../tsd/xrm.d.ts" />
-
 import { Utility } from './levelup.common.utility';
 
 export class Navigation {
@@ -27,7 +24,7 @@ export class Navigation {
   }
 
   newRecord() {
-    let entityName = prompt('Entity?', '');
+    const entityName = prompt('Entity?', '');
     if (entityName) {
       window.open(`${this.utility.clientUrlForParams}etn=${entityName}&newWindow=true&pagetype=entityrecord`, '_blank');
     }
@@ -67,8 +64,9 @@ export class Navigation {
     if (!this.utility.Xrm.Page.data || !this.utility.Xrm.Page.data.entity) {
       window.open(`${this.utility.clientUrlForParams}pagetype=advancedfind`, '_blank');
     } else {
-      let entityName = this.utility.Xrm.Page.data.entity.getEntityName();
+      const entityName = this.utility.Xrm.Page.data.entity.getEntityName();
       window.open(
+        //@ts-ignore
         `${this.utility.clientUrlForParams}extraqs=EntityCode%3d${this.utility.Xrm.Internal.getEntityCode(
           entityName
         )}&pagetype=advancedfind`,
@@ -78,8 +76,10 @@ export class Navigation {
   }
 
   mocaClient() {
-    var url =
+    let url =
+      //@ts-ignore
       (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      //@ts-ignore
       (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
         ? Xrm.Page.context.getClientUrl()
         : window.location.origin;
@@ -114,6 +114,7 @@ export class Navigation {
   }
 
   diagnostics() {
+    //@ts-ignore
     if (Xrm.Internal.isUci && Xrm.Internal.isUci()) {
       window.open(`${Xrm.Page.context.getClientUrl()}/tools/diagnostics/diag.aspx/GetMetrics`);
     } else {
@@ -122,19 +123,23 @@ export class Navigation {
   }
 
   perfCenter() {
+    //@ts-ignore
     if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('perf=')) {
       window.location.href = `${this.utility.clientUrl}&perf=true`;
     } else {
+      //@ts-ignore
       Mscrm.Performance.PerformanceCenter.get_instance().TogglePerformanceResultsVisibility();
     }
   }
 
   instancePicker() {
     if (
+      //@ts-ignore
       (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      //@ts-ignore
       (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
     ) {
-      var clientUrl = Xrm.Page.context.getClientUrl();
+      let clientUrl = Xrm.Page.context.getClientUrl();
       window.open(
         `https://port${clientUrl.substr(clientUrl.indexOf('.'))}/G/Instances/InstancePicker.aspx?redirect=False`,
         '_blank'
@@ -163,7 +168,9 @@ export class Navigation {
 
   solutionHistory() {
     if (
+      //@ts-ignore
       (Xrm.Page.context.isOffice365 && Xrm.Page.context.isOffice365()) ||
+      //@ts-ignore
       (Xrm.Page.context.isOnPremises && !Xrm.Page.context.isOnPremises())
     ) {
       window.open(
@@ -176,12 +183,14 @@ export class Navigation {
   }
 
   debugRibbon() {
+    //@ts-ignore
     if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('ribbondebug=')) {
       window.location.href = `${location.href}&ribbondebug=true`;
     }
   }
 
   formMonitor() {
+    //@ts-ignore
     if (Xrm.Internal.isUci && Xrm.Internal.isUci() && !location.search.includes('monitor=')) {
       window.location.href = `${location.href}&monitor=true`;
     }

@@ -1,37 +1,30 @@
-import { IExtensionMessage, LocalStorage, IExtensionLocalStorage } from './interfaces/types';
-
-chrome.runtime.onMessage.addListener((message: IExtensionMessage, sender, response) => {
-  if (message.type === 'Page') {
-    switch (message.category) {
-      case 'allUsers':
-        chrome.storage.local.set({
-          [LocalStorage.usersList]: message.content,
-        });
-
-        populateUsersDropdown(message.content);
-        break;
-    }
-  }
-});
+import { IExtensionMessage } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;
   document.getElementById('version').innerHTML = `v${extensionVersion}`;
+
   const bodyText = encodeURIComponent(`
-    Browser Version: ${navigator.appVersion}
+    Browser Version: ${navigator}
     Extension Version: ${extensionVersion}
     ----------------------------------------------------------
     [DESCRIBE ISSUE HERE]`);
   const issueUrl = `https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/new?body=${bodyText}`;
   (<HTMLAnchorElement>document.getElementById('issueUrl')).href = issueUrl;
+  document.querySelector('#resetImpersonationButton').addEventListener('click', function (e) {
+    chrome.runtime.sendMessage(<IExtensionMessage>{
+      category: 'impersonation',
+      type: 'reset',
+    });
+  });
 
   document.querySelector('.maincontainer').addEventListener(
     'click',
     function (e) {
-      let targetElement = <HTMLButtonElement>(<HTMLElement>e.target).parentElement;
+      const targetElement = <HTMLButtonElement>(<HTMLElement>e.target).parentElement;
       if (targetElement.localName !== 'button') return;
 
-      let category = targetElement.getAttribute('data-category');
+      const category = targetElement.getAttribute('data-category');
       chrome.runtime.sendMessage(<IExtensionMessage>{
         category: category || '',
         type: targetElement.id,
@@ -43,9 +36,9 @@ window.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#environmentLinks').addEventListener(
     'click',
     function (e) {
-      let targetElement = <HTMLDivElement>e.target;
+      const targetElement = <HTMLDivElement>e.target;
 
-      let category = targetElement.getAttribute('data-category');
+      const category = targetElement.getAttribute('data-category');
       chrome.runtime.sendMessage(<IExtensionMessage>{
         category: category || '',
         type: targetElement.id,
@@ -54,121 +47,28 @@ window.addEventListener('DOMContentLoaded', function () {
     false
   );
 
-  document.getElementById('impersonate-toggle').addEventListener('change', function () {
-    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
-    let checkboxLabel = <HTMLInputElement>document.getElementById('impersonate-cbx-label');
+  document.getElementById('impersonate-toggle').addEventListener('change', async function () {
+    const checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
+    const checkboxLabel = <HTMLInputElement>document.getElementById('impersonate-cbx-label');
 
     checkboxLabel.innerHTML = checkboxElement.checked ? 'IMPERSONATING' : '';
 
-    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
+    const userName = <HTMLSelectElement>document.getElementById('user-to-impersonate-input');
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
 
-    chrome.tabs.query({ active: true }, function (tabs) {
-      var url = tabs[0].url.split('main.aspx')[0];
+    const url = tab.url.split('main.aspx')[0];
 
-      let msg: IExtensionMessage = <IExtensionMessage>{
-        type: 'Impersonate',
-        category: 'activation',
-        content: {
-          IsActive: checkboxElement.checked,
-          UserId: selectedUser.value,
-          Url: url,
-        },
-      };
-
-      chrome.storage.local.set({
-        [LocalStorage.isImpersonating]: checkboxElement.checked,
-        [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
-      });
-
-      chrome.runtime.sendMessage(msg);
-      chrome.tabs.reload(tabs[0].id, { bypassCache: true });
-    });
-  });
-
-  document.getElementById('users-dropdown').addEventListener('change', function () {
-    let selectedUser = <HTMLSelectElement>document.getElementById('users-dropdown');
-    let checkboxElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
-
-    let checked = checkboxElement.checked;
-
-    let msg: IExtensionMessage = <IExtensionMessage>{
-      type: 'Impersonate',
-      category: 'changeUser',
+    const impersonateMessage: IExtensionMessage = <IExtensionMessage>{
+      type: 'impersonation',
+      category: 'Impersonation',
       content: {
-        IsActive: checked,
-        UserId: selectedUser.value,
+        isActive: checkboxElement.checked,
+        userName: userName.value.trim(),
+        url: url,
       },
     };
 
-    chrome.storage.local.set({
-      [LocalStorage.userId]: selectedUser.value,
-      [LocalStorage.userName]: selectedUser.options[selectedUser.selectedIndex].text,
-    });
-
-    chrome.runtime.sendMessage(msg);
+    chrome.runtime.sendMessage(impersonateMessage);
   });
-
-  initImpersonateTab();
 });
-
-function initImpersonateTab() {
-  chrome.storage.local.get([LocalStorage.usersList], function (result: IExtensionLocalStorage) {
-    let users = result.usersList;
-    document.getElementById('impersonate-tab').style.display = 'block';
-
-    if (!users) {
-      chrome.runtime.sendMessage({
-        category: 'allUsers',
-        type: 'API',
-      });
-    } else {
-      populateUsersDropdown(users);
-    }
-  });
-}
-
-function populateUsersDropdown(users) {
-  let select = <HTMLSelectElement>document.getElementById('users-dropdown');
-
-  while (select.firstChild) {
-    select.removeChild(select.lastChild);
-  }
-
-  for (var i = 0; i < users.length; i++) {
-    let opt = document.createElement('option');
-    opt.value = users[i].azureactivedirectoryobjectid;
-    opt.innerHTML = users[i].fullname;
-    select.appendChild(opt);
-  }
-
-  setSavedValues();
-}
-
-function setSavedValues() {
-  chrome.storage.local.get([LocalStorage.userId, LocalStorage.isImpersonating], function (
-    result: IExtensionLocalStorage
-  ) {
-    let isImpersonating = result.isImpersonating || false;
-    let userId = result.userId;
-
-    let selectElement = <HTMLInputElement>document.getElementById('impersonate-toggle');
-
-    if (isImpersonating) {
-      selectElement.parentElement.classList.add('is-checked');
-    } else {
-      selectElement.parentElement.classList.remove('is-checked');
-    }
-
-    selectElement.checked = isImpersonating;
-    (<HTMLInputElement>document.getElementById('impersonate-cbx-label')).innerHTML = selectElement.checked
-      ? 'IMPERSONATING'
-      : '';
-
-    let dropdown = <HTMLSelectElement>document.getElementById('users-dropdown');
-    dropdown.value = userId;
-
-    if (userId) {
-      dropdown.parentElement.classList.add('is-dirty');
-    }
-  });
-}

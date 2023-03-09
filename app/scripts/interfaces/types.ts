@@ -1,6 +1,5 @@
 export type MessageType =
   | 'Page'
-  | 'VisibilityCheck'
   | 'displayLogicalNames'
   | 'godMode'
   | 'formProperties'
@@ -38,17 +37,15 @@ export type MessageType =
   | 'environmentDetails'
   | 'myRoles'
   | 'allUserRoles'
-  | 'allUsers'
   | 'processes'
-  | 'Settings'
-  | 'Extension'
-  | 'Load'
-  | 'Impersonate'
-  | 'API';
+  | 'loadUsers'
+  | 'activation'
+  | 'reset'
+  | 'impersonation';
 
 export type Category =
+  | 'Impersonation'
   | 'Settings'
-  | 'Extension'
   | 'Forms'
   | 'Navigation'
   | 'Grid'
@@ -61,18 +58,27 @@ export type Category =
   | 'quickFindFields'
   | 'workflows'
   | 'allUserRoles'
-  | 'allUsers'
   | 'optionsets'
   | 'environment'
-  | 'activation'
+  | 'impersonation'
+  | 'userDetail'
   | 'changeUser';
 
 export type ExtensionState = 'On' | 'Off';
-
+export type ExtensionMessageContent =
+  | IResultRow[]
+  | IResultRowKeyValues[][]
+  | IImpersonateMessage
+  | IImpersonationResponse
+  | string;
+export interface IImpersonationResponse {
+  users: UserDetail[];
+  impersonateRequest: IImpersonateMessage;
+}
 export interface IExtensionMessage {
   type: MessageType;
   category?: Category;
-  content?: IResultRow[] | IResultRowKeyValues[][] | IImpersonateMessage | string;
+  content?: ExtensionMessageContent;
 }
 
 export interface ICustomMessage extends Event {
@@ -95,9 +101,9 @@ export interface IResultRowKeyValues {
 }
 
 export interface IImpersonateMessage {
-  UserId: string;
-  IsActive: boolean;
-  Url: string;
+  userName: string;
+  isActive: boolean;
+  url: string;
 }
 
 export interface IRetrieveCurrentOrganizationResponse {
@@ -124,7 +130,7 @@ declare global {
 export enum LocalStorage {
   lastUrl = 'lastUrl',
   currentUrl = 'currentUrl',
-  usersList = 'usersList',
+  users = 'usersList',
   isImpersonating = 'isImpersonating',
   userId = 'userId',
   userName = 'userName',
@@ -133,8 +139,19 @@ export enum LocalStorage {
 export interface IExtensionLocalStorage {
   lastUrl: string;
   currentUrl: string;
-  usersList: any[];
+  users: any[];
   isImpersonating: boolean;
   userId: string;
   userName: string;
+}
+
+export interface UserDetail {
+  userId: string;
+  userName: string;
+  fullName: string;
+}
+export interface ImpersonationStorage {
+  isImpersonationActive: boolean;
+  userName: string;
+  userFullName: string;
 }

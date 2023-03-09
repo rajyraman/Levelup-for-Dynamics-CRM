@@ -1,4 +1,4 @@
-import { default as WebApiClient } from 'xrm-webapi-client';
+import * as WebApiClient from 'xrm-webapi-client';
 import {
   IRetrieveCurrentOrganizationResponseDetail,
   Category,
@@ -17,7 +17,9 @@ export class Utility {
     private _xrm: Xrm.XrmStatic,
     private _clientUrl: string
   ) {
-    let version = _xrm.Page.context.getVersion ? _xrm.Page.context.getVersion() : <string>window['APPLICATION_VERSION'];
+    const version = _xrm.Page.context.getVersion
+      ? _xrm.Page.context.getVersion()
+      : <string>window['APPLICATION_VERSION'];
     this._is2016OrGreater = version.startsWith('8') || version.startsWith('9');
     this._currentUserId = _xrm.Page.context.getUserId().substr(1, 36);
     this._version = version;
@@ -61,7 +63,9 @@ export class Utility {
 
   public get isOnline(): boolean {
     return (
+      //@ts-ignore
       (this._xrm.Page.context.isOffice365 && this._xrm.Page.context.isOffice365()) ||
+      //@ts-ignore
       (this._xrm.Page.context.isOnPremises && !this._xrm.Page.context.isOnPremises())
     );
   }
@@ -115,14 +119,14 @@ export class Utility {
       });
   }
 
-  messageExtension(message: any[] | boolean, category: Category): void {
-    let extensionMessage = {
+  messageExtension(message: any[] | boolean | object, category: Category): void {
+    const extensionMessage = {
       type: 'Page',
       category: category,
       content: message,
     };
 
-    let levelUpEvent = new CustomEvent('levelup', {
+    const levelUpEvent = new CustomEvent('levelup', {
       detail: extensionMessage,
     });
     levelUpEvent.initEvent('levelup', false, false);
@@ -130,7 +134,7 @@ export class Utility {
   }
 
   static injectScript(file): void {
-    let scriptTag = document.createElement('script');
+    const scriptTag = document.createElement('script');
     scriptTag.setAttribute('type', 'text/javascript');
     scriptTag.setAttribute('src', file);
     document.body.appendChild(scriptTag);
@@ -145,7 +149,7 @@ export class Utility {
   }
 
   static copy(valueToCopy): void {
-    let t = document.createElement('input');
+    const t = document.createElement('input');
     t.setAttribute('id', 'copy');
     t.setAttribute('value', valueToCopy);
     document.body.appendChild(t);
