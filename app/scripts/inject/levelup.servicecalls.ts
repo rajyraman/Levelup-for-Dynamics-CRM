@@ -161,6 +161,9 @@ export class Service {
       });
   }
   async impersonateUser(impersonateRequest: IImpersonateMessage) {
+    const domainNameCondition = impersonateRequest.url
+      ? `<condition attribute='domainname' operator='eq' value='${impersonateRequest.userName}' />`
+      : `<condition attribute='domainname' operator='like' value='%${impersonateRequest.userName}%' />`;
     const request = {
       entityName: 'systemuser',
       fetchXml: `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
@@ -173,7 +176,7 @@ export class Service {
             <condition attribute='isdisabled' operator='eq' value='0' />
             condition attribute='islicensed' operator='eq' value='1' />
             <condition attribute='accessmode' operator='eq' value='0' />
-            <condition attribute='domainname' operator='eq' value='${impersonateRequest.userName}' />
+            ${domainNameCondition}
           </filter>
           <order attribute='fullname' descending='false' />
         </entity>
@@ -187,7 +190,7 @@ export class Service {
     );
     this.utility.messageExtension(
       <IImpersonationResponse>{ users: resultsArray, impersonateRequest: impersonateRequest },
-      'impersonation'
+      'Impersonation'
     );
     return resultsArray;
   }
