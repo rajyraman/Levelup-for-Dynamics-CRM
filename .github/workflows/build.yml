@@ -27,7 +27,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
     env:
       filename: levelup-for-dynamics-365-power-apps
     
@@ -35,7 +35,7 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3.6.0
       with:
         node-version: ${{ matrix.node-version }}
     
@@ -47,50 +47,16 @@ jobs:
 
     - run: npm run pack
     
-    - name: Create Draft Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
+    - name: Create Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
       id: create-draft-release
-      uses: actions/create-release@v1
+      uses: ncipollo/release-action@v1.12.0
       if: contains(github.ref, '-draft') || github.event.inputs.draftRelease
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}
-        draft: true
-        prerelease: true
-
-    - name: Upload Draft Release Asset for Chrome ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
-      id: draft-release-zip-file
-      uses: actions/upload-release-asset@v1
-      if: steps.create-draft-release.conclusion == 'success'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-draft-release.outputs.upload_url }}
-        asset_path: ./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
-        asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome-DRAFT.zip
-        asset_content_type: application/zip    
-    
-    - name: Create Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
-      id: create-release
-      uses: actions/create-release@v1
-      if: contains(github.ref, 'refs/tags/v') || github.event.inputs.productionRelease
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset for Chrome ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
-      id: release-zip-file
-      uses: actions/upload-release-asset@v1
-      if: steps.create-release.conclusion == 'success'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
-        asset_name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip
-        asset_content_type: application/zip
+        commit: ${{ github.ref }}
+        name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}
+        draft: github.event.inputs.draftRelease
+        prerelease: github.event.inputs.draftRelease
+        artifacts: "./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip"
+        replacesArtifacts: true
