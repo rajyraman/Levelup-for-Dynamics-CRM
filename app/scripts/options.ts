@@ -1,4 +1,3 @@
-import { ReturnAllPages } from 'xrm-webapi-client';
 import { IExtensionMessage, UserDetail } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -15,7 +14,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
   chrome.runtime.onMessage.addListener(async function (message: IExtensionMessage) {
     if (message.type !== 'search' || message.category !== 'Impersonation') return;
-    document.querySelector('datalist#userList').innerHTML = (<UserDetail[]>message.content)
+    const users = <UserDetail[]>message.content;
+
+    if (users.length > 0) document.querySelector('#startImpersonationButton').removeAttribute('disabled');
+    document.querySelector('datalist#userList').innerHTML = users
       .map((u) => `<option label="${u.fullName}" value="${u.userName}"></option>`)
       .join('');
   });

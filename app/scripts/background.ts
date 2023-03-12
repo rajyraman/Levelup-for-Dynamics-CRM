@@ -63,7 +63,13 @@ chrome.runtime.onMessage.addListener(async function (
       case 'Impersonation':
         const impersonationResponse = <IImpersonationResponse>message.content;
         const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-        if (!tab || impersonationResponse.users.length === 0) return;
+        if (
+          !tab ||
+          impersonationResponse.users.length === 0 ||
+          !impersonationResponse.impersonateRequest.canImpersonate
+        )
+          return;
+
         if (impersonationResponse.users.length > 1) {
           chrome.runtime.sendMessage(<IExtensionMessage>{
             type: 'search',

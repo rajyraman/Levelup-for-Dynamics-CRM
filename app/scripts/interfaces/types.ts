@@ -105,6 +105,7 @@ export interface IImpersonateMessage {
   userName: string;
   isActive?: boolean;
   url?: string;
+  canImpersonate?: boolean;
 }
 
 export interface IRetrieveCurrentOrganizationResponse {
