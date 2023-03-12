@@ -62,12 +62,7 @@ chrome.runtime.onMessage.addListener(async function (
         break;
       case 'Impersonation':
         const impersonationResponse = <IImpersonationResponse>message.content;
-        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-        if (
-          !tab ||
-          impersonationResponse.users.length === 0 ||
-          !impersonationResponse.impersonateRequest.canImpersonate
-        )
+        if (impersonationResponse.users.length === 0 || !impersonationResponse.impersonateRequest.canImpersonate)
           return;
 
         if (impersonationResponse.users.length > 1) {
@@ -128,7 +123,8 @@ chrome.runtime.onMessage.addListener(async function (
             });
             chrome.storage.local.clear();
           }
-          chrome.tabs.reload(tab.id, { bypassCache: true });
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (tab) chrome.tabs.reload(tab.id, { bypassCache: true });
         }
         break;
       default:
@@ -142,9 +138,8 @@ chrome.runtime.onMessage.addListener(async function (
       });
     });
     chrome.storage.local.clear();
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tab) return;
-    chrome.tabs.reload(tab.id, { bypassCache: true });
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) chrome.tabs.reload(tab.id, { bypassCache: true });
   } else if (message.type === 'impersonation' || message.type === 'search') {
     const impersonizationMessage = <IImpersonateMessage>message.content,
       [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
