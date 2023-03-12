@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag'     
+        description: 'Tag'
         default: false
       draftRelease:
-        description: 'Draft Release'     
-        default: false        
+        description: 'Draft Release'
+        default: false
 jobs:
   build:
 
@@ -22,10 +22,10 @@ jobs:
         node-version: [16.x]
     env:
       filename: levelup-for-dynamics-365-power-apps
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Cache node modules
       id: cache-npm
       uses: actions/cache@v3
@@ -44,20 +44,20 @@ jobs:
       name: List the state of node modules
       continue-on-error: true
       run: npm list
-        
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3.6.0
       with:
         node-version: ${{ matrix.node-version }}
-    
+
     - name: Read package.json
       uses: tyankatsu0105/read-package-version-actions@v1
-      id: package-version        
-    
+      id: package-version
+
     - run: npm ci
 
     - run: npm run pack
-    
+
     - name: Create Release ${{ env.filename }}-${{ steps.package-version.outputs.version }}
       id: create-draft-release
       uses: ncipollo/release-action@v1.12.0
@@ -69,4 +69,4 @@ jobs:
         prerelease: github.event.inputs.draftRelease
         artifacts: "./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip"
         replacesArtifacts: true
-        tag: github.event.inputs.tag
+        tag: ${{ github.event.inputs.tag }}
