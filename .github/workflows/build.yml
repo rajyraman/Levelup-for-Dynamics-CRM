@@ -6,20 +6,12 @@ name: build
 on:
   workflow_dispatch:
     inputs:
-      productionRelease:
-        description: 'Release Package - Draft'     
+      tag:
+        description: 'Tag'     
         default: false
       draftRelease:
-        description: 'Release Package - Production'     
+        description: 'Draft Release'     
         default: false        
-  push:
-    branches: [ master ]
-    tags:
-      - "v*"
-      - "-draft*"
-      - "-rc*"    
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
 jobs:
   build:
 
@@ -72,9 +64,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        commit: ${{ github.ref }}
         name: ${{ env.filename }}-${{ steps.package-version.outputs.version }}
         draft: github.event.inputs.draftRelease
         prerelease: github.event.inputs.draftRelease
         artifacts: "./packages/${{ env.filename }}-${{ steps.package-version.outputs.version }}-chrome.zip"
         replacesArtifacts: true
+        tag: github.event.inputs.tag
