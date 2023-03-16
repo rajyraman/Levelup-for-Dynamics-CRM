@@ -11,6 +11,12 @@ window.addEventListener('DOMContentLoaded', function () {
     [DESCRIBE ISSUE HERE]`);
   const issueUrl = `https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/new?body=${bodyText}`;
   (<HTMLAnchorElement>document.getElementById('issueUrl')).href = issueUrl;
+  document.querySelector('#resetImpersonationButton').addEventListener('click', function (e) {
+    chrome.runtime.sendMessage(<IExtensionMessage>{
+      category: 'Impersonation',
+      type: 'reset',
+    });
+  });
 
   chrome.runtime.onMessage.addListener(async function (message: IExtensionMessage) {
     if (message.type !== 'search' || message.category !== 'Impersonation') return;
