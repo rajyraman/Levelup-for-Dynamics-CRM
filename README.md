@@ -18,8 +18,8 @@ Browser | Store Link
 
 ### Form Actions
 
-# | Action | What it does
---- | --- | --
+| # | Action | What it does |
+| --- | --- | -- |
 1 | **Logical Names** | Displays logical names for fields, tabs and sections.
 2 | **Clear Logical Names** | Restores the form to the original state, by removing the schema name textboxes.
 3 | **Blur Fields** | Blurs all form fields and subgrids on the form.
@@ -41,8 +41,8 @@ Browser | Store Link
 
 ### Navigation Actions
 
-# | Action | What it does
---- | --- | --
+| # | Action | What it does |
+| --- | --- | -- |
 1 | **Open record By Id** | Displays a dialog to get the entity schemaname and record id. Once this is given, it opens a new popup to show the record.
 2 | **New record** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to create a new record.
 3 | **Open list** | Displays a dialog to get the entity schemaname. Once this is given, it opens a new popup to show the entity list.
@@ -62,8 +62,8 @@ Browser | Store Link
 
 ### View Actions
 
-# | Action | What it does
---- | --- | --
+| # | Action | What it does |
+| --- | --- | -- |
 1 | **New window** | Displays the current grid (Saved Query) in a new window.
 2 | **Quick Find fields** | Displays the search fields for the current entity that is displayed in the grid.
 3 | **Blur Fields** | Blurs all columns in the currently displayed view.
@@ -72,8 +72,8 @@ Browser | Store Link
 
 ### Hamburger menu Actions
 
-# | Action | What it does
---- | --- | --
+| # | Action | What it does |
+| --- | --- | -- |
 1 | **Environment Details** | Displays information that can be used for support requests like TenantId, EnvironmentId, OrganizationVersion etc.
 2 | **Environment Settings** | Displays some useful information about the current "Organization" you are connected to in a popup.
 3 | **My Roles** | Displays the user roles, that you user record has.
@@ -83,10 +83,6 @@ Browser | Store Link
 7 | **Command Debugger** | Turns on [command checker](https://powerapps.microsoft.com/en-us/blog/introducing-command-checker-for-model-app-ribbons/) for the current Form or View.
 8 | **Forms Monitor** | Turns on Forms Monitor. Refer https://powerapps.microsoft.com/en-us/blog/troubleshoot-forms-in-a-model-driven-app/ for more information.
 9 | **Entity Metadata** | Displays Object Type Code, Collection Name, Change Tracking and Display Name of all entities
-
-Action | What it does
---- | ---
-**Impersonate** | Impersonate any user in model driven app. Works only on Edge and Chrome + Online. Originally created by [Ivan Ficko](https://dynamicsninja.blog/) based on idea from [Bob Guidinger](https://bguidinger.com/blog/user-impersonation-in-unified-interface-apps)
 
 ## Impersonating another user
 
@@ -148,7 +144,8 @@ if(process.env.NODE_ENV === 'development'){
 ```
 
 ## Credits
-* [Impersonation by Ivan Ficko](https://dynamicsninja.blog/)
+* [Bob Guidinger's original idea on Impersonation](https://bguidinger.com/blog/user-impersonation-in-unified-interface-apps)
+* [Ivan Ficko](https://dynamicsninja.blog/) for PR that added impersonation capability to Level up
 * [God mode adapted from original script by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/30/activate-god-mode-in-crm-2013-dont-let-your-users-see-this/)
 * [Customize by Paul Nieuwelaar](https://paulnieuwelaar.wordpress.com/2014/07/28/customize-and-publish-from-crm-2013-forms-with-bookmarklets/)
 * [Form Properties by Jared Johnson](http://www.magnetismsolutions.com/blog/jaredjohnson/2014/08/03/dynamics-crm-2013-resurrecting-the-form-properties-window-with-bookmarklet)
