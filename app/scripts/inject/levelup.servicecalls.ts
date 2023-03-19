@@ -127,16 +127,23 @@ export class Service {
 
   entityMetadata() {
     this.utility
-      .fetch(`EntityDefinitions`, 'LogicalName,ObjectTypeCode,LogicalCollectionName,ChangeTrackingEnabled,DisplayName')
+      .fetch(`EntityDefinitions`, 'SchemaName,CollectionSchemaName,LogicalName,LogicalCollectionName,EntitySetName,DisplayName,DisplayCollectionName,Description,ObjectTypeCode,LogicalCollectionName,ChangeTrackingEnabled,DisplayName')
       .then((records) => {
         const resultsArray = [
           {
             cells: [
-              'Entity Logical Name',
-              'Object Type Code',
+              'Schema Name',
+              'Collection Schema Name',
+              'Logical Name',
               'Logical Collection Name',
-              'Change Tracking Enabled',
+              'Entity Set Name',
+
               'Display Name',
+              'Display Collection Name',
+              'Description',
+
+              'Object Type Code',
+              'Change Tracking Enabled',
             ],
           },
         ];
@@ -149,11 +156,18 @@ export class Service {
         records.forEach(function (r) {
           resultsArray.push({
             cells: [
+              r.SchemaName,
+              r.CollectionSchemaName,
               r.LogicalName,
-              r.ObjectTypeCode,
               r.LogicalCollectionName,
-              r.ChangeTrackingEnabled,
+              r.EntitySetName,
+
               r.DisplayName?.UserLocalizedLabel?.Label,
+              r.DisplayCollectionName?.UserLocalizedLabel?.Label,
+              r.Description?.UserLocalizedLabel?.Label,
+
+              r.ObjectTypeCode,
+              r.ChangeTrackingEnabled,
             ],
           });
         });
