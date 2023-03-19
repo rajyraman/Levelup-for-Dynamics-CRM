@@ -161,6 +161,34 @@ export class Service {
       });
   }
   async impersonateUser(impersonateRequest: IImpersonateMessage) {
+    if (typeof Xrm.Utility.getGlobalContext === 'function') {
+      const privs: {
+        [key: string]: {
+          id: string;
+          businessUnitId: string;
+          privilegeName: string;
+          depth: number;
+        };
+        //@ts-ignore
+      } = await Xrm.Utility.getGlobalContext().userSettings.getSecurityRolePrivilegesInfo();
+      const canImpersonate = Object.keys(privs)
+        .map((k) => privs[k])
+        .some((x) => x.privilegeName === 'prvActOnBehalfOfAnotherUser');
+      if (!canImpersonate) {
+        impersonateRequest.canImpersonate = false;
+        this.utility.messageExtension(
+          <IImpersonationResponse>{ users: [], impersonateRequest: impersonateRequest },
+          'Impersonation'
+        );
+        return null;
+      }
+    }
+    const domainNameCondition = impersonateRequest.url
+      ? `<condition attribute='domainname' operator='eq' value='${impersonateRequest.userName}' />`
+      : `<condition attribute='domainname' operator='like' value='%${impersonateRequest.userName}%' />`;
+    const fullNameCondition = impersonateRequest.url
+      ? `<condition attribute='fullname' operator='eq' value='${impersonateRequest.userName}' />`
+      : `<condition attribute='fullname' operator='like' value='%${impersonateRequest.userName}%' />`;
     const request = {
       entityName: 'systemuser',
       fetchXml: `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >
@@ -173,7 +201,10 @@ export class Service {
             <condition attribute='isdisabled' operator='eq' value='0' />
             condition attribute='islicensed' operator='eq' value='1' />
             <condition attribute='accessmode' operator='eq' value='0' />
-            <condition attribute='domainname' operator='eq' value='${impersonateRequest.userName}' />
+            <filter type="or">
+              ${domainNameCondition}
+              ${fullNameCondition}
+            </filter>
           </filter>
           <order attribute='fullname' descending='false' />
         </entity>
@@ -185,9 +216,10 @@ export class Service {
       (x) =>
         <UserDetail>{ fullName: x['fullname'], userId: x['azureactivedirectoryobjectid'], userName: x['domainname'] }
     );
+    impersonateRequest.canImpersonate = true;
     this.utility.messageExtension(
       <IImpersonationResponse>{ users: resultsArray, impersonateRequest: impersonateRequest },
-      'impersonation'
+      'Impersonation'
     );
     return resultsArray;
   }

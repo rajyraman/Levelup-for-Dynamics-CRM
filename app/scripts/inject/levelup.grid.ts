@@ -37,7 +37,25 @@ export class Grid {
         this.utility.messageExtension(resultsArray, 'quickFindFields');
       });
     } else {
-      alert('The current page is not a grid');
+      alert('The current page is not a view');
+    }
+  }
+
+  sendToFXB() {
+    //@ts-ignore
+    if (this.utility.Xrm.Utility.getPageContext) {
+      const view = <Xrm.EntityListPageContext>this.utility.Xrm.Utility.getPageContext().input;
+
+      this.utility.fetch('savedqueries', 'fetchxml', `savedqueryid eq ${view.viewId}`).then((view) => {
+        if (view && view[0].fetchxml) {
+          window.open(
+            `xrmtoolbox:///plugin%3A"FetchXML Builder" /data%3A"${view[0].fetchxml.replaceAll('"', "'")}"`,
+            '_blank'
+          );
+        }
+      });
+    } else {
+      alert('The current page is not a view');
     }
   }
 
@@ -71,7 +89,7 @@ export class Grid {
         viewUrl = `${this.utility.clientUrlForParams}etc=${etc}&viewtype=${viewType}&viewid=${viewId}&newWindow=true&pagetype=entitylist`;
       window.open(viewUrl, '_blank');
     } else {
-      alert('The current page is not a grid');
+      alert('The current page is not a view');
     }
   }
 
@@ -85,5 +103,5 @@ export class Grid {
 }
 
 function setFilter(formDocument: Document, filter: string) {
-  formDocument.querySelectorAll('.wj-row[aria-label="Data"]').forEach((e: HTMLElement) => (e.style.filter = filter));
+  formDocument.querySelectorAll('div[role="gridcell"]').forEach((e: HTMLElement) => (e.style.filter = filter));
 }

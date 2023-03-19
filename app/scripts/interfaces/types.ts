@@ -41,6 +41,7 @@ export type MessageType =
   | 'loadUsers'
   | 'activation'
   | 'reset'
+  | 'search'
   | 'impersonation';
 
 export type Category =
@@ -60,7 +61,6 @@ export type Category =
   | 'allUserRoles'
   | 'optionsets'
   | 'environment'
-  | 'impersonation'
   | 'userDetail'
   | 'changeUser';
 
@@ -70,6 +70,7 @@ export type ExtensionMessageContent =
   | IResultRowKeyValues[][]
   | IImpersonateMessage
   | IImpersonationResponse
+  | UserDetail[]
   | string;
 export interface IImpersonationResponse {
   users: UserDetail[];
@@ -102,8 +103,9 @@ export interface IResultRowKeyValues {
 
 export interface IImpersonateMessage {
   userName: string;
-  isActive: boolean;
-  url: string;
+  isActive?: boolean;
+  url?: string;
+  canImpersonate?: boolean;
 }
 
 export interface IRetrieveCurrentOrganizationResponse {
