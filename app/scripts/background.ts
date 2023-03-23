@@ -65,69 +65,55 @@ chrome.runtime.onMessage.addListener(async function (
         if (impersonationResponse.users.length === 0 || !impersonationResponse.impersonateRequest.canImpersonate)
           return;
 
-        if (impersonationResponse.users.length > 1) {
-          chrome.runtime.sendMessage(<IExtensionMessage>{
-            type: 'search',
-            category: 'Impersonation',
-            content: impersonationResponse.users,
-          });
-        } else {
-          userId = impersonationResponse.users[0].userId;
-
-          chrome.storage.local.set({
-            [impersonationResponse.impersonateRequest.url]: <ImpersonationStorage>{
-              isImpersonationActive: impersonationResponse.impersonateRequest.isActive,
-              userName: impersonationResponse.impersonateRequest.userName,
-              userFullName: impersonationResponse.users[0].fullName,
-            },
-          });
-          if (impersonationResponse.impersonateRequest.isActive) {
-            chrome.declarativeNetRequest.updateDynamicRules(
-              {
-                removeRuleIds: [1],
-                addRules: [
-                  {
-                    id: 1,
-                    priority: 1,
-                    action: {
-                      type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-                      requestHeaders: [
-                        {
-                          header: 'CallerObjectId',
-                          operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-                          value: userId,
-                        },
-                      ],
-                    },
-                    condition: {
-                      regexFilter: `${impersonationResponse.impersonateRequest.url}api/*`,
-                      resourceTypes: [
-                        chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
-                        chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
-                        chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
-                      ],
-                    },
+        chrome.runtime.sendMessage(<IExtensionMessage>{
+          type: 'search',
+          category: 'Impersonation',
+          content: impersonationResponse.users,
+        });
+        if (impersonationResponse.impersonateRequest.isActive) {
+          chrome.declarativeNetRequest.updateDynamicRules(
+            {
+              removeRuleIds: [1],
+              addRules: [
+                {
+                  id: 1,
+                  priority: 1,
+                  action: {
+                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+                    requestHeaders: [
+                      {
+                        header: 'CallerObjectId',
+                        operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                        value: userId,
+                      },
+                    ],
                   },
-                ],
-              },
-              async () => {
-                renderBadge(impersonationResponse.impersonateRequest.url);
-              }
-            );
-          } else {
-            chrome.declarativeNetRequest.getDynamicRules((rules) => {
-              const ruleIds = rules.map((x) => x.id);
-              chrome.declarativeNetRequest.updateDynamicRules({
-                removeRuleIds: ruleIds,
-              });
+                  condition: {
+                    regexFilter: `${impersonationResponse.impersonateRequest.url}api/*`,
+                    resourceTypes: [
+                      chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
+                      chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
+                      chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
+                    ],
+                  },
+                },
+              ],
+            },
+            async () => {
+              renderBadge(impersonationResponse.impersonateRequest.url);
+            }
+          );
+        } else {
+          chrome.declarativeNetRequest.getDynamicRules((rules) => {
+            const ruleIds = rules.map((x) => x.id);
+            chrome.declarativeNetRequest.updateDynamicRules({
+              removeRuleIds: ruleIds,
             });
-            chrome.storage.local.clear();
-          }
-          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-          if (tab) chrome.tabs.reload(tab.id, { bypassCache: true });
+          });
+          chrome.storage.local.clear();
         }
-        break;
-      default:
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab) chrome.tabs.reload(tab.id, { bypassCache: true });
         break;
     }
   } else if (message.type === 'reset') {

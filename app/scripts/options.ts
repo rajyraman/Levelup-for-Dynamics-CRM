@@ -4,13 +4,6 @@ window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;
   document.getElementById('version').innerHTML = `v${extensionVersion}`;
 
-  const bodyText = encodeURIComponent(`
-    Browser Version: ${navigator}
-    Extension Version: ${extensionVersion}
-    ----------------------------------------------------------
-    [DESCRIBE ISSUE HERE]`);
-  const issueUrl = `https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues/new?body=${bodyText}`;
-  (<HTMLAnchorElement>document.getElementById('issueUrl')).href = issueUrl;
   document.querySelector('#resetImpersonationButton').addEventListener('click', function (e) {
     chrome.runtime.sendMessage(<IExtensionMessage>{
       category: 'Impersonation',
