@@ -9,9 +9,8 @@ class App {
   constructor() {
     this.isCRMPage = Array.from(document.scripts).some(
       (x) =>
+        x.src.indexOf('/uclient/scripts') !== -1 ||
         x.src.indexOf('/_static/_common/scripts/PageLoader.js') !== -1 ||
-        x.src.indexOf('/uclient/scripts/app.js') !== -1 ||
-        x.src.indexOf('/uclient/scripts/es6-shim.js') !== -1 ||
         x.src.indexOf('/_static/_common/scripts/crminternalutility.js') !== -1
     );
   }
@@ -77,3 +76,4 @@ class App {
 }
 
 new App().start();
+
