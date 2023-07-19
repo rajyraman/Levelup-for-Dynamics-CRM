@@ -385,9 +385,9 @@ export class Forms {
                 workflowKeyValue = workflowKeyValue === 0 || workflowKeyValue.Value === 0 ? 'Background' : 'Real-time';
               } else if (keyName === 'runas') {
                 workflowKeyValue =
-                  workflowKeyValue === 0 || workflowKeyValue.Value === 0
+                  workflowKeyValue === 0 || workflowKeyValue?.Value === 0
                     ? 'Owner'
-                    : workflowKeyValue === 1 || workflowKeyValue.Value === 1
+                    : workflowKeyValue === 1 || workflowKeyValue?.Value === 1
                     ? 'User'
                     : '';
               } else if (keyName === 'ismanaged') {
