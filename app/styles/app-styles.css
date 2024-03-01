@@ -6,3 +6,7 @@
     background-color: rgb(0,78,140);
     border: 1px solid black;
 }
+
+a.mdl-navigation__link {
+    text-decoration: underline;
+}
