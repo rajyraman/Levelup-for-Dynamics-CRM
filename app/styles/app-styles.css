@@ -10,3 +10,15 @@
 a.mdl-navigation__link {
     text-decoration: underline;
 }
+
+.mdl-button--raised:active {
+    background: black;
+}
+
+.mdl-button--raised:focus {
+    background: black;
+}
+
+.mdl-button--raised:hover {
+    background: black;
+}
