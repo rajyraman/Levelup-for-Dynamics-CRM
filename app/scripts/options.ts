@@ -12,6 +12,18 @@ window.addEventListener('DOMContentLoaded', function () {
     drawerButtonIcon?.setAttribute("aria-hidden", true);
   }
 
+  let optionButtons = document.querySelectorAll(".mdl-button");
+  if (optionButtons.length > 0) {
+    for(let i = 0; i < optionButtons.length; i++) {
+      let oButton = optionButtons[i] as HTMLButtonElement;
+      let tooltip = oButton?.parentElement?.querySelector(".mdl-tooltip");
+      if (tooltip && oButton.id?.length > 0) {
+        tooltip.id = oButton.id + "-tooltip";
+        oButton?.setAttribute("aria-describedby", tooltip.id);
+      }
+    }
+  }
+
   const bodyText = encodeURIComponent(`
     Browser Version: ${navigator}
     Extension Version: ${extensionVersion}
