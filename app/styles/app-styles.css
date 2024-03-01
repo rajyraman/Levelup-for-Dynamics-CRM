@@ -1,3 +1,8 @@
 .mdl-textfield__label {
     color:black
 }
+
+.mdl-layout__tab.is-active {
+    background-color: rgb(0,78,140);
+    border: 1px solid black;
+}
