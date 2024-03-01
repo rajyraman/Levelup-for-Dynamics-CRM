@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', function () {
   if (drawerButton) {
     drawerButton.title = "Admin Area";
 
-    let drawerButtonIcon = document.querySelector(".mdl-layout__drawer-button") as HTMLElement;
+    let drawerButtonIcon = drawerButton.querySelector("i") as HTMLElement;
     drawerButtonIcon?.setAttribute("aria-hidden", true);
   }
 
