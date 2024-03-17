@@ -2,6 +2,11 @@
     color:black
 }
 
+.mdl-layout__tab:focus {
+    background-color: black; /*rgb(25, 109, 179);*/
+    border: 1px solid black;
+}
+
 .mdl-layout__tab.is-active {
     background-color: rgb(0,78,140);
     border: 1px solid black;
@@ -11,14 +16,14 @@ a.mdl-navigation__link {
     text-decoration: underline;
 }
 
+a.mdl-navigation__link:focus {
+    background-color: black;
+}
+
 .mdl-button--raised:active {
-    background: black;
+    background: black !important;                   
 }
 
 .mdl-button--raised:focus {
-    background: black;
-}
-
-.mdl-button--raised:hover {
-    background: black;
+    background: black !important;
 }
