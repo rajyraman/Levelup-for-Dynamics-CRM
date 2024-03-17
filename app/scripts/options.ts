@@ -1,13 +1,19 @@
 import { IExtensionMessage, UserDetail } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
-  let drawerButton = document.querySelector(".mdl-layout__drawer-button") as HTMLElement;
-  if (drawerButton) {
-    drawerButton.title = "Admin Area";
+  let mdlHeader = this.document.querySelector(".mdl-layout__header") as HTMLElement;
+  const observer = new MutationObserver((mutations) => {
+    let drawerButton = document.querySelector(".mdl-layout__drawer-button") as HTMLElement;
+    if (drawerButton) {
+      drawerButton.title = "Admin Area";
+  
+      let drawerButtonIcon = drawerButton.querySelector("i") as HTMLElement;
+      drawerButtonIcon?.setAttribute("aria-hidden", "true");
 
-    let drawerButtonIcon = drawerButton.querySelector("i") as HTMLElement;
-    drawerButtonIcon?.setAttribute("aria-hidden", "true");
-  }
+      observer.disconnect();
+    }
+  });
+  observer.observe(mdlHeader, {childList: true, subtree: false});
 
   let optionButtons = document.querySelectorAll(".mdl-button");
   if (optionButtons.length > 0) {
