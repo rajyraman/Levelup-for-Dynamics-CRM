@@ -1,6 +1,34 @@
 import { IExtensionMessage, UserDetail } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
+  let mdlHeader = this.document.querySelector(".mdl-layout__header") as HTMLElement;
+  const observer = new MutationObserver((mutations) => {
+    let drawerButton = document.querySelector(".mdl-layout__drawer-button") as HTMLElement;
+    if (drawerButton) {
+      drawerButton.title = "Admin Area";
+  
+      let drawerButtonIcon = drawerButton.querySelector("i") as HTMLElement;
+      drawerButtonIcon?.setAttribute("aria-hidden", "true");
+
+      observer.disconnect();
+    }
+  });
+  observer.observe(mdlHeader, {childList: true, subtree: false});
+
+  let optionButtons = document.querySelectorAll(".mdl-button");
+  if (optionButtons.length > 0) {
+    for(let i = 0; i < optionButtons.length; i++) {
+      let oButton = optionButtons[i] as HTMLButtonElement;
+      let tooltip = oButton?.parentElement?.querySelector(".mdl-tooltip");
+      if (tooltip && oButton.id?.length > 0) {
+        tooltip.id = oButton.id + "-tooltip";
+        oButton?.setAttribute("aria-describedby", tooltip.id);
+      }
+    }
+  }
+});
+
+window.addEventListener('DOMContentLoaded', function () {
   const extensionVersion = chrome.runtime.getManifest().version;
   document.getElementById('version').innerHTML = `v${extensionVersion}`;
 
