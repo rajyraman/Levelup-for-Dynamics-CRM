@@ -1,15 +1,12 @@
 import { IExtensionMessage, UserDetail } from './interfaces/types';
 
 window.addEventListener('DOMContentLoaded', function () {
-  const extensionVersion = chrome.runtime.getManifest().version;
-  document.getElementById('version').innerHTML = `v${extensionVersion}`;
-
   let drawerButton = document.querySelector(".mdl-layout__drawer-button") as HTMLElement;
   if (drawerButton) {
     drawerButton.title = "Admin Area";
 
     let drawerButtonIcon = drawerButton.querySelector("i") as HTMLElement;
-    drawerButtonIcon?.setAttribute("aria-hidden", true);
+    drawerButtonIcon?.setAttribute("aria-hidden", "true");
   }
 
   let optionButtons = document.querySelectorAll(".mdl-button");
@@ -23,6 +20,11 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     }
   }
+});
+
+window.addEventListener('DOMContentLoaded', function () {
+  const extensionVersion = chrome.runtime.getManifest().version;
+  document.getElementById('version').innerHTML = `v${extensionVersion}`;
 
   const bodyText = encodeURIComponent(`
     Browser Version: ${navigator}
