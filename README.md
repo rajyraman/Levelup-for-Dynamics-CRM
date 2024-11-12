@@ -55,7 +55,7 @@ Browser | Store Link
 10 | **Advanced Find** | Opens Advanced Find in a new window.
 11 | **Mobile Client** | Opens the mobile client (MoCA) in a new window.
 12 | **Perf Diag** | Displays the performance diagnostics page. Primarily useful for assessing network performance. Refer https://mbs.microsoft.com/customersource/Global/CRM/learning/documentation/user-guides/PerformanceOptimizationsCRMOnlineSuccess.
-13 | **Perf Center** | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer http://blog.cobalt.net/blog/understanding-the-microsoft-dynamics-crm-performance-center
+13 | **Perf Center** | Displays the performance center page. Primarily used to assess slow form performance. Can be used in conjunction with DevTools. Refer https://www.cobalt.net/understanding-the-microsoft-dynamics-crm-performance-center/
 14 | **Instance Picker** | Displays the instance picker page (applicable to Dynamics CRM/365 Online only).
 15 | **Power Platform Admin** | Opens admin.powerplatform.microsoft.com
 16 | **Solutions History** | Display Solutions History page to see the list of solutions imported into the environment.
