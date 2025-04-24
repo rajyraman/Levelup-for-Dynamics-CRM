@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #222;
+            --border-color: #ddd;
+            --input-border: #ccc;
+            --input-focus-border: #aaa;
+            --input-bg: #ffffff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #e0e0e0;
+                --border-color: #444;
+                --input-border: #555;
+                --input-focus-border: #777;
+                --input-bg: #2a2a2a;
+            }
+        }
+
         body {
-            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
+            font-family: "Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
             font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }        
         table{
             width: 100%;
@@ -17,27 +39,35 @@
             padding: 0.5em;
         }
         thead{
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             font-weight: bold;
         }
         tr{
-            border: 1px solid #ddd;
-            color: #222;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
         }
         td{
             padding: 0.5em;
         }
         input {
-            font-family: "Segoe UI" , "Segoe" , Tahoma, Helvetica, Arial, sans-serif;
-            border: solid 1px #ccc;
-            border-radius: 5px;
-            padding: 5px 5px;
+            font-family: "Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            padding: 10px 15px;
             width: 300px;
             margin-bottom: 15px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         input:focus {
             outline: none;
-            border-color: #aaa;
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 2px rgba(170, 170, 170, 0.2);
+        }
+        input::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
         }        
     </style>
     <meta charset="UTF-8">
