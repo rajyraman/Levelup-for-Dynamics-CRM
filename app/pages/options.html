@@ -87,6 +87,14 @@
                 <a href="#fixed-tab-4" class="mdl-layout__tab">Impersonate</a>
             </div>
         </header>
+        <div>
+            <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+                <i class="material-icons" style="position: absolute; top: 20px; left: 10px;">search</i>
+                <input class="mdl-textfield__input" type="text" id="search" placeholder="Search options..." style="padding-left: 40px;" autofocus>
+                <label class="mdl-textfield__label" for="search">Search options...</label>
+            </div>
+            <div id="search-results" class="mdl-grid" style="display: none;"></div>
+        </div>
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Admin area</span>
             <nav id="environmentLinks" class="mdl-navigation">
@@ -101,7 +109,7 @@
                 <div data-category="API" class="links mdl-navigation__link" id="entityMetadata" data-category="">Entity Metadata</div>
             </nav>
         </div>
-        <main class="mdl-layout__content">
+        <main class="mdl-layout__content" id="main-menu" style="padding-top: 0; margin-top: -10px">
             <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
                 <div class="page-content">
                     <div class="mdl-grid">
