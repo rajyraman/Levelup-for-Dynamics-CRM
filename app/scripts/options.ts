@@ -1,3 +1,5 @@
+declare const componentHandler: any; // Add this declaration for MDL
+
 import { IExtensionMessage, UserDetail } from './interfaces/types';
 
 interface SearchableOption {
@@ -67,6 +69,10 @@ window.addEventListener('DOMContentLoaded', function () {
         .join('');
       searchResults.style.display = 'flex';
       mainMenu.style.display = 'none';
+
+      // Tell MDL to upgrade the components in the search results
+      componentHandler.upgradeElements(searchResults.querySelectorAll('.mdl-button, .mdl-tooltip'));
+
     } else {
       searchResults.style.display = 'none';
     }
