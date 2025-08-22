@@ -58,7 +58,7 @@
     "gulp-zip": "5.x.x",
     "prettier": "^2.8.4",
     "require-dir": "1.x.x",
-    "standard": "14.x.x",
+    "standard": "17.x.x",
     "ts-loader": "^6.x.x",
     "typescript": "^4.4.4",
     "vinyl-named": "1.x.x",
