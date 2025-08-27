@@ -1,0 +1,158 @@
+name: Bug Report / Feature Request
+description: Report a bug or request a feature for Level Up for Dynamics 365/Power Apps
+title: "[BUG/REQUEST]: "
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue or request a feature! Please fill out the information below to help me understand and address your request.
+
+  - type: checkboxes
+    id: issue-search
+    attributes:
+      label: Prerequisites
+      description: Please confirm you have completed the following before submitting this issue
+      options:
+        - label: I have searched the existing issues and found no duplicates
+          required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of issue is this?
+      options:
+        - Bug Report
+        - Feature Request
+        - Question
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is or what feature is being requested.
+      placeholder: Describe the issue or feature request...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce (for bugs)
+      description: Please provide step-by-step instructions to reproduce the issue
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what you expected to happen...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser are you using?
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Safari
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: Which operating system are you using?
+      options:
+        - Windows
+        - Mac
+        - Linux
+    validations:
+      required: true
+
+  - type: input
+    id: dynamics-version
+    attributes:
+      label: Dynamics 365 / Power Apps Version
+      description: What version of Dynamics 365 or Power Apps are you using?
+      placeholder: e.g., 9.2.25073.00208
+    validations:
+      required: false
+
+  - type: dropdown
+    id: admin-status
+    attributes:
+      label: Admin Status
+      description: Are you an admin or non-admin user?
+      options:
+        - Admin
+        - Non-admin
+    validations:
+      required: false
+
+  - type: dropdown
+    id: deployment-type
+    attributes:
+      label: Deployment Type
+      description: Are you using Online or On-Premise?
+      options:
+        - Online
+        - On-Premise
+    validations:
+      required: false
+
+  - type: dropdown
+    id: app-type
+    attributes:
+      label: App Type
+      description: What type of app are you using?
+      options:
+        - Model Driven App
+        - Custom Power Apps app
+        - Customer Service Workspace
+        - Other Multisession App
+    validations:
+      required: false
+
+  - type: input
+    id: entity-name
+    attributes:
+      label: Entity Name
+      description: If relevant, what entity were you working with?
+      placeholder: e.g., Account, Contact, Custom Entity
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (e.g., browser DevTools output, console errors, steps you've already tried)
+      placeholder: Any additional information that might help...
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Recordings
+      description: If applicable, add screenshots or describe any recordings. Please blur sensitive information.
+      placeholder: Drag and drop screenshots here or describe what you're seeing...
+    validations:
+      required: false
+
