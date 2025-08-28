@@ -1,5 +1,26 @@
 {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll": false
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": [
+        "javascript",
+        "typescript"
+    ],
+    "prettier.requireConfig": true,
+    "typescript.preferences.quoteStyle": "single",
+    "javascript.preferences.quoteStyle": "single",
+    "files.eol": "\r\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.rulers": [
+        100
+    ],
+    "emmet.includeLanguages": {
+        "typescript": "javascript"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     }
 }

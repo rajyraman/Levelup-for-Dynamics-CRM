@@ -1,0 +1,32 @@
+{
+  "version": "X.X.X",
+  "builtDate": "YYYY-MM-DD",
+  "title": "What's New in vX.X.X",
+  "sections": [
+    {
+      "title": "🎨 UI Improvements",
+      "emoji": "🎨",
+      "items": ["Add your UI improvements here"]
+    },
+    {
+      "title": "🚀 Performance Enhancements",
+      "emoji": "🚀",
+      "items": ["Add your performance improvements here"]
+    },
+    {
+      "title": "✨ New Features",
+      "emoji": "✨",
+      "items": ["Add your new features here"]
+    },
+    {
+      "title": "🛠️ Developer Experience",
+      "emoji": "🛠️",
+      "items": ["Add your developer experience improvements here"]
+    },
+    {
+      "title": "🐛 Bug Fixes",
+      "emoji": "🐛",
+      "items": ["Add your bug fixes here"]
+    }
+  ]
+}

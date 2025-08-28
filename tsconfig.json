@@ -1,20 +1,43 @@
 {
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "sourceMap": false,
-        "noImplicitAny": false,
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "lib": [
-            "ES2017",
-            "dom"
-        ],
-        "rootDir": "app/scripts",
-        "typeRoots": [
-            "./app/tsd",
-            "./node_modules/@types",
-            "/node_modules/xrm-webapi-client/dist/WebApiClient.d.ts"
-        ],
-        "pretty": true,
-    }
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "#types/*": ["./src/types/*"],
+      "#services/*": ["./src/services/*"],
+      "#components/*": ["./src/sidebar/components/*"],
+      "#contexts/*": ["./src/sidebar/contexts/*"],
+      "#hooks/*": ["./src/sidebar/hooks/*"],
+      "#config/*": ["./src/sidebar/config/*"],
+      "#utils/*": ["./src/utils/*"],
+      "#content/*": ["./src/content/*"],
+      "#background/*": ["./src/background/*"],
+      "#data/*": ["./src/data/*"]
+    },
+    "outDir": "./build",
+    "rootDir": "./src",
+    "declaration": false,
+    "sourceMap": false,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM"],
+    "types": ["@types/chrome", "@types/xrm", "vite/client"],
+    "isolatedModules": true,
+    "useDefineForClassFields": true
+  },
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["xrm"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build", "release"]
 }
+

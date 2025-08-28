@@ -1,0 +1,1 @@
+- Be concise and direct. Use Mermaid diagram if you want to, rather than churn out a long wall of text to explain.
