@@ -1,10 +1,8 @@
 # Level Up for Dynamics 365/Power Apps
 
-Level Up is a browser extension that helps Dynamics 365, Power Apps, and web teams work more efficiently. It provides quick admin actions, custom command execution, UI utilities, and diagnostic tools in a compact sidebar or popup.
+Level Up is a browser extension that helps Dynamics 365, Power Apps, and web teams work more efficiently. It provides quick admin actions, custom command execution, UI utilities, and diagnostic tools in a compact sidebar or popup.
 
-# Screenshots
-
-Below are screenshots of the extension displayed side-by-side for quick comparison.
+Below are screenshots of the extension in the two modes.
 
 <table>
   <tr>
