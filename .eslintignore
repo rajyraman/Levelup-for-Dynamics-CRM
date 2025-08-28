@@ -1,0 +1,24 @@
+# Build outputs
+
+build/
+release/
+dist/
+
+# Dependencies
+
+node_modules/
+
+# Coverage reports
+
+coverage/
+
+# Generated files
+
+\*.d.ts
+
+# Package files
+
+_.tgz
+_.zip
+
+# Build artifacts and configuration

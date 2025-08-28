@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Level Up for Dynamics 365/Power Apps",
+  "version": "4.1.1",
+  "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "declarativeNetRequest",
+    "storage",
+    "contextMenus"
+  ],
+  "optional_host_permissions": ["https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
+  "action": {
+    "default_title": "Level Up for Dynamics 365/Power Apps",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["levelup-extension.js"],
+      "matches": ["https://*/*"]
+    }
+  ]
+}
