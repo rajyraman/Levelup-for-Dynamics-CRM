@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 function usage() {
   console.error('Usage: node scripts/bump-version.js [major|minor|patch|<version>]');
@@ -43,7 +44,7 @@ function bumpSemver(version, part) {
   return `${major}.${minor}.${patch}`;
 }
 
-const repoRoot = path.resolve(__dirname, '..');
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageJsonPath = path.join(repoRoot, 'package.json');
 const manifestPath = path.join(repoRoot, 'src', 'manifest.json');
 

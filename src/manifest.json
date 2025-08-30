@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Level Up for Dynamics 365/Power Apps",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
   "permissions": [
     "activeTab",
