@@ -80,3 +80,8 @@ The extension organizes actions into different categories accessible through the
 - **🎭 User Impersonation**: Act on behalf of other users (requires System Administrator privileges)
 - **⚡ Custom Commands**: Execute custom JavaScript commands and scripts
 - **🔧 Extension Configuration**: Customize which sections and features are visible
+
+## Credits
+* Bob Guidinger's original idea on Impersonation
+* Ivan Ficko for the original PR in v3 that added impersonation capability to Level up
+* [Rocket Icon by Jerry Low](https://www.iconfinder.com/jerrylow)
