@@ -1,6 +1,6 @@
 {
   "name": "level-up-vnext",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Microsoft Edge sidebar extension for Dynamics 365/Power Apps productivity tools",
   "main": "build/background.js",
   "type": "module",
@@ -21,8 +21,7 @@
     "dev": "cross-env NODE_ENV=development vite build --watch",
     "watch": "vite build --mode production --watch",
     "clean": "rimraf build release",
-    "package": "npm run clean && npm run build && node scripts/package.js",
-    "release": "npm run package",
+    "pack": "npm run clean && npm run build && node scripts/package.js && node scripts/package.js firefox",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -42,6 +41,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "bump": "node scripts/bump-version.js",
+    "tag": "node -e \"const v=require('./package.json').version; require('child_process').execSync(`git tag v${v} && git push origin v${v}`, {stdio:'inherit'})\"",
+    "tag:check": "node -p \"require('./package.json').version\"",
     "update-release-notes": "node scripts/update-release-notes.js"
   },
   "keywords": [
@@ -104,3 +105,4 @@
     "react-dom": "^19.1.0"
   }
 }
+
