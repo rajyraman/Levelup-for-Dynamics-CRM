@@ -1,20 +1,9 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  IconButton,
-  Collapse,
-  Tooltip,
-  Chip,
-} from '@mui/material';
-import {
-  Favorite as HeartIcon,
-  Close as TimesIcon,
-  ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
+import { Card, CardContent, Typography, Box, IconButton, Collapse, Chip } from '@mui/material';
+import { Favorite as HeartIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { DynamicsAction } from '#types/global';
+import StandardActionButton, { StandardActionGrid } from '#components/StandardActionButton';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 interface ActionButton {
   id: DynamicsAction;
@@ -29,37 +18,7 @@ interface FavoritesProps {
   onFavoriteToggle: (id: DynamicsAction) => void;
 }
 
-const badgeSx = {
-  width: 18,
-  height: 18,
-  minWidth: 18,
-  boxSizing: 'border-box',
-  mr: 1,
-  p: 0,
-  borderRadius: '50%',
-  backgroundColor: 'background.paper',
-  border: 1,
-  borderColor: 'divider',
-  color: 'error.main',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  transformOrigin: 'center center',
-  '& .MuiSvgIcon-root': {
-    fontSize: '0.9rem',
-    lineHeight: 0,
-    transformOrigin: 'center',
-    transformBox: 'fill-box',
-  },
-  transition:
-    'transform 0.2s ease-in-out, background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-  '&:hover': {
-    backgroundColor: 'error.main',
-    color: 'error.contrastText',
-    transform: 'scale(1.2)',
-  },
-  verticalAlign: 'middle',
-};
+// (no badge styles needed here)
 
 const FavoritesComponent: React.FC<FavoritesProps> = ({
   favoriteButtons,
@@ -146,132 +105,24 @@ const FavoritesComponent: React.FC<FavoritesProps> = ({
 
         <Collapse in={expanded} timeout='auto' unmountOnExit>
           <Box sx={{ p: 2, pt: 1.5 }}>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, 80px)',
-                gap: '12px',
-                justifyContent: 'flex-start',
-              }}
-            >
+            <StandardActionGrid minColumnWidth={80}>
               {favoriteButtons.map(button => (
-                <Box
+                <StandardActionButton
                   key={button.id}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    position: 'relative',
-                    width: '80px',
-                  }}
-                >
-                  <Box sx={{ position: 'relative' }}>
-                    <Tooltip title={button.tooltip || button.label} arrow placement='top'>
-                      <IconButton
-                        onClick={() => onActionClick(button.id)}
-                        sx={{
-                          width: 64,
-                          height: 64,
-                          borderRadius: 2,
-                          border: 1,
-                          borderColor: 'divider',
-                          color: 'text.primary',
-                          backgroundColor: 'transparent',
-                          flexShrink: 0,
-                          transition: 'all 0.2s ease-in-out',
-                          '&:hover': {
-                            backgroundColor: 'action.hover',
-                            borderColor: 'divider',
-                            transform: 'translateY(-1px)',
-                            boxShadow: 1,
-                          },
-                          '& .MuiSvgIcon-root': { color: 'inherit' },
-                        }}
-                      >
-                        <button.icon sx={{ fontSize: '1.5rem' }} />
-                      </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title='Remove from favorites' arrow placement='top'>
-                      <IconButton
-                        className='remove-button'
-                        onClick={e => {
-                          e.stopPropagation();
-                          onFavoriteToggle(button.id);
-                        }}
-                        size='small'
-                        sx={{
-                          position: 'absolute',
-                          top: -6,
-                          right: -6,
-                          width: 18,
-                          height: 18,
-                          minWidth: 18,
-                          padding: 0,
-                          zIndex: 2,
-                          backgroundColor: 'background.paper',
-                          color: 'text.disabled',
-                          borderRadius: '50%',
-                          border: 1,
-                          borderColor: 'divider',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          transition:
-                            'transform 0.2s ease-in-out, background-color 0.2s ease-in-out, color 0.2s ease-in-out',
-                          transformOrigin: 'center center',
-                          '&:hover': {
-                            backgroundColor: 'error.main',
-                            color: 'error.contrastText',
-                            borderColor: 'error.main',
-                            transform: 'scale(1.2)',
-                          },
-                          '& .MuiSvgIcon-root': {
-                            fontSize: '0.9rem',
-                            lineHeight: 0,
-                            transformOrigin: 'center',
-                            transformBox: 'fill-box',
-                          },
-                        }}
-                      >
-                        <TimesIcon
-                          sx={{
-                            transition: 'transform 0.2s ease-in-out',
-                            fontSize: '0.9rem',
-                            lineHeight: 0,
-                            transformOrigin: 'center',
-                            transformBox: 'fill-box',
-                          }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-
-                  <Typography
-                    variant='caption'
-                    sx={{
-                      mt: 0.5,
-                      fontWeight: 500,
-                      color: 'text.secondary',
-                      width: '100%',
-                      maxWidth: '80px',
-                      whiteSpace: 'normal',
-                      wordBreak: 'break-word',
-                      textAlign: 'center',
-                      fontSize: '0.7rem',
-                      lineHeight: 1.1,
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {button.label}
-                  </Typography>
-                </Box>
+                  id={button.id}
+                  label={button.label}
+                  icon={button.icon}
+                  tooltip={button.tooltip}
+                  onClick={() => onActionClick(button.id)}
+                  isFavorite={true}
+                  onFavoriteToggle={() => onFavoriteToggle(button.id)}
+                  showFavorite={true}
+                  showLabel={true}
+                  favoriteVariant='subtle'
+                  favoriteIcon={CloseIcon}
+                />
               ))}
-            </Box>
+            </StandardActionGrid>
           </Box>
         </Collapse>
       </CardContent>

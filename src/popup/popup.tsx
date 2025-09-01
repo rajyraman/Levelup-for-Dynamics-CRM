@@ -189,7 +189,7 @@ const PopupApp: React.FC = () => {
             textOverflow: 'ellipsis',
           }}
         >
-          Express Mode
+          EXPRESS MODE
         </Typography>
       </Box>
 
