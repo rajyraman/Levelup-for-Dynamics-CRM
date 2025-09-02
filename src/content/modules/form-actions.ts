@@ -451,7 +451,15 @@ export class FormActions {
     attributes.forEach((attr: Xrm.Attributes.Attribute) => {
       const value = attr.getValue();
       if (value) {
-        parameters[attr.getName()] = String(value);
+        const attributeName = attr.getName();
+        if (attr.getAttributeType() === 'lookup' && Array.isArray(value) && value.length > 0) {
+          const lookupValue = value as Xrm.LookupValue[];
+          parameters[attributeName] = lookupValue[0].id;
+          parameters[`${attributeName}name`] = lookupValue[0].name ?? '';
+          parameters[`${attributeName}type`] = lookupValue[0].entityType;
+        } else {
+          parameters[attributeName] = String(value);
+        }
       }
     });
     await Xrm.Navigation.openForm({ entityName: entityName, openInNewWindow: true }, parameters);
