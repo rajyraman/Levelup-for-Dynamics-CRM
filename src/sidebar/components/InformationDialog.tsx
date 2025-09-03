@@ -253,14 +253,47 @@ const InformationDialog: React.FC<InformationDialogProps> = ({ open, onClose }) 
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label='information tabs'>
-          <Tab label='About' />
           <Tab label='Release Notes' />
+          <Tab label='About' />
           <Tab label='Stats for Nerds' />
         </Tabs>
       </Box>
 
       <DialogContent sx={{ px: 0 }}>
         <TabPanel value={tabValue} index={0}>
+          <Box sx={{ px: 3 }}>
+            <Typography variant='h6' sx={{ mb: 2 }}>
+              {releaseNotesData.title}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
+              Built:{' '}
+              {new Date(releaseNotesData.builtDate).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </Typography>
+
+            {releaseNotesData.sections.map(
+              (section: ReleaseNotes['sections'][0], index: number) => (
+                <Card key={index} sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant='subtitle1' sx={{ fontWeight: 600, mb: 1 }}>
+                      {section.title}
+                    </Typography>
+                    <Box component='ul' sx={{ pl: 2, mb: 0 }}>
+                      {section.items.map((item: string, itemIndex: number) => (
+                        <li key={itemIndex}>{item}</li>
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </Box>
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={1}>
           <Box sx={{ px: 3 }}>
             <Box sx={{ textAlign: 'center', py: 3 }}>
               <Typography variant='h5' sx={{ fontWeight: 'bold', mb: 1.5 }}>
@@ -314,39 +347,6 @@ const InformationDialog: React.FC<InformationDialogProps> = ({ open, onClose }) 
                 Thank you for using Level Up!
               </Typography>
             </Box>
-          </Box>
-        </TabPanel>
-
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ px: 3 }}>
-            <Typography variant='h6' sx={{ mb: 2 }}>
-              {releaseNotesData.title}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
-              Built:{' '}
-              {new Date(releaseNotesData.builtDate).toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </Typography>
-
-            {releaseNotesData.sections.map(
-              (section: ReleaseNotes['sections'][0], index: number) => (
-                <Card key={index} sx={{ mb: 2 }}>
-                  <CardContent>
-                    <Typography variant='subtitle1' sx={{ fontWeight: 600, mb: 1 }}>
-                      {section.title}
-                    </Typography>
-                    <Box component='ul' sx={{ pl: 2, mb: 0 }}>
-                      {section.items.map((item: string, itemIndex: number) => (
-                        <li key={itemIndex}>{item}</li>
-                      ))}
-                    </Box>
-                  </CardContent>
-                </Card>
-              )
-            )}
           </Box>
         </TabPanel>
 

@@ -1,7 +1,7 @@
 {
-  "version": "4.1.1",
-  "builtDate": "2025-08-22",
-  "title": "What's New in v4.1.1",
+  "version": "4.1.2",
+  "builtDate": "2025-09-03",
+  "title": "What's New in v4.1.2",
   "sections": [
     {
       "title": "🎨 UI Improvements",
@@ -9,11 +9,6 @@
       "items": [
         "Look and feel of favorite buttons match the rest of the buttons"
       ]
-    },
-    {
-      "title": "✨ New Features",
-      "emoji": "✨",
-      "items": []
     },
     {
       "title": "🐛 Bug Fixes",

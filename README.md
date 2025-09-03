@@ -18,6 +18,12 @@ You can also launch it from the Right Click Context Menu.
 
 ![Context](./docs/images/context-menu.png)
 
+Sidebar has two modes: Default and Simple.
+
+![Sidebar Modes](./docs/images/sidebar-modes.png)
+
+If you choose Simple, you will get the same functionalities like the Popup. Impersonation is available only in the Default mode.
+
 Below are screenshots of the extension displayed side-by-side for quick comparison.
 
 <table>
