@@ -18,12 +18,12 @@ export class DynamicsUtils {
    * Check if current context is a form page
    */
   static isFormContext(): boolean {
-    // Method 1: Try standard Xrm.Page detection
+    // Method 1: Try standard Xrm.Page detection in main window
     if (typeof Xrm !== 'undefined' && Xrm.Page && Xrm.Page.data && Xrm.Page.data.entity) {
       return true;
     }
 
-    // Method 2: Try modern Xrm.Utility approach
+    // Method 2: Try modern Xrm.Utility approach in main window
     try {
       if (typeof Xrm !== 'undefined' && Xrm.Utility?.getPageContext) {
         const pageContext = Xrm.Utility.getPageContext();
@@ -31,6 +31,22 @@ export class DynamicsUtils {
       }
     } catch (error) {
       // Xrm not ready yet
+    }
+
+    // Method 3: Check for Xrm in first iframe (Classic mode)
+    try {
+      const firstFrame = window.frames[0] as Window & { Xrm?: typeof Xrm };
+      if (
+        firstFrame &&
+        firstFrame.Xrm &&
+        firstFrame.Xrm.Page &&
+        firstFrame.Xrm.Page.data &&
+        firstFrame.Xrm.Page.data.entity
+      ) {
+        return true;
+      }
+    } catch (error) {
+      // Cannot access iframe content (cross-origin or not loaded yet)
     }
 
     return false;
@@ -188,6 +204,7 @@ export class DynamicsUtils {
                 transition: all 0.2s ease;
                 font-size: 13px;
                 min-width: 80px;
+                height: 40px;
               ">Copy</button>
             </div>
           </div>
@@ -435,6 +452,8 @@ export class DynamicsUtils {
 
       // Find the label element in the DOM
       let labelElement: HTMLElement | null = null;
+      const classicMode = false;
+      const CLASSIC_INLINE_LABEL = '.ms-crm-InlineEditLabelText';
 
       if (type === 'field') {
         // prettier-ignore
@@ -451,6 +470,11 @@ export class DynamicsUtils {
         // For sections, find by section name
         // prettier-ignore
         labelElement = document.querySelector(`[data-id*="${logicalName}"]`) as HTMLElement;
+      }
+
+      //classic mode field label
+      if (!labelElement) {
+        labelElement = frames[0].document.querySelector(`#${logicalName}_c`) as HTMLElement | null;
       }
 
       if (labelElement) {
@@ -611,17 +635,35 @@ export class DynamicsUtils {
           }
         });
 
-        // Replace the logical name part with the clickable span
-        // Only modify if we haven't already processed this element
-        const baseText = textContent.replace(/\s*\([^)]+\)$/, '').trim();
+        // Insert badge differently for classic vs modern DOM
+        if (classicMode) {
+          // For classic forms we don't want to wipe out the existing markup
+          // (icons, gradient masks, etc). Insert the badge after the visible
+          // label text span if possible.
+          let anchor = labelElement.querySelector(CLASSIC_INLINE_LABEL) as HTMLElement | null;
+          if (!anchor) {
+            // fallback to first child text node or the labelElement itself
+            anchor = labelElement.firstElementChild as HTMLElement | null;
+          }
+          if (anchor && anchor.parentElement) {
+            anchor.insertAdjacentElement('afterend', clickableSpan);
+          } else {
+            // As a last resort append to the label element
+            labelElement.appendChild(clickableSpan);
+          }
+        } else {
+          // Replace the logical name part with the clickable span
+          // Only modify if we haven't already processed this element
+          const baseText = textContent.replace(/\s*\([^)]+\)$/, '').trim();
 
-        // Clear existing content and rebuild to prevent duplication
-        labelElement.textContent = baseText;
+          // Clear existing content and rebuild to prevent duplication
+          labelElement.textContent = baseText;
 
-        // Add the logical name badge below the label text (centered)
-        const lineBreak = document.createElement('br');
-        labelElement.appendChild(lineBreak);
-        labelElement.appendChild(clickableSpan);
+          // Add the logical name badge below the label text (centered)
+          const lineBreak = document.createElement('br');
+          labelElement.appendChild(lineBreak);
+          labelElement.appendChild(clickableSpan);
+        }
       }
     } catch (error) {
       DynamicsUtils._log(`Could not add click handler to logical name: ${String(error)}`, 'error');

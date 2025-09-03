@@ -7,28 +7,22 @@
       "title": "🎨 UI Improvements",
       "emoji": "🎨",
       "items": [
-        "Streamlined action button layouts with standardized grid components",
-        "Better dark mode theme handling and improved contrast ratios"
+        "Look and feel of favorite buttons match the rest of the buttons"
       ]
     },
     {
       "title": "✨ New Features",
       "emoji": "✨",
-      "items": [
-        "New popup mode with quick action access",
-        "Ability to open sidebar mode from right-click context menu"
-      ]
+      "items": []
     },
     {
       "title": "🐛 Bug Fixes",
       "emoji": "🐛",
       "items": [
-        "Search functionality restoration in All Fields dialog (issues #381, #383, #391, #393)",
-        "Multi-domain support for on-premise and custom URLs (issues #374, #375, #379, #388, #394)",
-        "WebAPI entity naming fixes for proper pluralization (issues #376, #390)",
-        "Modal dialog improvements for better user experience (issue #380)",
-        "Multi-session app compatibility fixes (issue #384)",
-        "UI layout fixes for option values display (issue #377)"
+        "Form detection in classic mode (#410)",
+        "Open by ID missing prompt for entity name in popup",
+        "Sorting of All Fields (#413)",
+        "Clone now picks up Lookup fields (#416)"
       ]
     }
   ]

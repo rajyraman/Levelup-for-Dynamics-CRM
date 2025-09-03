@@ -21,6 +21,7 @@ interface ExtensionInstance {
 }
 
 interface WorkflowProcess {
+  scope_Formatted: string;
   mode_Formatted: string;
   statecode_Formatted: string;
   statuscode_Formatted: string;
@@ -56,6 +57,27 @@ export class FormActions {
 
   constructor(extension: ExtensionInstance) {
     this.extension = extension;
+  }
+
+  /**
+   * Get the Xrm object, handling both modern and classic mode
+   */
+  private getXrm(): typeof Xrm {
+    // Check if we're in classic mode and need to access Xrm through frames[0]
+    if (DynamicsUtils.isFormContext()) {
+      try {
+        // In classic mode forms, Xrm is always in frames[0].Xrm.Page
+        const frameXrm = (window.frames[0] as Window & { Xrm?: typeof Xrm })?.Xrm;
+        if (frameXrm && frameXrm.Page && frameXrm.Page.data) {
+          return frameXrm;
+        }
+      } catch (error) {
+        // Fall back to global Xrm if iframe access fails
+      }
+    }
+
+    // Default to global Xrm for modern mode or fallback
+    return Xrm;
   }
 
   /**
@@ -119,7 +141,8 @@ export class FormActions {
     // First, clear any existing logical names to prevent duplicates
     this.clearLogicalNames();
 
-    const attributes = Xrm.Page.data.entity.attributes.get();
+    const xrm = this.getXrm();
+    const attributes = xrm.Page.data.entity.attributes.get();
     let processedCount = 0;
 
     attributes.forEach((attr: Xrm.Attributes.Attribute) => {
@@ -141,6 +164,7 @@ export class FormActions {
    */
   clearLogicalNames(): string {
     document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
+    frames[0].document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
     return 'Logical names cleared and original labels restored';
   }
 
@@ -153,8 +177,10 @@ export class FormActions {
     // Create the confetti burst effect first
     ConfettiEffects.createConfettiBurst();
 
+    const xrm = this.getXrm();
+
     // Make all mandatory fields optional
-    const attributes = Xrm.Page.data.entity.attributes.get();
+    const attributes = xrm.Page.data.entity.attributes.get();
     attributes.forEach((attr: Xrm.Attributes.Attribute) => {
       if (attr.getRequiredLevel() === 'required') {
         attr.setRequiredLevel('none');
@@ -163,7 +189,7 @@ export class FormActions {
     });
 
     // Make all controls visible and enabled
-    Xrm.Page.ui.controls.forEach((control: Xrm.Controls.Control) => {
+    xrm.Page.ui.controls.forEach((control: Xrm.Controls.Control) => {
       // Cast to StandardControl to access setVisible and setDisabled
       const standardControl = control as Xrm.Controls.StandardControl;
       const wasHidden = standardControl.getVisible && !standardControl.getVisible();
@@ -182,7 +208,7 @@ export class FormActions {
     });
 
     // Make all tabs and sections visible
-    Xrm.Page.ui.tabs.forEach((tab: Xrm.Controls.Tab) => {
+    xrm.Page.ui.tabs.forEach((tab: Xrm.Controls.Tab) => {
       const wasTabHidden = !tab.getVisible();
       tab.setVisible(true);
 
@@ -210,11 +236,12 @@ export class FormActions {
     // Remove existing highlights
     DynamicsUtils.removeStyles('levelup-changed-fields');
 
+    const xrm = this.getXrm();
     const changedFields: string[] = [];
 
     try {
       // Get the data XML which contains only changed fields
-      const dataXml = Xrm.Page.data.entity.getDataXml();
+      const dataXml = xrm.Page.data.entity.getDataXml();
 
       if (dataXml) {
         // Parse the XML to extract field names
@@ -238,7 +265,7 @@ export class FormActions {
       // If XML parsing fails, fall back to the attribute-level change detection
       DynamicsUtils.showToast('Unable to parse data XML, falling back to attribute checks', 'info');
       // Fallback to the old method if XML parsing fails
-      const attributes = Xrm.Page.data.entity.attributes.get();
+      const attributes = xrm.Page.data.entity.attributes.get();
       attributes.forEach((attr: Xrm.Attributes.Attribute) => {
         if (attr.getIsDirty && attr.getIsDirty()) {
           changedFields.push(attr.getName());
@@ -289,8 +316,9 @@ export class FormActions {
    * Get current record URL
    */
   getRecordUrl(): string {
-    const entityName = Xrm.Page.data.entity.getEntityName();
-    const recordId = Xrm.Page.data.entity.getId().replace(/[{}]/g, '');
+    const xrm = this.getXrm();
+    const entityName = xrm.Page.data.entity.getEntityName();
+    const recordId = xrm.Page.data.entity.getId().replace(/[{}]/g, '');
     const orgUrl = DynamicsUtils.getOrganizationUrl();
 
     const recordUrl = `${orgUrl}/main.aspx?etn=${entityName}&id=${recordId}&pagetype=entityrecord`;
@@ -304,7 +332,8 @@ export class FormActions {
    * Get current record ID
    */
   getRecordId(): string {
-    const recordId = Xrm.Page.data.entity.getId().replace(/[{}]/g, '');
+    const xrm = this.getXrm();
+    const recordId = xrm.Page.data.entity.getId().replace(/[{}]/g, '');
     DynamicsUtils.showTextDialog('Record ID', recordId);
     return recordId;
   }
@@ -313,8 +342,9 @@ export class FormActions {
    * Open current record in Web API
    */
   openWebApiRecord(): string {
-    const entityName = Xrm.Page.data.entity.getEntityName();
-    const recordId = Xrm.Page.data.entity.getId().replace(/[{}]/g, '');
+    const xrm = this.getXrm();
+    const entityName = xrm.Page.data.entity.getEntityName();
+    const recordId = xrm.Page.data.entity.getId().replace(/[{}]/g, '');
     const orgUrl = DynamicsUtils.getOrganizationUrl();
 
     const webApiUrl = `${orgUrl}/api/data/v9.0/${DynamicsUtils.getEntityCollectionName(entityName)}(${recordId})`;
@@ -327,8 +357,9 @@ export class FormActions {
    * Refresh all subgrids on the form
    */
   refreshAllSubgrids(): string {
+    const xrm = this.getXrm();
     let refreshedCount = 0;
-    Xrm.Page.ui.controls.forEach((control: Xrm.Controls.Control) => {
+    xrm.Page.ui.controls.forEach((control: Xrm.Controls.Control) => {
       if (control.getControlType && control.getControlType() === 'subgrid') {
         const subgridControl = control as Xrm.Controls.GridControl;
         if (subgridControl.refresh) {
@@ -345,8 +376,9 @@ export class FormActions {
    * Show option set values in a popup table with enhanced performance for large datasets
    */
   showOptionSetValues(): string {
+    const xrm = this.getXrm();
     // Get all optionset controls and their options
-    const optionsetData: OptionSetData[] = Xrm.Page.getControl()
+    const optionsetData: OptionSetData[] = xrm.Page.getControl()
       .filter((x: Xrm.Controls.Control) => x.getControlType() === 'optionset')
       .map((x: Xrm.Controls.Control) => {
         const optionsetControl = x as OptionSetControl;
@@ -401,11 +433,12 @@ export class FormActions {
    * Clone current record
    */
   async cloneRecord(): Promise<string> {
-    const entityName = Xrm.Page.data.entity.getEntityName();
+    const xrm = this.getXrm();
+    const entityName = xrm.Page.data.entity.getEntityName();
 
     // Get all field values to pass as parameters
     const parameters: Record<string, string> = {};
-    const attributes = Xrm.Page.data.entity.attributes
+    const attributes = xrm.Page.data.entity.attributes
       .get()
       .filter(
         a =>
@@ -419,7 +452,15 @@ export class FormActions {
     attributes.forEach((attr: Xrm.Attributes.Attribute) => {
       const value = attr.getValue();
       if (value) {
-        parameters[attr.getName()] = String(value);
+        const attributeName = attr.getName();
+        if (attr.getAttributeType() === 'lookup' && Array.isArray(value) && value.length > 0) {
+          const lookupValue = value as Xrm.LookupValue[];
+          parameters[attributeName] = lookupValue[0].id;
+          parameters[`${attributeName}name`] = lookupValue[0].name ?? '';
+          parameters[`${attributeName}type`] = lookupValue[0].entityType;
+        } else {
+          parameters[attributeName] = String(value);
+        }
       }
     });
     await Xrm.Navigation.openForm({ entityName: entityName, openInNewWindow: true }, parameters);
@@ -431,11 +472,12 @@ export class FormActions {
    * Refresh form without saving and disable auto-save
    */
   async refreshWithoutSave(): Promise<string> {
+    const xrm = this.getXrm();
     // Remove any existing changed field highlights
     DynamicsUtils.removeStyles('levelup-changed-fields');
 
-    await Xrm.Page.data.refresh(false);
-    Xrm.Page.data.entity.addOnSave((econtext: Xrm.Events.SaveEventContext) => {
+    await xrm.Page.data.refresh(false);
+    xrm.Page.data.entity.addOnSave((econtext: Xrm.Events.SaveEventContext) => {
       const eventArgs = econtext.getEventArgs();
       if (eventArgs.getSaveMode() === 70 || eventArgs.getSaveMode() === 2) {
         eventArgs.preventDefault();
@@ -452,9 +494,10 @@ export class FormActions {
    * Show all field logical names with their current values in a popup table
    */
   async showAllFields(): Promise<string> {
+    const xrm = this.getXrm();
     try {
-      const entityLogicalName = Xrm.Page.data.entity.getEntityName();
-      const recordId = Xrm.Page.data.entity.getId().replace(/[{}]/g, '');
+      const entityLogicalName = xrm.Page.data.entity.getEntityName();
+      const recordId = xrm.Page.data.entity.getId().replace(/[{}]/g, '');
       const collection = DynamicsUtils.getEntityCollectionName(entityLogicalName);
       const webApiClient = WebApiClient.getInstance();
 
@@ -514,7 +557,8 @@ export class FormActions {
         }
       });
 
-      rows.sort((a, b) => a[0].localeCompare(b[0]));
+      // Sort rows by field name (case-insensitive) for predictable ordering
+      rows.sort((a, b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
 
       DynamicsUtils.createMuiPopup({
         id: 'levelup-all-fields-popup',
@@ -543,8 +587,9 @@ export class FormActions {
    * Open the Power Platform form editor for the current record
    */
   async openFormEditor(): Promise<string> {
+    const xrm = this.getXrm();
     try {
-      const entityName = Xrm.Page.data.entity.getEntityName();
+      const entityName = xrm.Page.data.entity.getEntityName();
       const environmentId = Xrm.Utility.getGlobalContext().organizationSettings.bapEnvironmentId;
 
       // Get solution information using the reusable method
@@ -554,7 +599,7 @@ export class FormActions {
         DynamicsUtils.showToast(solutionInfo.notificationMessage, 'info');
       }
 
-      const formId = Xrm.Page.ui.formSelector.getCurrentItem().getId();
+      const formId = xrm.Page.ui.formSelector.getCurrentItem().getId();
       const formEditorUrl = `https://make.powerapps.com/e/${environmentId}/s/${solutionInfo.solutionId}/entity/${entityName}/form/edit/${formId}`;
 
       // Open the form editor in a new tab
@@ -578,9 +623,10 @@ export class FormActions {
    * Show table processes (workflows, business rules, BPFs, custom APIs, actions) in a dual-pane dialog
    */
   async showTableProcesses(): Promise<string> {
+    const xrm = this.getXrm();
     try {
       const webApiClient = WebApiClient.getInstance();
-      const entityName = Xrm.Page.data.entity.getEntityName();
+      const entityName = xrm.Page.data.entity.getEntityName();
       const environmentId = Xrm.Utility.getGlobalContext().organizationSettings.bapEnvironmentId;
 
       // Get solution information using the reusable method
@@ -694,18 +740,9 @@ export class FormActions {
             processType.title === 'Realtime Workflows' ||
             processType.title === 'Background Workflows'
           ) {
-            const baseStatus = process.statecode_Formatted;
-            const modeText = process.mode_Formatted;
-            status = `${baseStatus} (${modeText})`;
+            status = process.statecode_Formatted;
           } else if (processType.title === 'Business Rules') {
-            const baseStatus = process.statecode_Formatted;
-            const scopeMap: { [key: number]: string } = {
-              1: 'Entity',
-              2: 'All Forms',
-              3: 'Specific Form',
-            };
-            const scopeText = scopeMap[process.scope || 0] || 'Unknown';
-            status = `${baseStatus} (${scopeText})`;
+            status = `${process.statecode_Formatted} (${process.scope_Formatted})`;
           } else {
             status = process.statuscode_Formatted;
           }
@@ -751,6 +788,16 @@ export class FormActions {
         rows: customApiRows,
         allowHtmlInColumns: [0], // Allow HTML in the Name column
       });
+
+      // If no processes were found at all, show a friendly alert and return
+      if (totalProcesses === 0) {
+        Xrm.Navigation.openAlertDialog({
+          title: 'No processes found',
+          text: `No workflows, business rules, flows, BPFs, actions, or custom APIs were found for ${entityName}.`,
+        });
+
+        return `No processes associated with ${entityName}`;
+      }
 
       // Use dual-pane layout for better navigation
       DynamicsUtils.createMuiPopup({

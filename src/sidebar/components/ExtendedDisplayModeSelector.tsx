@@ -56,11 +56,11 @@ const ExtendedDisplayModeSelector: React.FC<ExtendedDisplayModeSelectorProps> = 
 
   return (
     <>
-      <Tooltip title='Display Mode & Settings'>
+      <Tooltip title='Switch Sidebar Modes'>
         <IconButton
           onClick={handleClick}
           size='small'
-          aria-label='Display mode settings'
+          aria-label='Switch Sidebar Modes'
           sx={{
             color: 'text.primary',
             '&:hover': {

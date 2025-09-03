@@ -19,6 +19,10 @@ const PopupApp: React.FC = () => {
     severity: 'success' | 'info' | 'warning' | 'error';
   }>(null);
 
+  // Detect if running in Firefox
+  const isFirefox =
+    typeof chrome !== 'undefined' && chrome.runtime && navigator.userAgent.includes('Firefox');
+
   useEffect(() => {
     const checkConnection = async () => {
       setIsChecking(true);
@@ -57,7 +61,11 @@ const PopupApp: React.FC = () => {
       if (actionId === 'navigation:open-record-by-id') {
         const recordId = prompt('Enter the record ID (GUID):');
         if (!recordId) return; // User cancelled
-        actionData = { recordId: recordId.trim() };
+        const entityName = prompt(
+          'Enter the entity logical name for the record (e.g., account, contact, opportunity):'
+        );
+        if (!entityName) return; // User cancelled
+        actionData = { recordId: recordId.trim(), entityName: entityName.trim().toLowerCase() };
       } else if (actionId === 'navigation:new-record') {
         const entityName = prompt(
           'Enter the entity logical name (e.g., account, contact, opportunity):'
@@ -141,8 +149,8 @@ const PopupApp: React.FC = () => {
   return (
     <Box
       sx={{
-        minWidth: '320px',
-        maxWidth: '380px',
+        width: '320px',
+        maxWidth: '320px',
         background: theme =>
           `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
         borderRadius: '8px',
@@ -157,23 +165,28 @@ const PopupApp: React.FC = () => {
       {/* Vertical Express Mode Label */}
       <Box
         sx={{
-          width: '40px',
+          width: '36px',
+          minWidth: '36px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <Typography
           sx={{
             color: 'white',
-            fontSize: '0.75rem',
+            fontSize: '0.7rem',
             fontWeight: 600,
             letterSpacing: '1px',
             writingMode: 'vertical-rl',
             textOrientation: 'mixed',
             transform: 'rotate(180deg)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
           EXPRESS MODE
@@ -409,75 +422,77 @@ const PopupApp: React.FC = () => {
           </Box>
         )}
 
-        {/* Sidebar Modes at Bottom */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            pt: 1,
-            mt: 0.5,
-            borderTop: theme => `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <Typography
-            variant='caption'
+        {/* Sidebar Modes at Bottom - Only show for non-Firefox browsers */}
+        {!isFirefox && (
+          <Box
             sx={{
-              color: 'text.secondary',
-              fontSize: '0.65rem',
-              display: 'block',
-              mb: 0.25,
-              textTransform: 'uppercase',
-              letterSpacing: '0.3px',
-              fontWeight: 500,
+              textAlign: 'center',
+              pt: 1,
+              mt: 0.5,
+              borderTop: theme => `1px solid ${theme.palette.divider}`,
             }}
           >
-            Sidebar Modes
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5 }}>
-            <Link
-              component='button'
-              onClick={() => switchDisplayModeAndOpenSidebar('default')}
+            <Typography
+              variant='caption'
               sx={{
-                color: 'primary.main',
-                fontSize: '0.7rem',
-                textDecoration: 'none',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '2px 4px',
+                color: 'text.secondary',
+                fontSize: '0.65rem',
+                display: 'block',
+                mb: 0.25,
+                textTransform: 'uppercase',
+                letterSpacing: '0.3px',
                 fontWeight: 500,
-                transition: 'color 0.2s ease',
-                '&:hover': {
-                  color: 'primary.dark',
-                  textDecoration: 'underline',
-                },
               }}
             >
-              Default
-            </Link>
-            <Box sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>•</Box>
-            <Link
-              component='button'
-              onClick={() => switchDisplayModeAndOpenSidebar('simple')}
-              sx={{
-                color: 'primary.main',
-                fontSize: '0.7rem',
-                textDecoration: 'none',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '2px 4px',
-                fontWeight: 500,
-                transition: 'color 0.2s ease',
-                '&:hover': {
-                  color: 'primary.dark',
-                  textDecoration: 'underline',
-                },
-              }}
-            >
-              Simple
-            </Link>
+              Sidebar Modes
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5 }}>
+              <Link
+                component='button'
+                onClick={() => switchDisplayModeAndOpenSidebar('default')}
+                sx={{
+                  color: 'primary.main',
+                  fontSize: '0.7rem',
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  fontWeight: 500,
+                  transition: 'color 0.2s ease',
+                  '&:hover': {
+                    color: 'primary.dark',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Default
+              </Link>
+              <Box sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>•</Box>
+              <Link
+                component='button'
+                onClick={() => switchDisplayModeAndOpenSidebar('simple')}
+                sx={{
+                  color: 'primary.main',
+                  fontSize: '0.7rem',
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  fontWeight: 500,
+                  transition: 'color 0.2s ease',
+                  '&:hover': {
+                    color: 'primary.dark',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Simple
+              </Link>
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
     </Box>
   );
