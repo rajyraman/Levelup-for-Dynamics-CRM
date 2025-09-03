@@ -21,6 +21,7 @@ interface ExtensionInstance {
 }
 
 interface WorkflowProcess {
+  scope_Formatted: string;
   mode_Formatted: string;
   statecode_Formatted: string;
   statuscode_Formatted: string;
@@ -739,18 +740,9 @@ export class FormActions {
             processType.title === 'Realtime Workflows' ||
             processType.title === 'Background Workflows'
           ) {
-            const baseStatus = process.statecode_Formatted;
-            const modeText = process.mode_Formatted;
-            status = `${baseStatus} (${modeText})`;
+            status = process.statecode_Formatted;
           } else if (processType.title === 'Business Rules') {
-            const baseStatus = process.statecode_Formatted;
-            const scopeMap: { [key: number]: string } = {
-              1: 'Entity',
-              2: 'All Forms',
-              3: 'Specific Form',
-            };
-            const scopeText = scopeMap[process.scope || 0] || 'Unknown';
-            status = `${baseStatus} (${scopeText})`;
+            status = `${process.statecode_Formatted} (${process.scope_Formatted})`;
           } else {
             status = process.statuscode_Formatted;
           }
