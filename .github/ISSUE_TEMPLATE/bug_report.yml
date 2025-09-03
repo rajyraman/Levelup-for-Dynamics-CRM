@@ -1,7 +1,7 @@
 name: Bug Report / Feature Request
 description: Report a bug or request a feature for Level Up for Dynamics 365/Power Apps
-title: "[BUG/REQUEST]: "
-labels: ["triage"]
+title: '[BUG/REQUEST]: '
+labels: ['triage']
 body:
   - type: markdown
     attributes:
@@ -65,11 +65,11 @@ body:
       label: Browser
       description: Which browser are you using?
       options:
-        - Chrome
         - Edge
+        - Chrome
         - Firefox
-        - Safari
         - Other
+      default: 1
     validations:
       required: true
 
@@ -82,6 +82,28 @@ body:
         - Windows
         - Mac
         - Linux
+    validations:
+      required: false
+
+  - type: dropdown
+    id: window-mode
+    attributes:
+      label: Window Mode
+      description: Are you using normal or incognito/private browsing mode?
+      options:
+        - Normal
+        - Incognito/Private
+    validations:
+      required: true
+
+  - type: dropdown
+    id: form-mode
+    attributes:
+      label: Form Mode (for form-related issues)
+      description: Are you using Modern UI or Classic mode?
+      options:
+        - Modern UI
+        - Classic
     validations:
       required: true
 
@@ -114,7 +136,7 @@ body:
         - Online
         - On-Premise
     validations:
-      required: false
+      required: true
 
   - type: dropdown
     id: app-type
@@ -127,7 +149,7 @@ body:
         - Customer Service Workspace
         - Other Multisession App
     validations:
-      required: false
+      required: true
 
   - type: input
     id: entity-name
@@ -155,4 +177,3 @@ body:
       placeholder: Drag and drop screenshots here or describe what you're seeing...
     validations:
       required: false
-
