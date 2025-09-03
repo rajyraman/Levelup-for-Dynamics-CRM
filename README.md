@@ -2,7 +2,21 @@
 
 Level Up is a browser extension that helps Dynamics 365, Power Apps, and web teams work more efficiently. It provides quick admin actions, custom command execution, UI utilities, and diagnostic tools in a compact sidebar or popup.
 
-# Screenshots
+# Extension Modes
+
+There are two modes in the extension: Sidebar mode and Express Mode. When you click on the extension button, the popup you see is the Express Mode. Below is a summary of what is available in Sidebar mode and Popup mode.
+
+| Sidebar Mode | Express Mode |
+|--------------|--------------|
+| 1. Impersonation<br>2. Form Actions<br>3. Navigation Actions<br>4. Custom Commands<br>5. Debugging Actions<br>6. Dark Theme/Light Theme switcher | 1. Form Actions<br>2. Navigation Actions |
+
+You can launch Sidebar from the popup by clicking the links in the bottom.
+
+![Sidebar](./docs/images/sidebar-1.png)
+
+You can also launch it from the Right Click Context Menu.
+
+![Context](./docs/images/context-menu.png)
 
 Below are screenshots of the extension displayed side-by-side for quick comparison.
 
@@ -79,7 +93,7 @@ The extension organizes actions into different categories accessible through the
 
 - **🎭 User Impersonation**: Act on behalf of other users (requires System Administrator privileges)
 - **⚡ Custom Commands**: Execute custom JavaScript commands and scripts
-- **🔧 Extension Configuration**: Customize which sections and features are visible
+- **🔧 Extension Configuration**: Switch between Default and Simple Sidebar modes.
 
 ## Credits
 * Bob Guidinger's original idea on Impersonation

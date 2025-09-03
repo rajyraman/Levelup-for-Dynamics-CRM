@@ -362,7 +362,7 @@ const App: React.FC = () => {
   };
 
   const openGitHubIssues = () => {
-    chrome.tabs.create({ url: 'https://github.com/rajyraman/Levelup-for-Dynamics-CRM/issues' });
+    chrome.tabs.create({ url: 'https://github.com/rajyraman/Levelup-for-Dynamics-CRM/' });
   };
 
   const openDiscord = () => {
