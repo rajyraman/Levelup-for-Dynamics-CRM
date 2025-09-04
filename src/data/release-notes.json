@@ -1,23 +1,13 @@
 {
-  "version": "4.1.2",
-  "builtDate": "2025-09-03",
-  "title": "What's New in v4.1.2",
+  "version": "4.1.3",
+  "builtDate": "2025-09-05",
+  "title": "What's New in v4.1.3",
   "sections": [
-    {
-      "title": "🎨 UI Improvements",
-      "emoji": "🎨",
-      "items": [
-        "Look and feel of favorite buttons match the rest of the buttons"
-      ]
-    },
     {
       "title": "🐛 Bug Fixes",
       "emoji": "🐛",
       "items": [
-        "Form detection in classic mode (#410)",
-        "Open by ID missing prompt for entity name in popup",
-        "Sorting of All Fields (#413)",
-        "Clone now picks up Lookup fields (#416)"
+        "Form detection in classic mode broke modern UI (#419, #420)"
       ]
     }
   ]

@@ -46,16 +46,7 @@ export class WebApiClient {
    */
   private initializeDynamicsWebApi(): void {
     try {
-      const globalContext = Xrm.Utility.getGlobalContext();
-      const clientUrl = globalContext.getClientUrl();
-
-      const config = {
-        serverUrl: clientUrl,
-        version: '9.2',
-        impersonate: undefined, // Will be set by background script via headers
-      };
-
-      this.dwa = new DynamicsWebApi(config);
+      this.dwa = new DynamicsWebApi();
       this.initialized = true;
       console.log('DynamicsWebApi initialized successfully');
     } catch (error) {
@@ -208,7 +199,7 @@ export class WebApiClient {
     // Try to get count first (optional)
     let totalCount: number | null = null;
     try {
-      const countUrl = `${clientUrl}/api/data/v9.2/systemusers/$count?$filter=${encodeURIComponent(filter)}`;
+      const countUrl = `${clientUrl}/api/data/v9.0/systemusers/$count?$filter=${encodeURIComponent(filter)}`;
       console.log('🔍 [WebApiClient] Count URL:', countUrl);
       const countResponse = await fetch(countUrl, {
         method: 'GET',
@@ -232,7 +223,7 @@ export class WebApiClient {
     }
 
     // Get the actual results
-    const resultsUrl = `${clientUrl}/api/data/v9.2/systemusers?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}&$top=${searchLimit}`;
+    const resultsUrl = `${clientUrl}/api/data/v9.0/systemusers?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}&$top=${searchLimit}`;
     console.log('🔍 [WebApiClient] Results URL:', resultsUrl);
 
     const response = await fetch(resultsUrl, {
@@ -320,7 +311,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    let url = `${clientUrl}/api/data/v9.2/${entityName}(${recordId})`;
+    let url = `${clientUrl}/api/data/v9.0/${entityName}(${recordId})`;
     if (select && select.length > 0) {
       url += `?$select=${select.join(',')}`;
     }
@@ -418,7 +409,7 @@ export class WebApiClient {
       queryParams.push(`$expand=${options.expand.join(',')}`);
     }
 
-    let url = `${clientUrl}/api/data/v9.2/${entityName}`;
+    let url = `${clientUrl}/api/data/v9.0/${entityName}`;
     if (queryParams.length > 0) {
       url += `?${queryParams.join('&')}`;
     }
@@ -471,7 +462,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    const url = `${clientUrl}/api/data/v9.2/${entityName}`;
+    const url = `${clientUrl}/api/data/v9.0/${entityName}`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -528,7 +519,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    const url = `${clientUrl}/api/data/v9.2/${entityName}(${recordId})`;
+    const url = `${clientUrl}/api/data/v9.0/${entityName}(${recordId})`;
 
     const response = await fetch(url, {
       method: 'PATCH',
@@ -577,7 +568,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    const url = `${clientUrl}/api/data/v9.2/${entityName}(${recordId})`;
+    const url = `${clientUrl}/api/data/v9.0/${entityName}(${recordId})`;
 
     const response = await fetch(url, {
       method: 'DELETE',
@@ -627,7 +618,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    let url = `${clientUrl}/api/data/v9.2/${functionName}`;
+    let url = `${clientUrl}/api/data/v9.0/${functionName}`;
 
     if (parameters) {
       const paramString = Object.keys(parameters)
@@ -685,7 +676,7 @@ export class WebApiClient {
     const globalContext = Xrm.Utility.getGlobalContext();
     const clientUrl = globalContext.getClientUrl();
 
-    const url = `${clientUrl}/api/data/v9.2/${entityName}?fetchXml=${encodeURIComponent(fetchXml)}`;
+    const url = `${clientUrl}/api/data/v9.0/${entityName}?fetchXml=${encodeURIComponent(fetchXml)}`;
 
     const response = await fetch(url, {
       method: 'GET',

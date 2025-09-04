@@ -63,8 +63,9 @@ export class FormActions {
    * Get the Xrm object, handling both modern and classic mode
    */
   private getXrm(): typeof Xrm {
-    // Check if we're in classic mode and need to access Xrm through frames[0]
     if (DynamicsUtils.isFormContext()) {
+      if (window.Xrm?.Page?.data) return window.Xrm;
+
       try {
         // In classic mode forms, Xrm is always in frames[0].Xrm.Page
         const frameXrm = (window.frames[0] as Window & { Xrm?: typeof Xrm })?.Xrm;
@@ -72,12 +73,10 @@ export class FormActions {
           return frameXrm;
         }
       } catch (error) {
-        // Fall back to global Xrm if iframe access fails
       }
     }
 
-    // Default to global Xrm for modern mode or fallback
-    return Xrm;
+    return window.Xrm;
   }
 
   /**
@@ -164,11 +163,14 @@ export class FormActions {
    */
   clearLogicalNames(): string {
     document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
-    frames[0].document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
+    const frameXrm = (window.frames[0] as Window & { Xrm?: typeof Xrm })?.Xrm;
+    if (frameXrm && frameXrm.Page && frameXrm.Page.data) {
+      window.frames[0].document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
+    }
     return 'Logical names cleared and original labels restored';
   }
 
-  /**
+  /**v
    * Enable "God Mode" - make all fields visible and editable
    */
   enableGodMode(): string {
@@ -396,14 +398,14 @@ export class FormActions {
     const tables = optionsetData.map(control => {
       const rows = control.options
         ? control.options.map((option: OptionSetOption) => [
-            option.text || 'N/A',
-            option.value === null ||
+          option.text || 'N/A',
+          option.value === null ||
             option.value === undefined ||
             Number.isNaN(option.value) ||
             String(option.value) === 'NaN'
-              ? '-'
-              : String(option.value),
-          ])
+            ? '-'
+            : String(option.value),
+        ])
         : [];
 
       return {
