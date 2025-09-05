@@ -18,34 +18,47 @@ export class DynamicsUtils {
    * Check if current context is a form page
    */
   static isFormContext(): boolean {
-    // Method 1: Try standard Xrm.Page detection in main window
-    if (typeof Xrm !== 'undefined' && Xrm.Page && Xrm.Page.data && Xrm.Page.data.entity) {
+    // Early exit if Xrm is not available
+    if (typeof Xrm === 'undefined') {
+      return false;
+    }
+
+    // Method 1: Check standard Xrm.Page in main window
+    if (Xrm.Page?.data?.entity) {
       return true;
     }
 
-    // Method 2: Try modern Xrm.Utility approach in main window
+    // Method 2: Try modern Xrm.Utility approach
     try {
-      if (typeof Xrm !== 'undefined' && Xrm.Utility?.getPageContext) {
-        const pageContext = Xrm.Utility.getPageContext();
-        return pageContext.input?.pageType === 'entityrecord';
-      }
-    } catch (error) {
-      // Xrm not ready yet
-    }
-
-    // Method 3: Check for Xrm in first iframe (Classic mode)
-    try {
-      const firstFrame = window.frames[0] as Window & { Xrm?: typeof Xrm };
-      if (
-        firstFrame &&
-        firstFrame.Xrm &&
-        firstFrame.Xrm.Page &&
-        firstFrame.Xrm.Page.data &&
-        firstFrame.Xrm.Page.data.entity
-      ) {
+      const pageContext = Xrm.Utility?.getPageContext?.();
+      if (pageContext?.input?.pageType === 'entityrecord') {
         return true;
       }
-    } catch (error) {
+    } catch {
+      // Xrm not ready yet, continue to iframe check
+    }
+
+    // Method 3: Check for UCI mode or iframe content (Classic mode)
+    try {
+      const isUci = (
+        Xrm as unknown as XrmStatic & { Internal: { isUci(): boolean } }
+      ).Internal?.isUci();
+
+      // If UCI mode and we already checked Xrm.Page above, no need to check iframes
+      if (isUci) {
+        return false;
+      }
+
+      // Classic mode: check first visible iframe
+      const visibleIframes = Array.from(document.querySelectorAll('iframe')).filter(
+        iframe => iframe.style.visibility !== 'hidden'
+      );
+
+      if (visibleIframes.length > 0) {
+        const frameWindow = visibleIframes[0].contentWindow;
+        return Boolean(frameWindow?.Xrm?.Page?.data?.entity);
+      }
+    } catch {
       // Cannot access iframe content (cross-origin or not loaded yet)
     }
 
