@@ -143,6 +143,7 @@ export class FormActions {
     this.clearLogicalNames();
 
     const xrm = this.getXrm();
+    const w = this.getWindow();
     const attributes = xrm.Page.data.entity.attributes.get();
     let processedCount = 0;
 
@@ -150,7 +151,7 @@ export class FormActions {
       try {
         const logicalName = attr.getName();
         // Use default click handler that shows visual feedback
-        DynamicsUtils.addClickHandlerToLogicalName(logicalName);
+        DynamicsUtils.addClickHandlerToLogicalName(w, logicalName);
         processedCount++;
       } catch (_error) {
         // Skip fields that cause errors (e.g., virtual fields, calculated fields)

@@ -445,6 +445,7 @@ export class DynamicsUtils {
    * Add click handler to logical name for copying to clipboard
    */
   static addClickHandlerToLogicalName(
+    contentWindow: Window | undefined,
     logicalName: string,
     typeOrHandler?: string | ((ev?: Event) => void),
     maybeHandler?: (ev?: Event) => void
@@ -486,8 +487,10 @@ export class DynamicsUtils {
       }
 
       //classic mode field label
-      if (!labelElement) {
-        labelElement = frames[0].document.querySelector(`#${logicalName}_c`) as HTMLElement | null;
+      if (!labelElement && contentWindow) {
+        labelElement = contentWindow.document.querySelector(
+          `#${logicalName}_c`
+        ) as HTMLElement | null;
       }
 
       if (labelElement) {
