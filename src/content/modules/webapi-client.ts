@@ -46,9 +46,26 @@ export class WebApiClient {
    */
   private initializeDynamicsWebApi(): void {
     try {
-      this.dwa = new DynamicsWebApi();
+      // Get the client URL from Xrm context if available (for on-premises environments)
+      let serverUrl: string | undefined;
+      try {
+        if (typeof Xrm !== 'undefined' && Xrm.Utility?.getGlobalContext) {
+          const globalContext = Xrm.Utility.getGlobalContext();
+          if (typeof globalContext.getClientUrl === 'function') {
+            serverUrl = globalContext.getClientUrl();
+          }
+        }
+      } catch (xrmError) {
+        // Xrm context may not be available yet, initialize without serverUrl
+        console.debug('Xrm context not available during DynamicsWebApi initialization:', xrmError);
+      }
+
+      // Initialize DynamicsWebApi with proper configuration
+      this.dwa = new DynamicsWebApi({
+        serverUrl: serverUrl,
+      });
       this.initialized = true;
-      console.log('DynamicsWebApi initialized successfully');
+      console.log('DynamicsWebApi initialized successfully', serverUrl ? `with serverUrl: ${serverUrl}` : 'without serverUrl (auto-detect)');
     } catch (error) {
       console.warn('Failed to initialize dynamics-web-api, falling back to fetch:', error);
       this.initialized = false;
@@ -57,12 +74,31 @@ export class WebApiClient {
   }
 
   /**
-   * Ensure the client is initialized
+   * Ensure the client is initialized and properly configured
    */
   private async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
-      await this.initializeDynamicsWebApi();
+      this.initializeDynamicsWebApi();
     }
+    
+    // If DynamicsWebApi is initialized but may not have been configured with serverUrl
+    // (because Xrm context wasn't available during initialization), try to configure it now
+    if (this.initialized && this.dwa) {
+      try {
+        if (typeof Xrm !== 'undefined' && Xrm.Utility?.getGlobalContext) {
+          const globalContext = Xrm.Utility.getGlobalContext();
+          if (typeof globalContext.getClientUrl === 'function') {
+            const serverUrl = globalContext.getClientUrl();
+            // Update the configuration if we have a client URL
+            this.dwa.setConfig({ serverUrl: serverUrl });
+          }
+        }
+      } catch (xrmError) {
+        // Xrm context still not available, continue with current configuration
+        console.debug('Xrm context not available for serverUrl configuration:', xrmError);
+      }
+    }
+    
     if (!this.initialized) {
       throw new Error('WebAPI client is not initialized');
     }
