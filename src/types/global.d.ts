@@ -247,10 +247,7 @@ declare global {
     interface Window {
         levelUpOriginalLabels?: Map<string, string>;
     }
-}
 
-// Extend Xrm namespace to include bapEnvironmentId in OrganizationSettings
-declare global {
     namespace Xrm {
         interface OrganizationSettings {
             /**
@@ -259,5 +256,11 @@ declare global {
              */
             bapEnvironmentId: string;
         }
+    }
+
+    interface XrmStatic {
+        Internal: {
+            isUci(): boolean;
+        };
     }
 }

@@ -64,21 +64,23 @@ export class FormActions {
    */
   private getXrm(): typeof Xrm {
     if (DynamicsUtils.isFormContext()) {
-      if (window.Xrm?.Page?.data) return window.Xrm;
-
-      try {
-        // In classic mode forms, Xrm is always in frames[0].Xrm.Page
-        const frameXrm = (window.frames[0] as Window & { Xrm?: typeof Xrm })?.Xrm;
-        if (frameXrm && frameXrm.Page && frameXrm.Page.data) {
-          return frameXrm;
-        }
-      } catch (error) {
-      }
+      const w = this.getWindow();
+      return w?.Xrm || window.Xrm;
     }
 
     return window.Xrm;
   }
 
+  private getWindow() {
+    const iframes = Array.from(document.querySelectorAll('iframe')).filter(function (d) {
+      return d.style.visibility !== 'hidden';
+    });
+    if ((Xrm as unknown as XrmStatic & { Internal: { isUci(): boolean } }).Internal?.isUci()) {
+      return window;
+    } else if (iframes && iframes.length > 0) {
+      return iframes[0].contentWindow || window;
+    }
+  }
   /**
    * Get user's preferred solution information or fall back to Default solution
    */
@@ -162,11 +164,8 @@ export class FormActions {
    * Clear logical names and restore original labels
    */
   clearLogicalNames(): string {
-    document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
-    const frameXrm = (window.frames[0] as Window & { Xrm?: typeof Xrm })?.Xrm;
-    if (frameXrm && frameXrm.Page && frameXrm.Page.data) {
-      window.frames[0].document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
-    }
+    const w = this.getWindow();
+    w?.document.querySelectorAll('.levelup-logical-name').forEach(x => x.remove());
     return 'Logical names cleared and original labels restored';
   }
 
@@ -398,14 +397,14 @@ export class FormActions {
     const tables = optionsetData.map(control => {
       const rows = control.options
         ? control.options.map((option: OptionSetOption) => [
-          option.text || 'N/A',
-          option.value === null ||
+            option.text || 'N/A',
+            option.value === null ||
             option.value === undefined ||
             Number.isNaN(option.value) ||
             String(option.value) === 'NaN'
-            ? '-'
-            : String(option.value),
-        ])
+              ? '-'
+              : String(option.value),
+          ])
         : [];
 
       return {
