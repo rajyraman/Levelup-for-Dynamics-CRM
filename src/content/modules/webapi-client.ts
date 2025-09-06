@@ -13,6 +13,14 @@ interface ImpersonationUser {
   domainname: string;
 }
 
+interface DynamicsWebApiConfig {
+  serverUrl?: string;
+  dataApi?: {
+    version?: string;
+  };
+  impersonate?: string;
+}
+
 interface SearchResult {
   users: ImpersonationUser[];
   hasMoreResults: boolean;
@@ -46,9 +54,55 @@ export class WebApiClient {
    */
   private initializeDynamicsWebApi(): void {
     try {
-      this.dwa = new DynamicsWebApi();
+      // Get configuration from Xrm context if available (for on-premises environments)
+      let serverUrl: string | undefined;
+      let apiVersion: string | undefined;
+
+      try {
+        if (typeof Xrm !== 'undefined' && Xrm.Utility?.getGlobalContext) {
+          const globalContext = Xrm.Utility.getGlobalContext();
+
+          // Get client URL and ensure it ends with '/' for proper URL construction
+          if (typeof globalContext.getClientUrl === 'function') {
+            const clientUrl = globalContext.getClientUrl();
+            serverUrl = clientUrl.endsWith('/') ? clientUrl : `${clientUrl}/`;
+          }
+
+          // Get Dynamics version for API configuration
+          if (typeof globalContext.getVersion === 'function') {
+            const version = globalContext.getVersion();
+            apiVersion = parseFloat(version).toString();
+          }
+        }
+      } catch (xrmError) {
+        // Xrm context may not be available yet, initialize without context-specific config
+        console.debug('Xrm context not available during DynamicsWebApi initialization:', xrmError);
+      }
+
+      // Build configuration object
+      const config: DynamicsWebApiConfig = {};
+
+      if (serverUrl) {
+        config.serverUrl = serverUrl;
+      }
+
+      if (apiVersion) {
+        config.dataApi = {
+          version: apiVersion,
+        };
+      }
+
+      // Set impersonate to undefined - will be configured by background script via headers
+      config.impersonate = undefined;
+
+      // Initialize DynamicsWebApi with proper configuration
+      this.dwa = new DynamicsWebApi(config);
       this.initialized = true;
-      console.log('DynamicsWebApi initialized successfully');
+
+      const configLog = serverUrl
+        ? `with serverUrl: ${serverUrl}${apiVersion ? `, version: ${apiVersion}` : ''}`
+        : 'without serverUrl (auto-detect)';
+      console.log('DynamicsWebApi initialized successfully', configLog);
     } catch (error) {
       console.warn('Failed to initialize dynamics-web-api, falling back to fetch:', error);
       this.initialized = false;
@@ -57,12 +111,51 @@ export class WebApiClient {
   }
 
   /**
-   * Ensure the client is initialized
+   * Ensure the client is initialized and properly configured
    */
   private async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
-      await this.initializeDynamicsWebApi();
+      this.initializeDynamicsWebApi();
     }
+
+    // If DynamicsWebApi is initialized but may not have been configured with context-specific settings
+    // (because Xrm context wasn't available during initialization), try to configure it now
+    if (this.initialized && this.dwa) {
+      try {
+        if (typeof Xrm !== 'undefined' && Xrm.Utility?.getGlobalContext) {
+          const globalContext = Xrm.Utility.getGlobalContext();
+
+          // Prepare configuration updates
+          const configUpdates: DynamicsWebApiConfig = {};
+
+          // Update serverUrl with trailing slash if available
+          if (typeof globalContext.getClientUrl === 'function') {
+            const clientUrl = globalContext.getClientUrl();
+            const serverUrl = clientUrl.endsWith('/') ? clientUrl : `${clientUrl}/`;
+            configUpdates.serverUrl = serverUrl;
+          }
+
+          // Update API version if available
+          if (typeof globalContext.getVersion === 'function') {
+            const version = globalContext.getVersion();
+            const apiVersion = parseFloat(version).toString();
+            configUpdates.dataApi = {
+              version: apiVersion,
+            };
+          }
+
+          // Apply configuration updates if we have any
+          if (Object.keys(configUpdates).length > 0) {
+            this.dwa.setConfig(configUpdates);
+            console.debug('Updated DynamicsWebApi configuration with Xrm context');
+          }
+        }
+      } catch (xrmError) {
+        // Xrm context still not available, continue with current configuration
+        console.debug('Xrm context not available for configuration update:', xrmError);
+      }
+    }
+
     if (!this.initialized) {
       throw new Error('WebAPI client is not initialized');
     }
