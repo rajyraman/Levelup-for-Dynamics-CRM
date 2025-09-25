@@ -2,7 +2,7 @@
 
 /// <reference types="xrm" />
 
-import { TableDialog } from './table-dialog';
+import { TableDialog, TableData } from './table-dialog';
 import { EntityMetadataCache } from '#types/global';
 
 export interface NavigationConfig {
@@ -360,12 +360,7 @@ export class DynamicsUtils {
   static createMuiPopup(config: {
     id: string;
     title: string;
-    tables: Array<{
-      title: string;
-      headers: string[];
-      rows: string[][];
-      description?: string;
-    }>;
+    tables: TableData[];
     layoutMode?: 'standard' | 'dual-pane' | 'compact';
     itemsPerPage?: number;
     showOpenInNewTab?: boolean;
