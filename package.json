@@ -1,6 +1,6 @@
 {
   "name": "level-up-vnext",
-  "version": "4.1.3",
+  "version": "4.1.4-beta.1",
   "description": "Microsoft Edge sidebar extension for Dynamics 365/Power Apps productivity tools",
   "main": "build/background.js",
   "type": "module",
