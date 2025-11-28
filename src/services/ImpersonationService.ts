@@ -234,21 +234,21 @@ export class ImpersonationService {
    */
   async stopImpersonation(environmentUrl: string): Promise<void> {
     console.log('🔍 [stopImpersonation] Called with URL:', environmentUrl, 'Type:', typeof environmentUrl);
-    
+
     // Extract hostname from environment URL
     let hostname: string;
     try {
       if (!environmentUrl) {
         throw new Error('Environment URL is undefined or empty');
       }
-      
+
       // Convert to string in case it's not
       const urlString = String(environmentUrl);
-      
+
       if (!/^https?:\/\//i.test(urlString)) {
         throw new Error(`URL does not start with http:// or https://: ${urlString}`);
       }
-      
+
       const urlObj = new URL(urlString);
       hostname = urlObj.hostname;
       console.log('✅ [stopImpersonation] Extracted hostname:', hostname);
@@ -361,21 +361,21 @@ export class ImpersonationService {
    */
   async resetImpersonation(environmentUrl: string): Promise<void> {
     console.log('🔍 [resetImpersonation] Called with URL:', environmentUrl, 'Type:', typeof environmentUrl);
-    
+
     // Extract hostname from environment URL
     let hostname: string;
     try {
       if (!environmentUrl) {
         throw new Error('Environment URL is undefined or empty');
       }
-      
+
       // Convert to string in case it's not
       const urlString = String(environmentUrl);
-      
+
       if (!/^https?:\/\//i.test(urlString)) {
         throw new Error(`URL does not start with http:// or https://: ${urlString}`);
       }
-      
+
       const urlObj = new URL(urlString);
       hostname = urlObj.hostname;
       console.log('✅ [resetImpersonation] Extracted hostname:', hostname);
