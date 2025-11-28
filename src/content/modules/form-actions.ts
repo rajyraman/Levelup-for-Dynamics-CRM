@@ -398,14 +398,14 @@ export class FormActions {
     const tables = optionsetData.map(control => {
       const rows = control.options
         ? control.options.map((option: OptionSetOption) => [
-            option.text || 'N/A',
-            option.value === null ||
+          option.text || 'N/A',
+          option.value === null ||
             option.value === undefined ||
             Number.isNaN(option.value) ||
             String(option.value) === 'NaN'
-              ? '-'
-              : String(option.value),
-          ])
+            ? '-'
+            : String(option.value),
+        ])
         : [];
 
       return {
@@ -559,6 +559,32 @@ export class FormActions {
         }
       });
 
+      const lookupSuffix = '@Microsoft.Dynamics.CRM.lookuplogicalname';
+      const recordData = record as unknown as Record<string, unknown>;
+      const orgUrl = DynamicsUtils.getOrganizationUrl();
+      const rowsByField = new Map(rows.map(row => [row[0], row]));
+
+      for (const [key, value] of Object.entries(recordData)) {
+        if (!key.endsWith(lookupSuffix)) {
+          continue;
+        }
+
+        const lookupFieldName = key.slice(0, -lookupSuffix.length);
+        const lookupEntityName = value as string | undefined;
+        const lookupId = recordData[lookupFieldName] as string | undefined;
+
+        if (!lookupEntityName || !lookupId || lookupId === 'null') {
+          continue;
+        }
+
+        const row = rowsByField.get(lookupFieldName);
+        if (!row) {
+          continue;
+        }
+
+        row[1] = `${row[1]} <a href="${orgUrl}/main.aspx?etn=${lookupEntityName}&id=${lookupId}&pagetype=entityrecord" target="_blank" style="color: #2563eb; text-decoration: none; margin-left: 8px; font-weight: 500;">🔗 Open Record</a>`;
+      }
+
       // Sort rows by field name (case-insensitive) for predictable ordering
       rows.sort((a, b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
 
@@ -571,6 +597,7 @@ export class FormActions {
             headers: ['Field Name', 'Field Value'],
             description: `${rows.length} field(s) returned via Web API for ${entityLogicalName}`,
             rows,
+            allowHtmlInColumns: [1], // Allow HTML in the Field Value column for hyperlinks
           },
         ],
         layoutMode: 'standard',
