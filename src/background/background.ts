@@ -109,9 +109,10 @@ messageService.registerHandler(
       | { user?: ImpersonationUser; tabId?: number; tabUrl?: string; openInWindow?: boolean }
       | undefined;
     const userData = payload?.user as ImpersonationUser | undefined;
-    // No longer support opening impersonation in a new window — start impersonation
-    // in the resolved target tab for simplicity.
-    // (Previously we had an `openInWindow` option; removed per request.)
+
+    if (!userData) {
+      throw new Error('No user provided for impersonation');
+    }
 
     // Prefer explicit payload.tabId, then sender.tab, then active tab
     let targetTabId = payload?.tabId ?? sender?.tab?.id;
@@ -122,24 +123,24 @@ messageService.registerHandler(
         const tab = await chrome.tabs.get(targetTabId);
         tabUrl = tab.url;
       } catch (e) {
-        // ignore
+        // Tab might be closed, will try active tab
+        targetTabId = undefined;
       }
     }
 
     if (!targetTabId || !tabUrl) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!currentTab?.id || !currentTab?.url) {
-        throw new Error('No active tab found');
+      try {
+        const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (currentTab?.id && currentTab?.url) {
+          targetTabId = currentTab.id;
+          tabUrl = currentTab.url;
+        }
+      } catch (e) {
+        // Ignore
       }
-      targetTabId = currentTab.id;
-      tabUrl = currentTab.url;
     }
 
-    if (!userData) {
-      throw new Error('No user provided for impersonation');
-    }
-
-    // Always start impersonation in the resolved target tab
+    // Start impersonation - it will validate the URL internally
     await impersonationService.startImpersonation(targetTabId, tabUrl, userData);
     return { success: true };
   }
@@ -148,18 +149,17 @@ messageService.registerHandler(
 messageService.registerHandler(
   'admin:stop-impersonation',
   async (data: unknown, sender?: chrome.runtime.MessageSender) => {
-    const payload = data as { tabId?: number } | undefined;
-    let targetTabId = payload?.tabId ?? sender?.tab?.id;
+    const payload = data as { tabUrl?: string } | undefined;
+    const environmentUrl = payload?.tabUrl ?? sender?.tab?.url;
 
-    if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!currentTab?.id) {
-        throw new Error('No active tab found');
-      }
-      targetTabId = currentTab.id;
+    console.log('🔍 [stop-impersonation] Received URL:', environmentUrl);
+
+    if (!environmentUrl) {
+      console.log('❌ [stop-impersonation] No environment URL provided');
+      throw new Error('Cannot determine environment to stop impersonation');
     }
 
-    await impersonationService.stopImpersonation(targetTabId);
+    await impersonationService.stopImpersonation(environmentUrl);
     return { success: true };
   }
 );
@@ -167,19 +167,17 @@ messageService.registerHandler(
 messageService.registerHandler(
   'admin:get-impersonation-status',
   async (data: unknown, sender?: chrome.runtime.MessageSender) => {
-    const payload = data as { tabId?: number } | undefined;
-    const targetTabId = payload?.tabId ?? sender?.tab?.id;
+    const payload = data as { tabUrl?: string } | undefined;
+    const environmentUrl = payload?.tabUrl ?? sender?.tab?.url;
 
-    if (targetTabId) {
-      return await impersonationService.getImpersonationStatus(targetTabId);
-    }
-
-    const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!currentTab?.id) {
+    if (!environmentUrl) {
+      console.log('❌ [get-impersonation-status] No environment URL provided');
       return null;
     }
 
-    return await impersonationService.getImpersonationStatus(currentTab.id);
+    const result = await impersonationService.getImpersonationStatus(environmentUrl);
+    console.log('🔍 [get-impersonation-status] Returning result:', result);
+    return result;
   }
 );
 
@@ -188,26 +186,48 @@ messageService.registerHandler('admin:force-cleanup-impersonation', async () => 
   return { success: true };
 });
 
+messageService.registerHandler(
+  'admin:reset-impersonation',
+  async (data: unknown, sender?: chrome.runtime.MessageSender) => {
+    const payload = data as { tabUrl?: string } | undefined;
+    const environmentUrl = payload?.tabUrl ?? sender?.tab?.url;
+
+    console.log('🔍 [reset-impersonation] Received URL:', environmentUrl);
+
+    if (!environmentUrl) {
+      console.log('❌ [reset-impersonation] No environment URL provided');
+      throw new Error('Cannot determine environment to reset impersonation');
+    }
+
+    await impersonationService.resetImpersonation(environmentUrl);
+    return { success: true };
+  }
+);
+
 console.log(
   `✅ [Background] Message service initialized with ${messageService.getStats().registeredHandlers} handlers`
 );
 
-chrome.runtime.onInstalled.addListener(async () => {
-  console.log('Level Up for Dynamics 365 extension installed');
-  await impersonationService.initializeOnStartup();
+chrome.runtime.onInstalled.addListener(async (details) => {
+  console.log('Level Up for Dynamics 365 extension installed', details.reason);
+
+  // Only clear on actual install or update, not on reload/development
+  if (details.reason === 'install' || details.reason === 'update') {
+    await impersonationService.initializeOnStartup();
+  } else {
+    console.log('Skipping impersonation cleanup for reason:', details.reason);
+  }
 });
 
-// Also initialize on startup
+// Only clear on browser startup (not extension reload)
 chrome.runtime.onStartup.addListener(async () => {
-  console.log('Level Up for Dynamics 365 extension startup');
+  console.log('Level Up for Dynamics 365 browser startup');
   await impersonationService.initializeOnStartup();
 });
 
-// Initialize immediately when service worker becomes active
-(async () => {
-  console.log('Level Up for Dynamics 365 service worker active');
-  await impersonationService.initializeOnStartup();
-})();
+// Service worker becomes active - just log, don't clear state
+// The constructor already calls initializeService() which reconstructs state
+console.log('Level Up for Dynamics 365 service worker active');
 
 // Handle extension icon click to open sidebar directly
 chrome.action.onClicked.addListener(async tab => {
@@ -328,6 +348,17 @@ chrome.tabs.onActivated.addListener(async (activeInfo: ChromeActiveInfo) => {
   try {
     const tab = await chrome.tabs.get(activeInfo.tabId);
     await updateSidePanelForTab(activeInfo.tabId, tab.url, { openIfDynamics: true });
+
+    // Update badge based on environment impersonation status
+    if (tab.url) {
+      try {
+        const urlObj = new URL(tab.url);
+        const status = await impersonationService.getImpersonationStatus(activeInfo.tabId);
+        // Badge will be updated by the impersonation service based on environment
+      } catch (e) {
+        // ignore invalid URLs
+      }
+    }
   } catch (error) {
     console.log('Could not access tab info:', error);
   }
@@ -365,83 +396,6 @@ chrome.runtime.onMessage.addListener(
     // All other messages are handled by MessageService
     if (message.type === 'LEVELUP_REQUEST') {
       // Handle impersonation actions
-      if (message.action === 'admin:start-impersonation' && message.data) {
-        const userData = message.data as { user: ImpersonationUser };
-
-        // Handle async operation properly
-        (async () => {
-          try {
-            const senderTabId = sender?.tab?.id;
-
-            if (senderTabId) {
-              // Try to get the tab URL for validation
-              let tabUrl: string | undefined;
-              try {
-                const tab = await chrome.tabs.get(senderTabId);
-                tabUrl = tab.url;
-              } catch (e) {
-                // ignore
-              }
-
-              await impersonationService.startImpersonation(senderTabId, tabUrl, userData.user);
-              sendResponse({ success: true });
-              return;
-            }
-
-            // Fallback to active tab
-            const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (!currentTab?.id || !currentTab?.url) {
-              throw new Error('No active tab found');
-            }
-
-            await impersonationService.startImpersonation(
-              currentTab.id,
-              currentTab.url,
-              userData.user
-            );
-            sendResponse({ success: true });
-          } catch (error) {
-            sendResponse({
-              success: false,
-              error: error instanceof Error ? error.message : 'Unknown error',
-            });
-          }
-        })();
-
-        return true; // Keep message channel open
-      }
-
-      if (message.action === 'admin:stop-impersonation') {
-        // Handle async operation properly
-        (async () => {
-          try {
-            const senderTabId = sender?.tab?.id;
-
-            if (senderTabId) {
-              await impersonationService.stopImpersonation(senderTabId);
-              sendResponse({ success: true });
-              return;
-            }
-
-            // Fallback to active tab
-            const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (!currentTab?.id) {
-              throw new Error('No active tab found');
-            }
-
-            await impersonationService.stopImpersonation(currentTab.id);
-            sendResponse({ success: true });
-          } catch (error) {
-            sendResponse({
-              success: false,
-              error: error instanceof Error ? error.message : 'Unknown error',
-            });
-          }
-        })();
-
-        return true; // Keep message channel open
-      }
-
       console.log(
         '🔍 [Background Listener] Other actions handled by MessageService, not forwarding'
       );
@@ -467,4 +421,4 @@ chrome.runtime.onMessage.addListener(message => {
   return false; // Don't keep the message channel open
 });
 
-export {};
+export { };

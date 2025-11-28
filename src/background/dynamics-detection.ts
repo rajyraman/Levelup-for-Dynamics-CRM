@@ -86,3 +86,37 @@ export async function detectDynamicsInTab(tabId: number): Promise<DynamicsDetect
     return { isDynamics: false, detectionMethod: 'failed' };
   }
 }
+
+/**
+ * Check if the Dynamics environment is on-premises or online
+ * Uses Xrm.Utility.getGlobalContext().isOnPremises() to determine
+ */
+export async function isOnPremisesEnvironment(tabId: number): Promise<boolean> {
+  try {
+    const results = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        try {
+          // Check if Xrm is available and has the isOnPremises method
+          if (typeof (window as any).Xrm !== 'undefined' &&
+            (window as any).Xrm?.Utility?.getGlobalContext &&
+            typeof (window as any).Xrm.Utility.getGlobalContext().isOnPremises === 'function') {
+            return (window as any).Xrm.Utility.getGlobalContext().isOnPremises();
+          }
+          return false; // Default to online if Xrm is not available
+        } catch (e) {
+          return false;
+        }
+      },
+    });
+
+    if (results && results[0] && typeof results[0].result === 'boolean') {
+      return results[0].result;
+    }
+
+    return false; // Default to online
+  } catch (error) {
+    console.error('❌ Error checking on-premises status:', error);
+    return false; // Default to online on error
+  }
+}

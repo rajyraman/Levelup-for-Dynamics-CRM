@@ -45,6 +45,7 @@ export interface UseImpersonationReturn {
   // Actions
   startImpersonation: (user: UserToImpersonate) => Promise<void>;
   stopImpersonation: () => Promise<void>;
+  resetImpersonation: () => Promise<void>;
   searchUsers: (query: string) => void;
   clearError: () => void;
   checkImpersonationStatus: (tabId?: number) => Promise<void>;
@@ -146,18 +147,24 @@ export const useImpersonation = (): UseImpersonationReturn => {
         }
 
         const response = await messageService.sendMessage('admin:get-impersonation-status', {
-          tabId: tab?.id,
           tabUrl: tab?.url,
         });
+
+        console.log('🔍 [useImpersonation] Received response:', response);
+        console.log('🔍 [useImpersonation] Response.data:', response.data);
+        console.log('🔍 [useImpersonation] Response.success:', response.success);
+        console.log('🔍 [useImpersonation] Condition check:', response.success && response.data);
 
         if (response.success && response.data) {
           setImpersonatedUser(response.data as UserToImpersonate);
           setIsImpersonating(true);
+          console.log('✅ [useImpersonation] Set impersonating to TRUE, user:', response.data);
         } else {
           // Covers cases where the message is sent successfully but logic fails,
           // or the user is simply not impersonating. No retry needed here.
           setIsImpersonating(false);
           setImpersonatedUser(null);
+          console.log('❌ [useImpersonation] Set impersonating to FALSE');
         }
         setIsCheckingStatus(false);
         return; // Success, exit the function
@@ -251,6 +258,8 @@ export const useImpersonation = (): UseImpersonationReturn => {
         setImpersonatedUser(null);
         setError('');
 
+        // Add a small delay to ensure the rule is fully removed before reload
+        await new Promise(resolve => setTimeout(resolve, 100));
         await reloadCurrentTab();
       } else {
         console.error('Failed to stop impersonation:', response.error);
@@ -260,6 +269,34 @@ export const useImpersonation = (): UseImpersonationReturn => {
       console.error('Error stopping impersonation:', error);
       setError(
         `Failed to stop impersonation: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }, [reloadCurrentTab]);
+
+  const resetImpersonation = useCallback(async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const response = await messageService.sendMessage('admin:reset-impersonation', {
+        tabId: tab?.id,
+        tabUrl: tab?.url,
+      });
+
+      if (response.success) {
+        setIsImpersonating(false);
+        setImpersonatedUser(null);
+        setError('');
+
+        // Add a small delay to ensure the rule is fully removed before reload
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await reloadCurrentTab();
+      } else {
+        console.error('Failed to reset impersonation:', response.error);
+        setError(response.error || 'Failed to reset impersonation');
+      }
+    } catch (error) {
+      console.error('Error resetting impersonation:', error);
+      setError(
+        `Failed to reset impersonation: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }, [reloadCurrentTab]);
@@ -397,6 +434,7 @@ export const useImpersonation = (): UseImpersonationReturn => {
     // Actions
     startImpersonation,
     stopImpersonation,
+    resetImpersonation,
     searchUsers,
     clearError,
     checkImpersonationStatus,

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Typography, Box, Chip, CircularProgress, Alert } from '@mui/material';
+import { Typography, Box, Chip, CircularProgress, Alert, Button, Tooltip } from '@mui/material';
+import { RestartAlt } from '@mui/icons-material';
 import { useImpersonation, UserToImpersonate } from '#hooks/useImpersonation';
 import PrivilegeWarning from './PrivilegeWarning';
 import ImpersonationStatusBanner from './ImpersonationStatusBanner';
@@ -23,6 +24,7 @@ const Impersonation = () => {
     error,
     startImpersonation,
     stopImpersonation,
+    resetImpersonation,
     searchUsers,
     clearError,
     retryPrivilegeCheck,
@@ -44,19 +46,38 @@ const Impersonation = () => {
           >
             Impersonation
           </Typography>
-          {(hasImpersonationPrivilege === null || isCheckingPrivilege) && (
-            <CircularProgress size={20} />
-          )}
-          {hasImpersonationPrivilege === false && <Chip label='No Access' color='error' />}
-          {hasImpersonationPrivilege === true && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {isCheckingStatus && <CircularProgress size={16} />}
-              <Chip
-                label={isImpersonating ? 'Active' : 'Inactive'}
-                color={isImpersonating ? 'success' : 'default'}
-              />
-            </Box>
-          )}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {(hasImpersonationPrivilege === null || isCheckingPrivilege) && (
+              <CircularProgress size={20} />
+            )}
+            {hasImpersonationPrivilege === false && <Chip label='No Access' color='error' />}
+            {hasImpersonationPrivilege === true && (
+              <>
+                {isCheckingStatus && <CircularProgress size={16} />}
+                <Chip
+                  label={isImpersonating ? 'Active' : 'Inactive'}
+                  color={isImpersonating ? 'success' : 'default'}
+                />
+                <Tooltip title='Reset impersonation headers if stuck' placement='top'>
+                  <Button
+                    size='small'
+                    variant='outlined'
+                    onClick={resetImpersonation}
+                    startIcon={<RestartAlt sx={{ fontSize: '1rem' }} />}
+                    sx={{
+                      textTransform: 'none',
+                      fontSize: '0.75rem',
+                      minWidth: 'auto',
+                      px: 1,
+                      py: 0.25,
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </Tooltip>
+              </>
+            )}
+          </Box>
         </Box>
 
         {/* Privilege Warning */}
@@ -73,7 +94,6 @@ const Impersonation = () => {
             <ImpersonationStatusBanner
               isImpersonating={isImpersonating}
               impersonatedUser={impersonatedUser}
-              onStopImpersonation={stopImpersonation}
             />
 
             {/* Error Alert */}

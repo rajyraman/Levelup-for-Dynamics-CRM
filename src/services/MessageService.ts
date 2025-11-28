@@ -116,9 +116,9 @@ export class MessageService {
         error: response?.error,
         dataLength:
           response?.data &&
-          typeof response.data === 'object' &&
-          'users' in response.data &&
-          Array.isArray((response.data as any).users)
+            typeof response.data === 'object' &&
+            'users' in response.data &&
+            Array.isArray((response.data as any).users)
             ? (response.data as any).users.length
             : 'N/A',
       });
@@ -233,7 +233,7 @@ export class MessageService {
           console.error('📨 [MessageService] Error processing queued message:', e);
           try {
             item.sendResponse({ success: false, error: 'Background failed to process message' });
-          } catch {}
+          } catch { }
         }
       }
     }
@@ -377,6 +377,8 @@ export class MessageService {
           console.log(`✅ [MessageService] Handled: ${message.action}`, {
             requestId: message.requestId,
             success: true,
+            hasData: !!result,
+            data: result,
           });
 
           sendResponse(response);

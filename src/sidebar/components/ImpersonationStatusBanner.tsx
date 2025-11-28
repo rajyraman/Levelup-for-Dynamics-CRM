@@ -1,17 +1,15 @@
 import React from 'react';
-import { Alert, Button, Avatar, Box, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { UserToImpersonate } from '#hooks/useImpersonation';
 
 interface ImpersonationStatusBannerProps {
   isImpersonating: boolean;
   impersonatedUser: UserToImpersonate | null;
-  onStopImpersonation: () => void;
 }
 
 const ImpersonationStatusBanner: React.FC<ImpersonationStatusBannerProps> = ({
   isImpersonating,
   impersonatedUser,
-  onStopImpersonation,
 }) => {
   if (!isImpersonating || !impersonatedUser) return null;
 
@@ -30,20 +28,6 @@ const ImpersonationStatusBanner: React.FC<ImpersonationStatusBannerProps> = ({
         px: 2,
         py: 1.5,
       }}
-      action={
-        <Button
-          size='small'
-          variant='outlined'
-          color='inherit'
-          onClick={onStopImpersonation}
-          sx={{
-            fontSize: '0.75rem',
-            textTransform: 'none',
-          }}
-        >
-          Stop
-        </Button>
-      }
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Box>
@@ -55,7 +39,7 @@ const ImpersonationStatusBanner: React.FC<ImpersonationStatusBannerProps> = ({
             variant='caption'
             sx={{ opacity: 0.85, color: 'text.secondary' }}
           >
-            Switching, suspending or refreshing tabs might stop impersonation.
+            This environment is impersonated. Use Reset if headers get stuck.
           </Typography>
           <Typography
             component='div'

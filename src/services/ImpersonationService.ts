@@ -1,16 +1,17 @@
 import { ImpersonationUser } from '#types/global';
+import { isOnPremisesEnvironment } from '#background/dynamics-detection';
 
-export interface TabImpersonation {
+export interface EnvironmentImpersonation {
   user: ImpersonationUser;
-  tabId: number;
   ruleId: number;
   hostname: string;
   createdAt: number;
+  isOnPremises: boolean;
 }
 
 export class ImpersonationService {
-  // Track by tab ID for session rules
-  private tabImpersonations: Map<number, TabImpersonation> = new Map();
+  // Track by environment URL (hostname) for dynamic rules
+  private environmentImpersonations: Map<string, EnvironmentImpersonation> = new Map();
   private nextRuleId = 1;
 
   constructor() {
@@ -19,9 +20,9 @@ export class ImpersonationService {
 
   private async initializeService(): Promise<void> {
     try {
-      // Rebuild in-memory state from any existing session rules so that
+      // Rebuild in-memory state from any existing dynamic rules so that
       // service worker restarts do not drop active impersonations.
-      await this.reconstructFromExistingSessionRules();
+      await this.reconstructFromExistingDynamicRules();
       console.log('✅ ImpersonationService initialized and state reconstructed');
     } catch (error) {
       console.error('Error initializing ImpersonationService:', error);
@@ -29,34 +30,32 @@ export class ImpersonationService {
   }
 
   /**
-   * Reconstruct in-memory tab impersonation map from existing session rules.
+   * Reconstruct in-memory environment impersonation map from existing dynamic rules.
    * This avoids destroying active impersonations when the background/service
    * worker is restarted.
    */
-  private async reconstructFromExistingSessionRules(): Promise<void> {
+  private async reconstructFromExistingDynamicRules(): Promise<void> {
     try {
-      this.tabImpersonations.clear();
+      this.environmentImpersonations.clear();
 
-      const sessionRules = await chrome.declarativeNetRequest.getSessionRules();
-      if (!sessionRules || sessionRules.length === 0) {
+      const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+      console.log('🔍 Reconstructing from', dynamicRules?.length || 0, 'dynamic rules');
+
+      if (!dynamicRules || dynamicRules.length === 0) {
         this.nextRuleId = 1;
+        console.log('✅ No dynamic rules found to reconstruct');
         return;
       }
 
       let maxId = 0;
+      let reconstructedCount = 0;
 
-      for (const rule of sessionRules) {
+      for (const rule of dynamicRules) {
         try {
           const id = rule.id || 0;
           if (id > maxId) {
             maxId = id;
           }
-
-          // Extract tabId from condition.tabIds if present
-          const tabId =
-            Array.isArray(rule.condition?.tabIds) && rule.condition.tabIds.length > 0
-              ? rule.condition.tabIds[0]
-              : undefined;
 
           // Extract hostname from urlFilter if it matches the expected pattern
           let hostname = '';
@@ -67,66 +66,83 @@ export class ImpersonationService {
             }
           }
 
-          // Extract CallerObjectId header value if present
-          let callerObjectId = '';
+          // Extract impersonation header (either CallerObjectId or MSCRMCalledId)
+          let userId = '';
+          let isOnPremises = false;
           const reqHeaders = (rule.action as any)?.requestHeaders as
             | Array<{ header?: string; value?: string }>
             | undefined;
           if (Array.isArray(reqHeaders) && reqHeaders.length > 0) {
-            const hdr = reqHeaders.find(
+            // Check for CallerObjectId (Online)
+            const callerObjectIdHdr = reqHeaders.find(
               h => h && h.header && h.header.toLowerCase() === 'callerobjectid'
             );
-            if (hdr && hdr.value) {
-              callerObjectId = hdr.value;
+            if (callerObjectIdHdr && callerObjectIdHdr.value) {
+              userId = callerObjectIdHdr.value;
+              isOnPremises = false;
+            } else {
+              // Check for MSCRMCalledId (On-Premises)
+              const mscrmCalledIdHdr = reqHeaders.find(
+                h => h && h.header && h.header.toLowerCase() === 'mscrmcalledid'
+              );
+              if (mscrmCalledIdHdr && mscrmCalledIdHdr.value) {
+                userId = mscrmCalledIdHdr.value;
+                isOnPremises = true;
+              }
             }
           }
 
-          if (tabId && callerObjectId) {
+          if (hostname && userId) {
             const impersonation = {
-              user: { azureactivedirectoryobjectid: callerObjectId, fullname: 'Unknown' } as any,
-              tabId,
+              user: {
+                azureactivedirectoryobjectid: isOnPremises ? '' : userId,
+                systemuserid: isOnPremises ? userId : '',
+                fullname: 'Unknown'
+              } as any,
               ruleId: id,
               hostname,
               createdAt: Date.now(),
-            } as TabImpersonation;
+              isOnPremises,
+            } as EnvironmentImpersonation;
 
-            this.tabImpersonations.set(tabId, impersonation);
+            this.environmentImpersonations.set(hostname, impersonation);
+            reconstructedCount++;
+            console.log('✅ Reconstructed impersonation for', hostname,
+              isOnPremises ? '(On-Premises) with MSCRMCalledId:' : '(Online) with CallerObjectId:',
+              userId);
+          } else {
+            console.warn('⚠️ Could not extract hostname/impersonation header from rule:', rule);
           }
         } catch (e) {
-          console.warn('Could not parse session rule during reconstruction:', e, rule);
+          console.warn('Could not parse dynamic rule during reconstruction:', e, rule);
         }
       }
 
       this.nextRuleId = maxId + 1;
       console.log(
         '🧩 Reconstructed',
-        this.tabImpersonations.size,
-        'impersonations, nextRuleId=',
+        reconstructedCount,
+        'impersonations from',
+        dynamicRules.length,
+        'rules, nextRuleId=',
         this.nextRuleId
       );
 
-      // Rebuild action badges for reconstructed impersonations
-      for (const [tabId, imp] of this.tabImpersonations.entries()) {
-        try {
-          const initials = this.computeInitials(imp.user.fullname || '');
-          await this.setActionBadgeForTab(tabId, initials, `Impersonating ${imp.user.fullname}`);
-        } catch (e) {
-          // ignore badge errors
-        }
-      }
+      // Update badges for all tabs with matching environments
+      await this.updateBadgesForAllTabs();
     } catch (error) {
-      console.error('Error reconstructing session rules:', error);
+      console.error('❌ Error reconstructing dynamic rules:', error);
       // Fallback to a safe default
-      this.tabImpersonations.clear();
+      this.environmentImpersonations.clear();
       this.nextRuleId = 1;
     }
   }
 
   /**
-   * Start impersonation for a specific tab
+   * Start impersonation for a specific environment URL
    */
   async startImpersonation(
-    tabId: number,
+    tabId: number | undefined,
     tabUrl: string | undefined,
     user: ImpersonationUser
   ): Promise<void> {
@@ -134,137 +150,185 @@ export class ImpersonationService {
       throw new Error('User does not have an Azure AD Object ID');
     }
 
-    if (!tabId) {
-      throw new Error('No tab id provided to start impersonation');
+    // If no tab info provided, try to get current active tab
+    if (!tabUrl && tabId) {
+      try {
+        const tab = await chrome.tabs.get(tabId);
+        tabUrl = tab.url;
+      } catch (e) {
+        // Tab might be closed or invalid
+      }
+    }
+
+    if (!tabUrl) {
+      try {
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (activeTab?.url) {
+          tabUrl = activeTab.url;
+        }
+      } catch (e) {
+        // Ignore
+      }
     }
 
     // Validate & parse URL safely (avoid crashes on chrome://, edge://, about:blank, undefined)
     let hostname: string;
     try {
       if (!tabUrl || !/^https?:\/\//i.test(tabUrl)) {
-        throw new Error('Impersonation only supported on Dynamics https pages');
+        throw new Error('Impersonation only supported on Dynamics https pages. Please open a Dynamics 365 environment first.');
       }
       const urlObj = new URL(tabUrl);
       hostname = urlObj.hostname;
     } catch (e) {
       console.warn('[ImpersonationService] Invalid tabUrl for impersonation:', tabUrl, e);
-      throw new Error('Cannot start impersonation on this tab');
+      throw new Error('Cannot start impersonation. Please ensure you are on a Dynamics 365 page.');
     }
 
-    // Stop any existing impersonation for this tab
-    await this.stopImpersonationForTab(tabId);
+    // Stop any existing impersonation for this environment
+    const existingImpersonation = this.environmentImpersonations.get(hostname);
+    if (existingImpersonation) {
+      // Only stop if it's for a different user
+      if (existingImpersonation.user.azureactivedirectoryobjectid !== user.azureactivedirectoryobjectid) {
+        console.log('🔄 Switching impersonation from', existingImpersonation.user.fullname, 'to', user.fullname);
+        await this.stopImpersonationForEnvironment(hostname);
+      } else {
+        console.log('⚠️ Impersonation already active for this user on this environment, skipping');
+        return;
+      }
+    }
+
+    // Check if this is an on-premises environment
+    const isOnPremises = tabId ? await isOnPremisesEnvironment(tabId) : false;
+    console.log('🔍 Environment type:', isOnPremises ? 'On-Premises' : 'Online');
 
     // Create new impersonation
     const ruleId = this.nextRuleId++;
 
-    const impersonation: TabImpersonation = {
+    const impersonation: EnvironmentImpersonation = {
       user,
-      tabId,
       hostname,
       ruleId,
       createdAt: Date.now(),
+      isOnPremises,
     };
 
     // Store in memory
-    this.tabImpersonations.set(tabId, impersonation);
+    this.environmentImpersonations.set(hostname, impersonation);
 
-    // Create Chrome session rule scoped to this tab
-    await this.createSessionRule(impersonation);
+    // Create Chrome dynamic rule for this environment
+    await this.createDynamicRule(impersonation);
 
-    // Set extension action badge (initials) for this tab
-    try {
-      const initials = this.computeInitials(user.fullname || '');
-      await this.setActionBadgeForTab(tabId, initials, `Impersonating ${user.fullname}`);
-    } catch (e) {
-      // ignore badge set errors
-    }
+    // Update badges for all tabs with this environment
+    await this.updateBadgesForEnvironment(hostname);
 
     console.log(
       '🎭 Impersonation started for user:',
       user.fullname,
-      'on tab:',
-      tabId,
-      'hostname:',
+      'on environment:',
       hostname
     );
   }
 
   /**
-   * Stop impersonation for current tab
+   * Stop impersonation for current environment
    */
-  async stopImpersonation(tabId?: number): Promise<void> {
-    // If tabId provided, use it; otherwise fall back to active tab
-    let targetTabId = tabId;
-    if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!currentTab?.id) {
-        throw new Error('No active tab found');
+  async stopImpersonation(environmentUrl: string): Promise<void> {
+    console.log('🔍 [stopImpersonation] Called with URL:', environmentUrl, 'Type:', typeof environmentUrl);
+    
+    // Extract hostname from environment URL
+    let hostname: string;
+    try {
+      if (!environmentUrl) {
+        throw new Error('Environment URL is undefined or empty');
       }
-      targetTabId = currentTab.id;
+      
+      // Convert to string in case it's not
+      const urlString = String(environmentUrl);
+      
+      if (!/^https?:\/\//i.test(urlString)) {
+        throw new Error(`URL does not start with http:// or https://: ${urlString}`);
+      }
+      
+      const urlObj = new URL(urlString);
+      hostname = urlObj.hostname;
+      console.log('✅ [stopImpersonation] Extracted hostname:', hostname);
+    } catch (e) {
+      console.error('❌ [stopImpersonation] URL validation failed:', e);
+      console.warn('[ImpersonationService] Invalid URL for stopping impersonation:', environmentUrl);
+      throw new Error(`Cannot stop impersonation - invalid environment URL: ${e instanceof Error ? e.message : String(e)}`);
     }
 
-    await this.stopImpersonationForTab(targetTabId);
-    // Clear extension badge for this tab
-    try {
-      await this.clearActionBadgeForTab(targetTabId);
-    } catch (e) {
-      // ignore
-    }
+    await this.stopImpersonationForEnvironment(hostname);
   }
 
   /**
-   * Get impersonation status for current tab
+   * Get impersonation status for current environment
    */
-  async getImpersonationStatus(tabId?: number): Promise<ImpersonationUser | null> {
-    // If tabId provided, use it; otherwise fall back to active tab
-    let targetTabId = tabId;
-    if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!currentTab?.id) {
+  async getImpersonationStatus(environmentUrl: string): Promise<ImpersonationUser | null> {
+    // Extract hostname from environment URL
+    let hostname: string;
+    try {
+      if (!environmentUrl || !/^https?:\/\//i.test(environmentUrl)) {
+        console.log('❌ [getImpersonationStatus] Invalid URL:', environmentUrl);
         return null;
       }
-      targetTabId = currentTab.id;
+      const urlObj = new URL(environmentUrl);
+      hostname = urlObj.hostname;
+    } catch (e) {
+      console.log('❌ [getImpersonationStatus] Failed to parse URL:', environmentUrl, e);
+      return null;
     }
 
-    const impersonation = this.tabImpersonations.get(targetTabId);
-    return impersonation ? impersonation.user : null;
-  }
+    const impersonation = this.environmentImpersonations.get(hostname);
+    console.log('🔍 [getImpersonationStatus] Checking hostname:', hostname, 'Found:', !!impersonation, 'Total envs:', this.environmentImpersonations.size);
+    console.log('🔍 [getImpersonationStatus] Returning user:', impersonation?.user);
 
-  /**
-   * Clean up impersonation when tab is closed
+    if (!impersonation) {
+      // Check if there's a dynamic rule but not in memory
+      const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+      console.log('🔍 [getImpersonationStatus] Dynamic rules exist:', dynamicRules.length);
+      if (dynamicRules.length > 0) {
+        console.warn('⚠️ [getImpersonationStatus] Dynamic rules exist but not in memory! Reconstructing...');
+        await this.reconstructFromExistingDynamicRules();
+        // Try again after reconstruction
+        const impersonationAfterReconstruct = this.environmentImpersonations.get(hostname);
+        return impersonationAfterReconstruct ? impersonationAfterReconstruct.user : null;
+      }
+    }
+
+    return impersonation ? impersonation.user : null;
+  }  /**
+   * Handle tab closed event - update badges but don't stop impersonation
+   * since it's environment-based and should persist
    */
   async handleTabClosed(tabId: number): Promise<void> {
-    const impersonation = this.tabImpersonations.get(tabId);
-    if (impersonation) {
-      await this.stopImpersonationForTab(tabId);
-      console.log('🗑️ [TAB_CLOSED] Cleaned up impersonation for tab:', tabId);
-    }
+    // With environment-based impersonation, we don't clean up when tabs close
+    // The impersonation persists for the environment URL
+    console.log('🗑️ [TAB_CLOSED] Tab closed:', tabId, '(impersonation persists for environment)');
   }
 
   /**
    * Get debug information about current impersonation state
    */
   async getDebugInfo(): Promise<any> {
-    const sessionRules = await chrome.declarativeNetRequest.getSessionRules();
     const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
 
     return {
-      tabImpersonations: Array.from(this.tabImpersonations.entries()),
-      sessionRules: sessionRules,
+      environmentImpersonations: Array.from(this.environmentImpersonations.entries()),
       dynamicRules: dynamicRules,
       nextRuleId: this.nextRuleId,
-      totalActiveRules: sessionRules.length + dynamicRules.length,
+      totalActiveRules: dynamicRules.length,
     };
   }
 
   /**
-   * Clean up on extension startup/install
+   * Clean up on extension startup/install - clears impersonation on browser restart
    */
   async initializeOnStartup(): Promise<void> {
     try {
-      // Clear existing session rules and memory - session rules may persist across browser restarts
-      await this.clearAllSessionRules();
-      this.tabImpersonations.clear();
+      // Clear existing dynamic rules and memory on browser restart
+      await this.clearAllDynamicRules();
+      this.environmentImpersonations.clear();
       // Reset rule ID counter to avoid conflicts with orphaned rules
       this.nextRuleId = 1;
 
@@ -279,44 +343,77 @@ export class ImpersonationService {
    */
   async forceCleanup(): Promise<void> {
     try {
-      await this.clearAllSessionRules();
-      this.tabImpersonations.clear();
+      await this.clearAllDynamicRules();
+      this.environmentImpersonations.clear();
       // Reset rule ID counter
       this.nextRuleId = 1;
+      // Clear all badges
+      await this.clearAllBadges();
       console.log('🧹 Force cleanup completed - all impersonation state cleared');
     } catch (error) {
       console.error('Error during force cleanup:', error);
     }
   }
 
-  private async stopImpersonationForTab(tabId: number): Promise<void> {
-    const impersonation = this.tabImpersonations.get(tabId);
+  /**
+   * Reset impersonation for a specific environment - removes headers but keeps rule structure
+   * Useful when headers get stuck
+   */
+  async resetImpersonation(environmentUrl: string): Promise<void> {
+    console.log('🔍 [resetImpersonation] Called with URL:', environmentUrl, 'Type:', typeof environmentUrl);
+    
+    // Extract hostname from environment URL
+    let hostname: string;
+    try {
+      if (!environmentUrl) {
+        throw new Error('Environment URL is undefined or empty');
+      }
+      
+      // Convert to string in case it's not
+      const urlString = String(environmentUrl);
+      
+      if (!/^https?:\/\//i.test(urlString)) {
+        throw new Error(`URL does not start with http:// or https://: ${urlString}`);
+      }
+      
+      const urlObj = new URL(urlString);
+      hostname = urlObj.hostname;
+      console.log('✅ [resetImpersonation] Extracted hostname:', hostname);
+    } catch (e) {
+      console.error('❌ [resetImpersonation] URL validation failed:', e);
+      console.warn('[ImpersonationService] Invalid URL for reset:', environmentUrl);
+      throw new Error(`Cannot reset impersonation - invalid environment URL: ${e instanceof Error ? e.message : String(e)}`);
+    }
+
+    // Stop impersonation for this environment
+    await this.stopImpersonationForEnvironment(hostname);
+    console.log('🔄 Reset impersonation for environment:', hostname);
+  }
+
+  private async stopImpersonationForEnvironment(hostname: string): Promise<void> {
+    const impersonation = this.environmentImpersonations.get(hostname);
 
     if (impersonation) {
       try {
-        // Remove Chrome session rule
-        await chrome.declarativeNetRequest.updateSessionRules({
+        // Remove Chrome dynamic rule
+        await chrome.declarativeNetRequest.updateDynamicRules({
           removeRuleIds: [impersonation.ruleId],
         });
-        console.log('🎭 Removed session rule:', impersonation.ruleId, 'for tab:', tabId);
+        console.log('🎭 Removed dynamic rule:', impersonation.ruleId, 'for environment:', hostname);
       } catch (error) {
-        console.error('Error removing session rule:', impersonation.ruleId, error);
+        console.error('Error removing dynamic rule:', impersonation.ruleId, error);
         // Still continue to clean up memory even if rule removal failed
       }
 
       // Remove from memory
-      this.tabImpersonations.delete(tabId);
+      this.environmentImpersonations.delete(hostname);
 
-      // Clear action badge for this tab
-      try {
-        await this.clearActionBadgeForTab(tabId);
-      } catch (e) {
-        // ignore
-      }
+      // Clear badges for all tabs with this environment
+      await this.clearBadgesForEnvironment(hostname);
 
-      console.log('🎭 Impersonation stopped for tab:', tabId);
+      console.log('🎭 Impersonation stopped for environment:', hostname);
     } else {
-      console.log('🎭 No impersonation found for tab:', tabId);
+      console.log('🎭 No impersonation found for environment:', hostname);
     }
   }
 
@@ -395,7 +492,15 @@ export class ImpersonationService {
     }
   }
 
-  private async createSessionRule(impersonation: TabImpersonation): Promise<void> {
+  private async createDynamicRule(impersonation: EnvironmentImpersonation): Promise<void> {
+    // Use appropriate header based on environment type
+    // Online: CallerObjectId with Azure AD Object ID
+    // On-Premises: MSCRMCalledId with System User ID
+    const headerName = impersonation.isOnPremises ? 'MSCRMCalledId' : 'CallerObjectId';
+    const headerValue = impersonation.isOnPremises
+      ? impersonation.user.systemuserid
+      : impersonation.user.azureactivedirectoryobjectid;
+
     const rule: chrome.declarativeNetRequest.Rule = {
       id: impersonation.ruleId,
       priority: 1,
@@ -404,99 +509,57 @@ export class ImpersonationService {
         requestHeaders: [
           {
             operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-            header: 'CallerObjectId',
-            value: impersonation.user.azureactivedirectoryobjectid,
+            header: headerName,
+            value: headerValue,
           },
         ],
       },
       condition: {
-        tabIds: [impersonation.tabId], // Scope rule to specific tab
         urlFilter: `https://${impersonation.hostname}/api/data/v*`,
         resourceTypes: [
           chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
-          chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
           chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
-        ],
+          chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
+        ]
       },
     };
 
-    await chrome.declarativeNetRequest.updateSessionRules({
+    await chrome.declarativeNetRequest.updateDynamicRules({
       addRules: [rule],
     });
 
-    console.log('📝 Created session rule:', rule.id, 'for tab:', impersonation.tabId);
+    console.log('📝 Created dynamic rule:', rule.id, 'for', impersonation.isOnPremises ? 'On-Premises' : 'Online', 'environment:', impersonation.hostname, 'using', headerName);
   }
 
-  private async clearAllSessionRules(): Promise<void> {
+  private async clearAllDynamicRules(): Promise<void> {
     try {
-      // Snapshot current in-memory impersonations so we can clear badges
-      const impersonatedTabIds = Array.from(this.tabImpersonations.keys());
-
-      const existingRules = await chrome.declarativeNetRequest.getSessionRules();
+      const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
       if (existingRules.length > 0) {
         const existingRuleIds = existingRules.map(rule => rule.id);
-        await chrome.declarativeNetRequest.updateSessionRules({
+        await chrome.declarativeNetRequest.updateDynamicRules({
           removeRuleIds: existingRuleIds,
         });
         console.log(
           '🧹 Cleared',
           existingRuleIds.length,
-          'existing session rules:',
+          'existing dynamic rules:',
           existingRuleIds
         );
-
-        // Also clear any dynamic rules that might be lingering (fallback cleanup)
-        try {
-          const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
-          if (dynamicRules.length > 0) {
-            const dynamicRuleIds = dynamicRules.map(rule => rule.id);
-            await chrome.declarativeNetRequest.updateDynamicRules({
-              removeRuleIds: dynamicRuleIds,
-            });
-            console.log('🧹 Also cleared', dynamicRuleIds.length, 'dynamic rules:', dynamicRuleIds);
-          }
-        } catch (dynamicError) {
-          console.warn('Could not clear dynamic rules:', dynamicError);
-        }
       } else {
-        console.log('✅ No existing session rules to clear');
+        console.log('✅ No existing dynamic rules to clear');
       }
 
-      // Clear in-memory impersonations and badges to keep UI in sync
-      try {
-        for (const tabId of impersonatedTabIds) {
-          try {
-            await this.clearActionBadgeForTab(tabId);
-          } catch (e) {
-            // ignore individual badge clear errors
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
+      // Clear all badges
+      await this.clearAllBadges();
 
-      this.tabImpersonations.clear();
+      this.environmentImpersonations.clear();
       this.nextRuleId = 1;
     } catch (error) {
-      console.error('Error clearing session rules:', error);
+      console.error('Error clearing dynamic rules:', error);
       // If there's an error, try to clear them individually
       try {
-        // Get rules again and try to clear them one by one
-        const rules = await chrome.declarativeNetRequest.getSessionRules();
+        const rules = await chrome.declarativeNetRequest.getDynamicRules();
         for (const rule of rules) {
-          try {
-            await chrome.declarativeNetRequest.updateSessionRules({
-              removeRuleIds: [rule.id],
-            });
-            console.log('🧹 Individually cleared session rule:', rule.id);
-          } catch (individualError) {
-            console.warn('Could not clear session rule:', rule.id, individualError);
-          }
-        }
-
-        // Also try to clear dynamic rules individually
-        const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
-        for (const rule of dynamicRules) {
           try {
             await chrome.declarativeNetRequest.updateDynamicRules({
               removeRuleIds: [rule.id],
@@ -510,19 +573,112 @@ export class ImpersonationService {
         console.error('Fallback cleanup also failed:', fallbackError);
       }
       // Ensure in-memory state is cleared in case of failure
-      try {
-        for (const [tabId] of this.tabImpersonations.entries()) {
+      await this.clearAllBadges();
+      this.environmentImpersonations.clear();
+      this.nextRuleId = 1;
+    }
+  }
+
+  /**
+   * Update badges for all tabs that match a specific environment
+   */
+  private async updateBadgesForEnvironment(hostname: string): Promise<void> {
+    const impersonation = this.environmentImpersonations.get(hostname);
+    if (!impersonation) return;
+
+    const initials = this.computeInitials(impersonation.user.fullname || '');
+    const title = `Impersonating ${impersonation.user.fullname}`;
+
+    try {
+      const tabs = await chrome.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id && tab.url) {
           try {
-            await this.clearActionBadgeForTab(tabId);
+            const tabUrl = new URL(tab.url);
+            if (tabUrl.hostname === hostname) {
+              await this.setActionBadgeForTab(tab.id, initials, title);
+            }
           } catch (e) {
-            // ignore
+            // ignore invalid URLs
           }
         }
-      } catch (e) {
-        // ignore
       }
-      this.tabImpersonations.clear();
-      this.nextRuleId = 1;
+    } catch (e) {
+      console.error('Error updating badges for environment:', e);
+    }
+  }
+
+  /**
+   * Update badges for all tabs based on their environments
+   */
+  private async updateBadgesForAllTabs(): Promise<void> {
+    try {
+      const tabs = await chrome.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id && tab.url) {
+          try {
+            const tabUrl = new URL(tab.url);
+            const impersonation = this.environmentImpersonations.get(tabUrl.hostname);
+            if (impersonation) {
+              const initials = this.computeInitials(impersonation.user.fullname || '');
+              await this.setActionBadgeForTab(
+                tab.id,
+                initials,
+                `Impersonating ${impersonation.user.fullname}`
+              );
+            } else {
+              await this.clearActionBadgeForTab(tab.id);
+            }
+          } catch (e) {
+            // ignore invalid URLs
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error updating badges for all tabs:', e);
+    }
+  }
+
+  /**
+   * Clear badges for all tabs that match a specific environment
+   */
+  private async clearBadgesForEnvironment(hostname: string): Promise<void> {
+    try {
+      const tabs = await chrome.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id && tab.url) {
+          try {
+            const tabUrl = new URL(tab.url);
+            if (tabUrl.hostname === hostname) {
+              await this.clearActionBadgeForTab(tab.id);
+            }
+          } catch (e) {
+            // ignore invalid URLs
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error clearing badges for environment:', e);
+    }
+  }
+
+  /**
+   * Clear all badges for all tabs
+   */
+  private async clearAllBadges(): Promise<void> {
+    try {
+      const tabs = await chrome.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id) {
+          try {
+            await this.clearActionBadgeForTab(tab.id);
+          } catch (e) {
+            // ignore individual badge clear errors
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
     }
   }
 }

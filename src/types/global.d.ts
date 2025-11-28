@@ -10,9 +10,9 @@ export type ExtensionDisplayMode = 'default' | 'simple';
 
 // Extend Window interface for content script loading flag
 declare global {
-  interface Window {
-    __levelUpContentScriptLoaded?: boolean;
-  }
+    interface Window {
+        __levelUpContentScriptLoaded?: boolean;
+    }
 }
 
 // Define grouped action types
@@ -61,7 +61,8 @@ export type AdminActionName =
     | 'start-impersonation'
     | 'stop-impersonation'
     | 'get-impersonation-status'
-    | 'force-cleanup-impersonation';
+    | 'force-cleanup-impersonation'
+    | 'reset-impersonation';
 
 export type DebuggingActionName =
     | 'forms-monitor'
