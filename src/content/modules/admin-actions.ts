@@ -225,8 +225,8 @@ export class AdminActions {
    */
   static startImpersonation(user: ImpersonationUser): boolean {
     try {
-      if (!user.azureactivedirectoryobjectid) {
-        throw new Error('User does not have an Azure AD Object ID');
+      if (!user.azureactivedirectoryobjectid && !user.systemuserid) {
+        throw new Error('User does not have AzureActiveDirectoryObjectId or SystemUserId');
       }
 
       currentImpersonationUser = user;

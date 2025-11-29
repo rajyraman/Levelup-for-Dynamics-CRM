@@ -81,6 +81,16 @@ class ContentScript {
   }
 
   private async isDynamics365Page(): Promise<boolean> {
+    // Check immediately first
+    if (this.checkDynamicsIndicators()) {
+      return true;
+    }
+
+    // If not found immediately, wait and observe
+    return this.waitForDynamics();
+  }
+
+  private checkDynamicsIndicators(): boolean {
     // Method 1: Check for Xrm.Utility.getGlobalContext()
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,6 +125,52 @@ class ContentScript {
     }
 
     return false;
+  }
+
+  private waitForDynamics(): Promise<boolean> {
+    return new Promise(resolve => {
+      // Set a timeout to stop checking
+      const timeoutId = setTimeout(() => {
+        observer.disconnect();
+        clearInterval(intervalId);
+        resolve(false);
+      }, 10000); // 10 seconds timeout
+
+      // Polling fallback (every 500ms)
+      const intervalId = setInterval(() => {
+        if (this.checkDynamicsIndicators()) {
+          cleanup();
+          resolve(true);
+        }
+      }, 500);
+
+      // MutationObserver to watch for added scripts
+      const observer = new MutationObserver(mutations => {
+        let shouldCheck = false;
+        for (const mutation of mutations) {
+          if (mutation.addedNodes.length > 0) {
+            shouldCheck = true;
+            break;
+          }
+        }
+
+        if (shouldCheck && this.checkDynamicsIndicators()) {
+          cleanup();
+          resolve(true);
+        }
+      });
+
+      observer.observe(document, {
+        childList: true,
+        subtree: true,
+      });
+
+      const cleanup = () => {
+        clearTimeout(timeoutId);
+        clearInterval(intervalId);
+        observer.disconnect();
+      };
+    });
   }
 
   private injectScript(): void {

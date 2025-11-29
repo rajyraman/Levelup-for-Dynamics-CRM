@@ -205,9 +205,9 @@ export const useImpersonation = (): UseImpersonationReturn => {
 
   const startImpersonation = useCallback(
     async (user: UserToImpersonate) => {
-      if (!user.azureactivedirectoryobjectid) {
+      if (!user.azureactivedirectoryobjectid && !user.systemuserid) {
         setError(
-          `Selected user does not have a valid Azure AD Object ID. Available properties: ${Object.keys(
+          `Selected user does not have a valid AzureActiveDirectoryObjectId or SystemUserId. Available properties: ${Object.keys(
             user
           ).join(', ')}`
         );

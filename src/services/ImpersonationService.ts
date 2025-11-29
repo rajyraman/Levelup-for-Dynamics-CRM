@@ -146,8 +146,8 @@ export class ImpersonationService {
     tabUrl: string | undefined,
     user: ImpersonationUser
   ): Promise<void> {
-    if (!user.azureactivedirectoryobjectid) {
-      throw new Error('User does not have an Azure AD Object ID');
+    if (!user.azureactivedirectoryobjectid && !user.systemuserid) {
+      throw new Error('User does not have AzureActiveDirectoryObjectId or SystemUserId');
     }
 
     // If no tab info provided, try to get current active tab
