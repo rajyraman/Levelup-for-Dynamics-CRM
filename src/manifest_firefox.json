@@ -3,7 +3,8 @@
     "activeTab",
     "scripting",
     "storage",
-    "menus"
+    "menus",
+    "declarativeNetRequest"
   ],
   "background": {
     "scripts": [

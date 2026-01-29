@@ -1,4 +1,5 @@
 import { ImpersonationUser } from '#types/global';
+import { ChromeAdapter, FirefoxAdapter } from '../background/adapters';
 
 export interface TabImpersonation {
   user: ImpersonationUser;
@@ -13,7 +14,7 @@ export class ImpersonationService {
   private tabImpersonations: Map<number, TabImpersonation> = new Map();
   private nextRuleId = 1;
 
-  constructor() {
+  constructor(private adapter: FirefoxAdapter | ChromeAdapter) {
     this.initializeService();
   }
 
@@ -37,7 +38,7 @@ export class ImpersonationService {
     try {
       this.tabImpersonations.clear();
 
-      const sessionRules = await chrome.declarativeNetRequest.getSessionRules();
+      const sessionRules = await this.adapter.declarativeNetRequest.getSessionRules();
       if (!sessionRules || sessionRules.length === 0) {
         this.nextRuleId = 1;
         return;
@@ -168,7 +169,7 @@ export class ImpersonationService {
     // Store in memory
     this.tabImpersonations.set(tabId, impersonation);
 
-    // Create Chrome session rule scoped to this tab
+    // Create session rule scoped to this tab
     await this.createSessionRule(impersonation);
 
     // Set extension action badge (initials) for this tab
@@ -196,7 +197,7 @@ export class ImpersonationService {
     // If tabId provided, use it; otherwise fall back to active tab
     let targetTabId = tabId;
     if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [currentTab] = await this.adapter.tabs.query({ active: true, currentWindow: true });
       if (!currentTab?.id) {
         throw new Error('No active tab found');
       }
@@ -219,7 +220,7 @@ export class ImpersonationService {
     // If tabId provided, use it; otherwise fall back to active tab
     let targetTabId = tabId;
     if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [currentTab] = await this.adapter.tabs.query({ active: true, currentWindow: true });
       if (!currentTab?.id) {
         return null;
       }
@@ -245,8 +246,8 @@ export class ImpersonationService {
    * Get debug information about current impersonation state
    */
   async getDebugInfo(): Promise<any> {
-    const sessionRules = await chrome.declarativeNetRequest.getSessionRules();
-    const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+    const sessionRules = await this.adapter.declarativeNetRequest.getSessionRules();
+    const dynamicRules = await this.adapter.declarativeNetRequest.getDynamicRules();
 
     return {
       tabImpersonations: Array.from(this.tabImpersonations.entries()),
@@ -294,8 +295,8 @@ export class ImpersonationService {
 
     if (impersonation) {
       try {
-        // Remove Chrome session rule
-        await chrome.declarativeNetRequest.updateSessionRules({
+        // Remove session rule
+        await this.adapter.declarativeNetRequest.updateSessionRules({
           removeRuleIds: [impersonation.ruleId],
         });
         console.log('🎭 Removed session rule:', impersonation.ruleId, 'for tab:', tabId);
@@ -349,25 +350,23 @@ export class ImpersonationService {
       // Set badge text for the specific tab (if supported)
       const badgeText = text && String(text).trim().length > 0 ? String(text).slice(0, 4) : 'IM';
       try {
-        chrome.action.setBadgeText({ text: badgeText, tabId });
-        chrome.action.setBadgeBackgroundColor({ color: '#1976d2', tabId });
+        this.adapter.action.setBadgeText({ text: badgeText, tabId });
+        this.adapter.action.setBadgeBackgroundColor({ color: '#1976d2', tabId });
         if (title) {
-          chrome.action.setTitle({ title, tabId });
+          this.adapter.action.setTitle({ title, tabId });
         }
       } catch (perTabErr) {
-        // Some browsers may not support tab-scoped badge APIs; ignore and fallback
-      }
-
-      // Also set a global badge as a visible fallback for browsers that do
-      // not render tab-scoped badges prominently.
-      try {
-        chrome.action.setBadgeText({ text: badgeText });
-        chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
-        if (title) {
-          chrome.action.setTitle({ title });
+        // Firefox may not support tab-scoped badges, fall back to global
+        try {
+          this.adapter.action.setBadgeText({ text: badgeText });
+          this.adapter.action.setBadgeBackgroundColor({ color: '#1976d2' });
+          if (title) {
+            this.adapter.action.setTitle({ title });
+          }
+        } catch (globalErr) {
+          // Firefox may not support action API at all, ignore
+          console.log('Badge setting not supported:', globalErr);
         }
-      } catch (globalErr) {
-        // ignore global badge set errors
       }
     } catch (e) {
       // ignore if API isn't available
@@ -378,15 +377,15 @@ export class ImpersonationService {
     try {
       // Clear both tab-scoped and global badges to ensure visibility cleared
       try {
-        chrome.action.setBadgeText({ text: '', tabId });
-        chrome.action.setTitle({ title: 'Level Up', tabId });
+        this.adapter.action.setBadgeText({ text: '', tabId });
+        this.adapter.action.setTitle({ title: 'Level Up', tabId });
       } catch (perTabErr) {
         // ignore
       }
 
       try {
-        chrome.action.setBadgeText({ text: '' });
-        chrome.action.setTitle({ title: 'Level Up' });
+        this.adapter.action.setBadgeText({ text: '' });
+        this.adapter.action.setTitle({ title: 'Level Up' });
       } catch (globalErr) {
         // ignore
       }
@@ -396,14 +395,14 @@ export class ImpersonationService {
   }
 
   private async createSessionRule(impersonation: TabImpersonation): Promise<void> {
-    const rule: chrome.declarativeNetRequest.Rule = {
+    const rule = {
       id: impersonation.ruleId,
       priority: 1,
       action: {
-        type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+        type: 'modifyHeaders',
         requestHeaders: [
           {
-            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+            operation: 'set',
             header: 'CallerObjectId',
             value: impersonation.user.azureactivedirectoryobjectid,
           },
@@ -412,15 +411,12 @@ export class ImpersonationService {
       condition: {
         tabIds: [impersonation.tabId], // Scope rule to specific tab
         urlFilter: `https://${impersonation.hostname}/api/data/v*`,
-        resourceTypes: [
-          chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
-          chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
-          chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
-        ],
+        resourceTypes: ['xmlhttprequest', 'main_frame', 'sub_frame'],
       },
     };
 
-    await chrome.declarativeNetRequest.updateSessionRules({
+    await this.adapter.declarativeNetRequest.updateSessionRules({
+      //@ts-ignore Chrome types are too strict
       addRules: [rule],
     });
 
@@ -432,10 +428,10 @@ export class ImpersonationService {
       // Snapshot current in-memory impersonations so we can clear badges
       const impersonatedTabIds = Array.from(this.tabImpersonations.keys());
 
-      const existingRules = await chrome.declarativeNetRequest.getSessionRules();
+      const existingRules = await this.adapter.declarativeNetRequest.getSessionRules();
       if (existingRules.length > 0) {
         const existingRuleIds = existingRules.map(rule => rule.id);
-        await chrome.declarativeNetRequest.updateSessionRules({
+        await this.adapter.declarativeNetRequest.updateSessionRules({
           removeRuleIds: existingRuleIds,
         });
         console.log(
@@ -447,10 +443,10 @@ export class ImpersonationService {
 
         // Also clear any dynamic rules that might be lingering (fallback cleanup)
         try {
-          const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+          const dynamicRules = await this.adapter.declarativeNetRequest.getDynamicRules();
           if (dynamicRules.length > 0) {
             const dynamicRuleIds = dynamicRules.map(rule => rule.id);
-            await chrome.declarativeNetRequest.updateDynamicRules({
+            await this.adapter.declarativeNetRequest.updateDynamicRules({
               removeRuleIds: dynamicRuleIds,
             });
             console.log('🧹 Also cleared', dynamicRuleIds.length, 'dynamic rules:', dynamicRuleIds);
@@ -482,23 +478,22 @@ export class ImpersonationService {
       // If there's an error, try to clear them individually
       try {
         // Get rules again and try to clear them one by one
-        const rules = await chrome.declarativeNetRequest.getSessionRules();
+        const rules = await this.adapter.declarativeNetRequest.getSessionRules();
         for (const rule of rules) {
           try {
-            await chrome.declarativeNetRequest.updateSessionRules({
+            await this.adapter.declarativeNetRequest.updateSessionRules({
               removeRuleIds: [rule.id],
             });
-            console.log('🧹 Individually cleared session rule:', rule.id);
           } catch (individualError) {
             console.warn('Could not clear session rule:', rule.id, individualError);
           }
         }
 
         // Also try to clear dynamic rules individually
-        const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+        const dynamicRules = await this.adapter.declarativeNetRequest.getDynamicRules();
         for (const rule of dynamicRules) {
           try {
-            await chrome.declarativeNetRequest.updateDynamicRules({
+            await this.adapter.declarativeNetRequest.updateDynamicRules({
               removeRuleIds: [rule.id],
             });
             console.log('🧹 Individually cleared dynamic rule:', rule.id);
@@ -526,6 +521,3 @@ export class ImpersonationService {
     }
   }
 }
-
-// Singleton instance
-export const impersonationService = new ImpersonationService();

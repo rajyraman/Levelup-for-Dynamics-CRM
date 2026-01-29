@@ -2,11 +2,11 @@ import { BrowserAdapter } from '.';
 
 export class FirefoxAdapter implements BrowserAdapter {
   name = 'Firefox';
-
   scripting = browser.scripting;
   runtime = browser.runtime;
   tabs = browser.tabs;
   action = browser.action;
+  declarativeNetRequest = browser.declarativeNetRequest;
 
   async openSidebar(): Promise<void> {
     // Firefox sidebar is global, doesn't need tabId
@@ -39,7 +39,7 @@ export class FirefoxAdapter implements BrowserAdapter {
     try {
       const results = await this.scripting.executeScript({
         target: { tabId },
-        //@ts-ignore
+        //@ts-ignore Firefox types only accept void return type
         func: () => {
           return !!window.__levelUpContentScriptLoaded;
         },

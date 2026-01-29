@@ -2,11 +2,11 @@ import { BrowserAdapter } from '.';
 
 export class ChromeAdapter implements BrowserAdapter {
   name = 'Chrome';
-
   scripting = chrome.scripting;
   runtime = chrome.runtime;
   tabs = chrome.tabs;
   action = chrome.action;
+  declarativeNetRequest = chrome.declarativeNetRequest;
 
   async openSidebar(tabId?: number): Promise<void> {
     if (!tabId) {

@@ -8,12 +8,15 @@ import {
 } from '#types/global';
 import { ActionHandlerRegistry } from '#services/ActionHandlerRegistry';
 import { messageService } from '#services/MessageService';
-import { impersonationService } from '#services/ImpersonationService';
+import { ImpersonationService } from '#services/ImpersonationService';
 import { FirefoxAdapter, ChromeAdapter } from './adapters';
 
 // Browser detection and adapter selection
 const isFirefox = typeof browser !== 'undefined';
 const adapter = isFirefox ? new FirefoxAdapter() : new ChromeAdapter();
+
+// Initialize impersonation service with adapter
+export const impersonationService = new ImpersonationService(adapter);
 
 // Initialize message service and handlers
 console.log('🚀 [Background] Starting background script...');
