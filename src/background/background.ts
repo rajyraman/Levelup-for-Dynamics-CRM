@@ -11,12 +11,43 @@ import { ActionHandlerRegistry } from '#services/ActionHandlerRegistry';
 import { messageService } from '#services/MessageService';
 import { impersonationService } from '#services/ImpersonationService';
 
+// Browser detection for Firefox vs Chrome compatibility
+// Firefox provides the 'browser' global, Chrome provides 'chrome'
+declare const browser: typeof chrome | undefined;
+
+type Chrome = typeof chrome;
+// Extend Chrome types to include Firefox-specific APIs
+interface FirefoxChrome extends Chrome {
+  sidebarAction?: {
+    open(): Promise<void>;
+    close(): Promise<void>;
+    isOpen(): Promise<boolean>;
+    setTitle(details: { title: string }): Promise<void>;
+    setIcon(details: { path: string | Record<string, string> }): Promise<void>;
+    setPanel(details: { panel: string }): Promise<void>;
+  };
+  menus?: {
+    removeAll(callback?: () => void): void;
+    create(createProperties: chrome.contextMenus.CreateProperties): void;
+    onClicked: {
+      addListener(
+        callback: (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => void
+      ): void;
+    };
+  };
+}
+
+const isFirefox = typeof browser !== 'undefined';
+
+// Use appropriate API namespace with proper typing
+const chromeOrBrowser = isFirefox ? (browser as FirefoxChrome) : (chrome as FirefoxChrome);
+
 /**
  * Check if content script is already loaded in a tab
  */
 async function checkContentScriptLoaded(tabId: number): Promise<boolean> {
   try {
-    const results = await chrome.scripting.executeScript({
+    const results = await chromeOrBrowser.scripting.executeScript({
       target: { tabId },
       func: () => {
         return !!window.__levelUpContentScriptLoaded;
@@ -34,7 +65,7 @@ async function checkContentScriptLoaded(tabId: number): Promise<boolean> {
  */
 async function isDynamics365Page(tabId: number): Promise<boolean> {
   try {
-    const results = await chrome.scripting.executeScript({
+    const results = await chromeOrBrowser.scripting.executeScript({
       target: { tabId },
       func: () => {
         // Method 1: Check for Xrm.Utility.getGlobalContext()
@@ -119,7 +150,7 @@ messageService.registerHandler(
 
     if (targetTabId && !tabUrl) {
       try {
-        const tab = await chrome.tabs.get(targetTabId);
+        const tab = await chromeOrBrowser.tabs.get(targetTabId);
         tabUrl = tab.url;
       } catch (e) {
         // ignore
@@ -127,7 +158,7 @@ messageService.registerHandler(
     }
 
     if (!targetTabId || !tabUrl) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [currentTab] = await chromeOrBrowser.tabs.query({ active: true, currentWindow: true });
       if (!currentTab?.id || !currentTab?.url) {
         throw new Error('No active tab found');
       }
@@ -152,7 +183,7 @@ messageService.registerHandler(
     let targetTabId = payload?.tabId ?? sender?.tab?.id;
 
     if (!targetTabId) {
-      const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [currentTab] = await chromeOrBrowser.tabs.query({ active: true, currentWindow: true });
       if (!currentTab?.id) {
         throw new Error('No active tab found');
       }
@@ -174,7 +205,7 @@ messageService.registerHandler(
       return await impersonationService.getImpersonationStatus(targetTabId);
     }
 
-    const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [currentTab] = await chromeOrBrowser.tabs.query({ active: true, currentWindow: true });
     if (!currentTab?.id) {
       return null;
     }
@@ -192,13 +223,13 @@ console.log(
   `✅ [Background] Message service initialized with ${messageService.getStats().registeredHandlers} handlers`
 );
 
-chrome.runtime.onInstalled.addListener(async () => {
+chromeOrBrowser.runtime.onInstalled.addListener(async () => {
   console.log('Level Up for Dynamics 365 extension installed');
   await impersonationService.initializeOnStartup();
 });
 
 // Also initialize on startup
-chrome.runtime.onStartup.addListener(async () => {
+chromeOrBrowser.runtime.onStartup.addListener(async () => {
   console.log('Level Up for Dynamics 365 extension startup');
   await impersonationService.initializeOnStartup();
 });
@@ -210,11 +241,18 @@ chrome.runtime.onStartup.addListener(async () => {
 })();
 
 // Handle extension icon click to open sidebar directly
-chrome.action.onClicked.addListener(async tab => {
+chromeOrBrowser.action.onClicked.addListener(async tab => {
   if (tab.id) {
     try {
-      await chrome.sidePanel.open({ tabId: tab.id });
-      console.log('🎯 [Action] Opened sidebar via extension icon click');
+      if (isFirefox) {
+        // Firefox uses sidebarAction API
+        await chromeOrBrowser.sidebarAction?.open();
+        console.log('🎯 [Action] Opened Firefox sidebar via extension icon click');
+      } else {
+        // Chrome uses sidePanel API
+        await chromeOrBrowser.sidePanel.open({ tabId: tab.id });
+        console.log('🎯 [Action] Opened Chrome side panel via extension icon click');
+      }
     } catch (error) {
       console.log('🎯 [Action] Failed to open sidebar:', error);
     }
@@ -225,20 +263,31 @@ console.log('🎯 [Background] Extension icon click will open sidebar directly')
 
 // Add context menu as alternative way to open sidebar
 try {
+  // Use appropriate API for context menus
+  const contextMenusAPI =
+    isFirefox && chromeOrBrowser.menus ? chromeOrBrowser.menus : chrome.contextMenus;
+
   // Remove existing context menu items first to prevent duplicates
-  chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
+  contextMenusAPI.removeAll(() => {
+    contextMenusAPI.create({
       id: 'levelup-open',
       title: 'Open Level Up Sidebar',
       contexts: ['page'],
     });
   });
 
-  chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  contextMenusAPI.onClicked.addListener(async (info: any, tab: any) => {
     if (info.menuItemId === 'levelup-open' && tab?.id) {
       try {
-        await chrome.sidePanel.open({ tabId: tab.id });
-        console.log('🔍 [ContextMenu] Opened sidebar via context menu');
+        if (isFirefox) {
+          // Firefox uses sidebarAction API
+          await chromeOrBrowser.sidebarAction?.open();
+          console.log('🔍 [ContextMenu] Opened Firefox sidebar via context menu');
+        } else {
+          // Chrome uses sidePanel API
+          await chromeOrBrowser.sidePanel.open({ tabId: tab.id });
+          console.log('🔍 [ContextMenu] Opened Chrome side panel via context menu');
+        }
       } catch (error) {
         console.log('🔍 [ContextMenu] Failed to open sidebar:', error);
       }
@@ -257,9 +306,28 @@ async function updateSidePanelForTab(
   url?: string | null,
   options?: { openIfDynamics?: boolean; force?: boolean }
 ) {
-  if (!chrome.sidePanel || typeof chrome.sidePanel.setOptions !== 'function') {
+  // For Firefox, sidebarAction doesn't need per-tab configuration like sidePanel
+  if (isFirefox) {
+    // Firefox sidebar is global, not per-tab like Chrome sidePanel
+    // Just inject content script if needed
+    if (url) {
+      const isLoaded = await checkContentScriptLoaded(tabId);
+      if (!isLoaded) {
+        try {
+          await chromeOrBrowser.scripting.executeScript({
+            target: { tabId },
+            files: ['content.js'],
+          });
+          console.log(
+            `🔍 [UpdatePanel] Content script injected for Firefox sidebar communication on tab ${tabId}`
+          );
+        } catch (error) {
+          console.log(`🔍 [UpdatePanel] Content script injection failed for tab ${tabId}:`, error);
+        }
+      }
+    }
     return;
-  } // Safety guard
+  }
 
   // For navigation events, check if it's Dynamics and inject content script if needed
   const isDynamicsPage = await isDynamics365Page(tabId);
@@ -271,7 +339,7 @@ async function updateSidePanelForTab(
       const isLoaded = await checkContentScriptLoaded(tabId);
       if (!isLoaded) {
         try {
-          await chrome.scripting.executeScript({
+          await chromeOrBrowser.scripting.executeScript({
             target: { tabId },
             files: ['content.js'],
           });
@@ -291,7 +359,7 @@ async function updateSidePanelForTab(
 
   // Always keep side panel enabled so user sees an informational message on non-Dynamics tabs
   try {
-    await chrome.sidePanel.setOptions({
+    await chromeOrBrowser.sidePanel.setOptions({
       tabId,
       path: 'sidebar.html',
       enabled: true,
@@ -303,19 +371,23 @@ async function updateSidePanelForTab(
   // Auto-open only for Dynamics tabs (previous behavior) unless user previously closed it
   if (
     isDynamicsPage &&
-    options?.openIfDynamics &&
-    (options.force || !userClosedPanelTabs.has(tabId))
+    (options?.openIfDynamics || options?.force) &&
+    (options?.force || !userClosedPanelTabs.has(tabId))
   ) {
     try {
-      await chrome.sidePanel.open({ tabId });
+      await chromeOrBrowser.sidePanel.open({ tabId });
     } catch (e) {
       console.log('[Background] Failed to open side panel:', e);
     }
+  } else {
+    console.log(
+      `🔍 [UpdatePanel] Not auto-opening side panel for tab ${tabId}. Dynamics: ${isDynamicsPage}, openIfDynamics: ${options?.openIfDynamics}, force: ${options?.force}, userClosed: ${userClosedPanelTabs.has(tabId)}`
+    );
   }
 }
 
 // Update side panel state on tab update
-chrome.tabs.onUpdated.addListener(
+chromeOrBrowser.tabs.onUpdated.addListener(
   async (tabId: number, changeInfo: ChromeTabChangeInfo, tab: ChromeTab) => {
     if (changeInfo.status === 'complete') {
       await updateSidePanelForTab(tabId, tab.url, { openIfDynamics: true });
@@ -324,9 +396,9 @@ chrome.tabs.onUpdated.addListener(
 );
 
 // Update side panel state when switching tabs
-chrome.tabs.onActivated.addListener(async (activeInfo: ChromeActiveInfo) => {
+chromeOrBrowser.tabs.onActivated.addListener(async (activeInfo: ChromeActiveInfo) => {
   try {
-    const tab = await chrome.tabs.get(activeInfo.tabId);
+    const tab = await chromeOrBrowser.tabs.get(activeInfo.tabId);
     await updateSidePanelForTab(activeInfo.tabId, tab.url, { openIfDynamics: true });
   } catch (error) {
     console.log('Could not access tab info:', error);
@@ -336,7 +408,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo: ChromeActiveInfo) => {
 // On install/startup, apply side panel state to all existing tabs
 async function initializeSidePanelState() {
   try {
-    const tabs = await chrome.tabs.query({});
+    const tabs = await chromeOrBrowser.tabs.query({});
     for (const t of tabs) {
       if (t.id !== undefined) {
         await updateSidePanelForTab(t.id, t.url, { openIfDynamics: false });
@@ -350,12 +422,12 @@ async function initializeSidePanelState() {
 initializeSidePanelState();
 
 // Handle tab removal to clean up impersonation
-chrome.tabs.onRemoved.addListener(async (tabId: number) => {
+chromeOrBrowser.tabs.onRemoved.addListener(async (tabId: number) => {
   await impersonationService.handleTabClosed(tabId);
 });
 
 // Handle messages from content script and sidebar
-chrome.runtime.onMessage.addListener(
+chromeOrBrowser.runtime.onMessage.addListener(
   (
     message: ActionMessage,
     sender: ChromeRuntimeSender,
@@ -377,7 +449,7 @@ chrome.runtime.onMessage.addListener(
               // Try to get the tab URL for validation
               let tabUrl: string | undefined;
               try {
-                const tab = await chrome.tabs.get(senderTabId);
+                const tab = await chromeOrBrowser.tabs.get(senderTabId);
                 tabUrl = tab.url;
               } catch (e) {
                 // ignore
@@ -389,7 +461,10 @@ chrome.runtime.onMessage.addListener(
             }
 
             // Fallback to active tab
-            const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            const [currentTab] = await chromeOrBrowser.tabs.query({
+              active: true,
+              currentWindow: true,
+            });
             if (!currentTab?.id || !currentTab?.url) {
               throw new Error('No active tab found');
             }
@@ -424,7 +499,10 @@ chrome.runtime.onMessage.addListener(
             }
 
             // Fallback to active tab
-            const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            const [currentTab] = await chromeOrBrowser.tabs.query({
+              active: true,
+              currentWindow: true,
+            });
             if (!currentTab?.id) {
               throw new Error('No active tab found');
             }
@@ -453,13 +531,13 @@ chrome.runtime.onMessage.addListener(
 );
 
 // Listen for LEVELUP_RESPONSE messages from content scripts to forward to sidebar
-chrome.runtime.onMessage.addListener(message => {
+chromeOrBrowser.runtime.onMessage.addListener(message => {
   console.log('🔍 [Background] Received message:', message);
 
   if (message.type === 'LEVELUP_RESPONSE') {
     console.log('🔍 [Background] Forwarding LEVELUP_RESPONSE to sidebar:', message);
     // Forward the response to any listening sidebar
-    chrome.runtime.sendMessage(message).catch(error => {
+    chromeOrBrowser.runtime.sendMessage(message).catch(error => {
       console.log('🔍 [Background] No sidebar listening for response (this is normal):', error);
     });
   }

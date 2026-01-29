@@ -3,17 +3,6 @@
   "name": "Level Up for Dynamics 365/Power Apps",
   "version": "4.1.3",
   "description": "Quickly perform advanced/hidden actions in Dynamics 365/Power Apps, without bookmarklets.",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "sidePanel",
-    "declarativeNetRequest",
-    "storage",
-    "contextMenus"
-  ],
-  "optional_host_permissions": [
-    "https://*/*"
-  ],
   "content_scripts": [
     {
       "matches": [
@@ -26,13 +15,9 @@
       "all_frames": false
     }
   ],
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
-  "side_panel": {
-    "default_path": "sidebar.html"
-  },
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
   "action": {
     "default_title": "Level Up for Dynamics 365/Power Apps",
     "default_popup": "popup.html",

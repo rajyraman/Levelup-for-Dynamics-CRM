@@ -1,0 +1,25 @@
+{
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "menus"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "type": "module"
+  },
+  "sidebar_action": {
+    "default_title": "Level Up for Dynamics 365/Power Apps",
+    "default_panel": "sidebar.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "open_at_install": false
+  }
+}

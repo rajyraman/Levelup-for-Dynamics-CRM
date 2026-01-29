@@ -1,0 +1,20 @@
+{
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "declarativeNetRequest",
+    "storage",
+    "contextMenus"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
+  }
+}

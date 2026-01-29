@@ -15,20 +15,17 @@ async function packageExtension(browserName = 'chromium') {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   const version = packageJson.version;
 
-  // Create release directory structure
+  // Create merged manifest for the specific browser
+  await createMergedManifest(buildDir, browserName);
+
+  // Validate build directory contains only compiled assets
+  validateBuildDirectory(buildDir);
+
+  // Create release directories
   const releaseDir = path.join(__dirname, '..', 'release');
   const versionDir = path.join(releaseDir, browserName, version);
   const packagePath = path.join(versionDir, `level-up-vnext-${browserName}-v${version}.zip`);
 
-  // Modify manifest for Firefox if needed
-  if (browserName === 'firefox') {
-    modifyManifestForFirefox(buildDir);
-  }
-
-  // Validate build directory contains only compiled assets
-  validateBuildDirectory(buildDir, browserName);
-
-  // Create release directories
   if (!fs.existsSync(releaseDir)) {
     fs.mkdirSync(releaseDir, { recursive: true });
   }
@@ -75,11 +72,8 @@ async function packageExtension(browserName = 'chromium') {
     // Pipe archive data to the file
     archive.pipe(output);
 
-    // Add files from build directory, excluding sourcemap files and sidebar files for Firefox
+    // Add files from build directory, excluding sourcemap files
     const ignorePatterns = ['**/*.map'];
-    if (browserName === 'firefox') {
-      ignorePatterns.push('sidebar.*');
-    }
     archive.glob('**/*', {
       cwd: buildDir,
       ignore: ignorePatterns,
@@ -90,7 +84,7 @@ async function packageExtension(browserName = 'chromium') {
   });
 }
 
-function validateBuildDirectory(buildDir, browserName) {
+function validateBuildDirectory(buildDir) {
   const files = getAllFiles(buildDir);
   const invalidFiles = files.filter(file => {
     const ext = path.extname(file).toLowerCase();
@@ -114,11 +108,10 @@ function validateBuildDirectory(buildDir, browserName) {
     'levelup-extension.js',
     'popup.html',
     'popup.js',
+    'sidebar.js',
+    'sidebar.html',
+    'sidebar.css',
   ];
-
-  if (browserName === 'chromium') {
-    requiredFiles.push('sidebar.js', 'sidebar.html', 'sidebar.css');
-  }
 
   const missingFiles = requiredFiles.filter(file => !fs.existsSync(path.join(buildDir, file)));
 
@@ -151,56 +144,28 @@ function getAllFiles(dir) {
   return files;
 }
 
-function modifyManifestForFirefox(buildDir) {
-  const manifestPath = path.join(buildDir, 'manifest.json');
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+function createMergedManifest(buildDir, browserName) {
+  const srcDir = path.join(__dirname, '..', 'src');
 
-  // Remove sidePanel permission (Firefox doesn't support sidePanel API)
-  if (manifest.permissions && manifest.permissions.includes('sidePanel')) {
-    manifest.permissions = manifest.permissions.filter(p => p !== 'sidePanel');
-  }
-
-  // Remove declarativeNetRequest for Firefox (different implementation)
-  if (manifest.permissions && manifest.permissions.includes('declarativeNetRequest')) {
-    manifest.permissions = manifest.permissions.filter(p => p !== 'declarativeNetRequest');
-  }
-
-  // Remove contextMenus for Firefox (Firefox uses 'menus' API instead)
-  if (manifest.permissions && manifest.permissions.includes('contextMenus')) {
-    manifest.permissions = manifest.permissions.filter(p => p !== 'contextMenus');
-  }
-
-  // Remove side_panel (Firefox doesn't support this)
-  delete manifest.side_panel;
-
-  // Remove sidebar_action (Firefox uses different sidebar implementation)
-  delete manifest.sidebar_action;
-
-  // Update web_accessible_resources to remove sidebar.html
-  if (manifest.web_accessible_resources) {
-    manifest.web_accessible_resources.forEach(resource => {
-      if (resource.resources) {
-        resource.resources = resource.resources.filter(r => r !== 'sidebar.html');
-      }
-    });
-  }
-
-  // Fix background for Firefox (Firefox doesn't support service_worker in same way)
-  if (manifest.background) {
-    delete manifest.background.service_worker;
-    manifest.background.scripts = ['background.js'];
-  }
-
-  // Change host_permissions to optional_host_permissions for Firefox
-  if (manifest.host_permissions) {
-    manifest.optional_host_permissions = manifest.host_permissions;
-    delete manifest.host_permissions;
-  }
-
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log(
-    '✅ Manifest modified for Firefox (removed sidePanel, declarativeNetRequest, contextMenus)'
+  // Read the three manifest files
+  const commonManifest = JSON.parse(
+    fs.readFileSync(path.join(srcDir, 'manifest_common.json'), 'utf8')
   );
+  const browserManifest = JSON.parse(
+    fs.readFileSync(path.join(srcDir, `manifest_${browserName}.json`), 'utf8')
+  );
+
+  // Merge the manifests (browser-specific properties override common ones)
+  const mergedManifest = {
+    ...commonManifest,
+    ...browserManifest,
+  };
+
+  // Write the merged manifest to build directory
+  const manifestPath = path.join(buildDir, 'manifest.json');
+  fs.writeFileSync(manifestPath, JSON.stringify(mergedManifest, null, 2));
+
+  console.log(`✅ Created merged manifest for ${browserName}`);
 }
 
 // Create proper icon files (SVG converted to simple format for development)

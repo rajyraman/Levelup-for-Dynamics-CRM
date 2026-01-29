@@ -19,10 +19,6 @@ const PopupApp: React.FC = () => {
     severity: 'success' | 'info' | 'warning' | 'error';
   }>(null);
 
-  // Detect if running in Firefox
-  const isFirefox =
-    typeof chrome !== 'undefined' && chrome.runtime && navigator.userAgent.includes('Firefox');
-
   useEffect(() => {
     const checkConnection = async () => {
       setIsChecking(true);
@@ -422,8 +418,8 @@ const PopupApp: React.FC = () => {
           </Box>
         )}
 
-        {/* Sidebar Modes at Bottom - Only show for non-Firefox browsers */}
-        {!isFirefox && (
+        {/* Sidebar Modes at Bottom */}
+        {(
           <Box
             sx={{
               textAlign: 'center',
