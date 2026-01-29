@@ -4,6 +4,7 @@
         "types": [
             "jest",
             "@types/chrome",
+            "@types/firefox-webext-browser",
             "@types/puppeteer",
             "@types/jest-environment-puppeteer"
         ],

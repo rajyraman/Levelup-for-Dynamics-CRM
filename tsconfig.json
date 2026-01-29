@@ -29,7 +29,7 @@
     "sourceMap": false,
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM"],
-    "types": ["@types/chrome", "@types/xrm", "vite/client"],
+    "types": ["@types/chrome", "@types/firefox-webext-browser", "@types/xrm", "vite/client"],
     "isolatedModules": true,
     "useDefineForClassFields": true
   },
